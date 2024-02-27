@@ -4,8 +4,8 @@
 #### 4.修改application-dev.yml配置文件，连接你的数据库、redis、mysql
 #### 5.运行后台程序即可
 
-#### 这是后台接口，前端项目请导航到：<a href='#' title='正在整理上传'>前端项目地址</a>
-项目支持mysql、sqlserver数据库，由于时间关系，源代码中目前只放了mysql数据库，如需sqlserver数据库文件，请联系作者提供
+#### 这是后台接口，前端项目请导航到：<a href='https://github.com/yueshengkeji/pm-view' title='前端项目'>前端项目地址</a>
+项目支持mysql、sqlserver数据库，由于时间关系，源代码中目前只放了mysql数据库，如需sqlserver数据库文件，请下方扫码联系作者提供
 
 项目管理软件平台，功能如下：
 ====================
