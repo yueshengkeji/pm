@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PlanMaterialMapper">
+    <resultMap id="planMaterial" type="com.yuesheng.pm.entity.PlanMaterial">
+        <id column="pm07024" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm07001" property="planId" jdbcType="VARCHAR"></result>
+        <result column="pm07002" property="projectId" jdbcType="VARCHAR"></result>
+        <result column="pm07003" property="taskId" jdbcType="VARCHAR"></result>
+        <result column="pm07005" property="planSum" jdbcType="DECIMAL"></result>
+        <result column="pm07006" property="taxMoney" jdbcType="DECIMAL"></result>
+        <result column="pm07010" property="inDate" jdbcType="VARCHAR"></result>
+        <result column="pm07011" property="planDate" jdbcType="VARCHAR"></result>
+        <result column="pm07014" property="planPrice" jdbcType="VARCHAR"></result>
+        <result column="pm07020" property="tax" jdbcType="DECIMAL"></result>
+        <result column="pm07021" property="price" jdbcType="DECIMAL"></result>
+        <result column="pm07022" property="money" jdbcType="DECIMAL"></result>
+        <result column="pm07023" property="cnfStr" jdbcType="VARCHAR"></result>
+        <result column="pm07025" property="serial" jdbcType="INTEGER"></result>
+        <association property="material" column="pm07004"
+                     select="com.yuesheng.pm.mapper.MaterialMapper.getMaterialByid"></association>
+        <!--<association property="unit" column="pm07015" select="com.yuesheng.pm.mapper.UnitMapper.getUnit"></association>-->
+        <!--<association property="material" javaType="com.yuesheng.pm.entity.Material">-->
+        <!--<id column="pm07004" property="id" jdbcType="VARCHAR"></id>-->
+        <!--</association>-->
+        <!--<association property="unit" jdbcType="com.yuesheng.pm.entity.Unit">-->
+        <!--<id column="pm07015" property="id" jdbcType="VARCHAR"></id>-->
+        <!--</association>-->
+        <!--<result column="pm07017" property="pm07017" jdbcType="TINYINT"></result>
+        <result column="pm07018" property="approveCode" jdbcType="VARCHAR"></result>
+        <result column="pm07019" property="approveDate" jdbcType="VARCHAR"></result>-->
+    </resultMap>
+    <insert id="insertOk">
+        INSERT INTO sdpm006 VALUES (#{projectId},#{taskId},
+        #{material.id},#{planSum},#{taxMoney},
+        0,0,1,#{inDate},#{planDate},0,0,#{planPrice},#{material.unit.id},1,
+        0,'','',#{tax},#{price},#{money},#{cnfStr},#{id},0)
+    </insert>
+    <!--已经审核过的计划单材料对象-->
+    <resultMap id="planMaterOk" type="com.yuesheng.pm.entity.PlanMaterial">
+        <id column="pm00623" property="id" jdbcType="VARCHAR"></id>
+        <!--<result column="pm00601" property="planId" jdbcType="VARCHAR"></result>-->
+        <result column="pm00601" property="projectId" jdbcType="VARCHAR"></result>
+        <result column="pm00602" property="taskId" jdbcType="VARCHAR"></result>
+        <result column="pm00604" property="planSum" jdbcType="DECIMAL"></result>
+        <result column="pm00605" property="taxMoney" jdbcType="DECIMAL"></result>
+        <result column="pm00609" property="inDate" jdbcType="VARCHAR"></result>
+        <result column="pm00610" property="planDate" jdbcType="VARCHAR"></result>
+        <result column="pm00613" property="planPrice" jdbcType="VARCHAR"></result>
+        <result column="pm00619" property="tax" jdbcType="DECIMAL"></result>
+        <result column="pm00620" property="price" jdbcType="DECIMAL"></result>
+        <result column="pm00621" property="money" jdbcType="DECIMAL"></result>
+        <result column="pm00622" property="cnfStr" jdbcType="VARCHAR"></result>
+        <result column="pm03505" property="applySum" jdbcType="DECIMAL"></result>
+
+        <association property="material" column="pm00603"
+                     select="com.yuesheng.pm.mapper.MaterialMapper.getMaterialByid"></association>
+        <!--<result column="pm07017" property="pm07017" jdbcType="TINYINT"></result>
+        <result column="pm07018" property="approveCode" jdbcType="VARCHAR"></result>
+        <result column="pm07019" property="approveDate" jdbcType="VARCHAR"></result>-->
+    </resultMap>
+    <!--已经审核过的计划单材料对象-->
+    <resultMap id="planMaterOkV2" type="com.yuesheng.pm.entity.PlanMaterial">
+        <id column="pm00623" property="id" jdbcType="VARCHAR"></id>
+        <!--<result column="pm00601" property="planId" jdbcType="VARCHAR"></result>-->
+        <result column="pm00601" property="projectId" jdbcType="VARCHAR"></result>
+        <result column="pm00602" property="taskId" jdbcType="VARCHAR"></result>
+        <result column="pm00604" property="planSum" jdbcType="DECIMAL"></result>
+        <result column="pm00605" property="taxMoney" jdbcType="DECIMAL"></result>
+        <result column="pm00609" property="inDate" jdbcType="VARCHAR"></result>
+        <result column="pm00610" property="planDate" jdbcType="VARCHAR"></result>
+        <result column="pm00613" property="planPrice" jdbcType="VARCHAR"></result>
+        <result column="pm00619" property="tax" jdbcType="DECIMAL"></result>
+        <result column="pm00620" property="price" jdbcType="DECIMAL"></result>
+        <result column="pm00621" property="money" jdbcType="DECIMAL"></result>
+        <result column="pm00622" property="cnfStr" jdbcType="VARCHAR"></result>
+        <result column="pm03505" property="applySum" jdbcType="DECIMAL"></result>
+        <association property="material" column="pm00603"
+                     select="com.yuesheng.pm.mapper.MaterialMapper.getMaterialByid">
+            <id column="pm00201" property="id" jdbcType="VARCHAR"></id>
+            <result column="pm00202" property="name" jdbcType="VARCHAR"></result>
+            <result column="pm00203" property="folder" jdbcType="VARCHAR"></result>
+            <result column="pm00205" property="model" jdbcType="VARCHAR"></result>
+            <result column="pm00221" property="brand" jdbcType="VARCHAR"></result>
+            <result column="pm00222" property="producingArea" jdbcType="VARCHAR"></result>
+            <association property="unit" column="pm00614"
+                         select="com.yuesheng.pm.mapper.UnitMapper.getUnit"></association>
+        </association>
+    </resultMap>
+
+    <select id="getMaterialsByPlan" resultMap="planMaterial">
+        SELECT pm07001,pm07002,pm07003,pm07004,pm07005,pm07006,pm07010,pm07011,pm07014,pm07015,pm07020,pm07021,pm07022,pm07023,pm07024,pm07025 FROM sdpm070 WHERE pm07001=#{planId}
+    </select>
+    <select id="getMaterialById" resultMap="planMaterial">
+        SELECT * FROM sdpm070 WHERE pm07024=#{id}
+    </select>
+    <select id="getMaterByProId" resultMap="planMaterial">
+        SELECT * FROM sdpm070 WHERE pm07002=#{proId}
+    </select>
+    <select id="getMaterByParam" resultMap="planMaterial">
+        SELECT * FROM sdpm070
+        <where>
+            <if test="projectId != null">
+                and pm07002=#{projectId}
+            </if>
+            <if test="pm07017 != null">
+                and pm07017=#{pm07017}
+            </if>
+        </where>
+    </select>
+    <select id="getMaterForApply" resultMap="planMaterOk">
+        SELECT (SELECT ISNULL(SUM(pm03505),0) FROM sdpm035 WHERE pm03520=a.pm00623) AS pm03505,a.* FROM sdpm006 AS a
+        WHERE (SELECT ISNULL(SUM(pm03505),0) FROM sdpm035 WHERE pm03520=a.pm00623) &lt; a.pm00604
+            AND a.pm00601=#{projectId}
+    </select>
+    <select id="getMaterForApplyV2" resultMap="planMaterOkV2">
+        SELECT (SELECT ISNULL(SUM(pm03505),0) FROM sdpm035 WHERE pm03520=a.pm00623) AS pm03505,
+        a.*,pm00201,pm00202 ,pm00203,pm00205,pm00221,pm00222
+        FROM sdpm006 AS a
+        left join sdpm002 on pm00201=a.pm00603
+        WHERE a.pm00601=#{projectId}
+        <if test="searchText != null">
+            AND isnull(a.pm00602,'')+cast(isnull(a.pm00604,0) AS VARCHAR)+
+            pm00201+pm00202+pm00205+pm00221+pm00222 LIKE '%'+#{searchText}+'%'
+        </if>
+        <if test="applyType == 0">
+            and (SELECT ISNULL(SUM(pm03505),0) FROM sdpm035 WHERE pm03520=a.pm00623) &lt; a.pm00604
+        </if>
+        <if test="applyType == 1">
+            and (SELECT ISNULL(SUM(pm03505),0) FROM sdpm035 WHERE pm03520=a.pm00623) &gt;= a.pm00604
+            and a.pm00604 &gt; 0
+        </if>
+    </select>
+    <select id="getMaterForApplyV2" resultMap="planMaterOkV2" databaseId="mysql">
+        SELECT (SELECT IFNULL(SUM(pm03505),0) FROM sdpm035 WHERE pm03520=a.pm00623) AS pm03505,
+        a.*,pm00201,pm00202 ,pm00203,pm00205,pm00221,pm00222
+        FROM sdpm006 AS a
+        left join sdpm002 on pm00201=a.pm00603
+        WHERE a.pm00601=#{projectId}
+        <if test="searchText != null">
+            AND concat(ifnull(a.pm00602,''),a.pm00604,
+            pm00201,pm00202,pm00205,pm00221,pm00222) LIKE concat('%',#{searchText},'%')
+        </if>
+        <if test="applyType == 0">
+            and (SELECT IFNULL(SUM(pm03505),0) FROM sdpm035 WHERE pm03520=a.pm00623) &lt; a.pm00604
+        </if>
+        <if test="applyType == 1">
+            and (SELECT IFNULL(SUM(pm03505),0) FROM sdpm035 WHERE pm03520=a.pm00623) &gt;= a.pm00604
+            and a.pm00604 &gt; 0
+        </if>
+    </select>
+
+    <delete id="deleteAll">
+        DELETE FROM sdpm070 WHERE pm07001=#{planId}
+    </delete>
+    <delete id="delete">
+        DELETE FROM sdpm070 WHERE pm07024=#{id}
+    </delete>
+    <update id="update">
+        UPDATE sdpm070 SET pm07002=#{projectId},pm07005=#{planSum},pm07006=#{taxMoney},
+        pm07011=#{planDate},pm07014=#{planPrice},pm07020=#{tax},pm07021=#{price},pm07022=#{money},pm07025=#{serial} WHERE pm07024=#{id};
+    </update>
+    <insert id="insert">
+        INSERT INTO sdpm070 VALUES (#{planId},#{projectId},#{taskId},
+        #{material.id},#{planSum},#{taxMoney},
+        0,0,1,#{inDate},#{planDate},0,0,#{planPrice},#{material.unit.id},1,
+        0,'','',#{tax},#{price},#{money},#{cnfStr},#{id},#{serial})
+    </insert>
+    <select id="getMaterialByOk" resultMap="planMaterOk">
+        SELECT * FROM sdpm006 WHERE pm00623=#{id}
+    </select>
+    <select id="getMaterByMaterId" resultMap="com.yuesheng.pm.mapper.MaterialMapper.material">
+        select a.* from sdpm002 AS a
+        RIGHT JOIN sdpm070 AS b ON a.pm00201=b.pm07004
+        WHERE b.pm07004=#{id}
+    </select>
+
+    <select id="getMaterialByMaterId" resultMap="planMaterial">
+        SELECT b.* FROM sdpm002 AS a RIGHT JOIN sdpm070 AS b
+        ON a.pm00201=b.pm07004 WHERE b.pm07004=#{materId}
+    </select>
+
+    <select id="getPlanMoneyByProject" resultType="Double">
+        select SUM(pm07006) from sdpm070
+        RIGHT JOIN sdpm071 on pm07101=pm07001
+        where pm07002=#{projectId} and pm07109=1
+    </select>
+
+    <update id="approve">
+        update sdpm070
+        set pm07017=#{appMark},
+            pm07018=#{approve.coding},
+            pm07019=#{approveDate}
+        where pm07001 = #{id}
+    </update>
+    <select id="getApproveMaterByKey" resultMap="planMaterOk">
+        select *
+        from sdpm006
+        where pm00601 + pm00602 + pm00603 + pm00622 = #{key}
+    </select>
+    <select id="getApproveMaterByKey" resultMap="planMaterOk" databaseId="mysql">
+        select *
+        from sdpm006
+        where concat(pm00601, pm00602, pm00603 , pm00622 )= #{key}
+    </select>
+    <select id="getMaterCount" resultType="com.yuesheng.pm.model.DateCount">
+        Select SUM(IsNull(pm07005,0)) as doubleCount,SUM(isnull(pm07005,0)*isnull(pm07021,0)) as doubleMoney
+        from  sdpm070,sdpm071
+        where pm07101=pm07001 and pm07109=1 and pm07017=1
+          and pm07002+pm07003+pm07004+pm07023=#{key}
+    </select>
+    <select id="getMaterCount" resultType="com.yuesheng.pm.model.DateCount" databaseId="mysql">
+        Select SUM(IFNull(pm07005,0)) as doubleCount,SUM(IFNull(pm07005,0)*IFNull(pm07021,0)) as doubleMoney
+        from  sdpm070,sdpm071
+        where pm07101=pm07001 and pm07109=1 and pm07017=1
+          and concat(pm07002,pm07003,pm07004,pm07023)=#{key}
+    </select>
+    <delete id="deleteOk">
+        delete
+        sdpm006 where pm00601+pm00602+pm00603+pm00622=
+        #{key}
+    </delete>
+    <delete id="deleteOk" databaseId="mysql">
+        delete
+        sdpm006 where concat(pm00601,pm00602,pm00603,pm00622)=
+        #{key}
+    </delete>
+    <update id="updateOk" >
+        update sdpm006 set pm00604=#{planSum},pm00621=#{money},pm00620=#{price},pm00616=1
+        where pm00601+pm00602+pm00603+pm00622=#{id}
+    </update>
+    <update id="updateOk" databaseId="mysql">
+        update sdpm006 set pm00604=#{planSum},pm00621=#{money},pm00620=#{price},pm00616=1
+        where concat(pm00601,pm00602,pm00603,pm00622)=#{id}
+    </update>
+
+    <select id="getProjectMaterial" resultMap="com.yuesheng.pm.mapper.ProjectMapper.projectMater">
+        SELECT mater.pm00201 AS 'pm00201',
+        mater.pm00202 AS 'pm00202',
+        mater.pm00205 AS 'pm00205',
+        mater.pm00221 AS 'pm00221',
+        mater.pm00222 AS 'pm00222',
+        sum(a.pm07005) AS 'pm07005',
+        1 AS 'type'
+        FROM sdpm070 AS a
+        RIGHT JOIN sdpm002 AS mater ON a.pm07004=mater.pm00201
+        WHERE a.pm07002=#{projectId}
+        GROUP BY mater.pm00201,mater.pm00202,mater.pm00205,mater.pm00221,mater.pm00222
+    </select>
+</mapper>

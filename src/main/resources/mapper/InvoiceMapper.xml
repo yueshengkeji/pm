@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.InvoiceMapper">
+
+    <resultMap id="Invoice" type="com.yuesheng.pm.entity.Invoice">
+        <result property="ID" column="id"></result>
+        <result property="invoiceID" column="invoice_id"></result>
+        <result property="invoiceMoney" column="invoice_money"></result>
+        <result property="remark" column="remark"></result>
+        <result property="percent" column="percent"></result>
+        <result property="agreementID" column="agreement_id"></result>
+        <result property="agreementName" column="agreement_name"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="registrant" column="registrant"></result>
+        <result property="registrantId" column="registrant_id"></result>
+        <result property="pMark" column="pMark"></result>
+        <result property="returnDate" column="return_date"></result>
+        <result property="status" column="status"></result>
+        <result property="billMark" column="bill_mark"></result>
+        <result property="tax" column="tax"></result>
+        <result property="statusNumber" column="status_number"></result>
+        <result property="operatorName" column="operator_name"></result>
+        <result property="operatorPhone" column="operator_phone"></result>
+        <result property="operatorIDNumber" column="operator_id_number"></result>
+        <result property="province" column="province"></result>
+        <result property="city" column="city"></result>
+        <result property="district" column="district"></result>
+        <result property="street" column="street"></result>
+        <result property="partyANeeds" column="party_a_needs"></result>
+        <result property="invoiceContent" column="invoice_content"></result>
+        <result property="collectedMoney" column="collected_money"></result>
+        <result property="invoiceCompany" column="invoice_company"></result>
+    </resultMap>
+
+    <select id="selectCountsByDate" resultType="java.lang.Integer">
+        select count(*) from contract_invoicing_registration
+        where create_time between #{startDate} and #{endDate}
+    </select>
+
+    <select id="selectByDateForPage" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where create_time between #{startDate} and #{endDate}
+        order by create_time desc
+    </select>
+
+    <select id="selectByDay" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where create_time between #{startDate} and #{endDate}
+    </select>
+
+    <select id="selectByDate" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where create_time between #{startTime} and #{endTime}
+    </select>
+
+    <select id="selectByMark" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where pMark = #{pMark}
+    </select>
+
+    <select id="selectByInvoiceID" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where invoice_id = #{invoiceID}
+        order by create_time desc
+    </select>
+
+    <select id="selectByAgreementID" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where agreement_id = #{agreementID}
+        order by create_time desc
+    </select>
+
+    <insert id="insertInvoice" parameterType="com.yuesheng.pm.entity.Invoice">
+        insert into contract_invoicing_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ID != null">id,</if>
+            <if test="invoiceMoney != null ">invoice_money,
+            </if>
+            <if test="invoiceID != null ">invoice_id,
+            </if>
+            <if test="remark != null ">remark,
+            </if>
+            <if test="percent != null ">[percent],
+            </if>
+            <if test="agreementID != null ">agreement_id,
+            </if>
+            <if test="agreementName != null">agreement_name,
+            </if>
+            <if test="createTime != null ">create_time,
+            </if>
+            <if test="registrant != null ">registrant,
+            </if>
+            <if test="registrantId != null">registrant_id,
+            </if>
+            <if test="pMark != null ">pMark,
+            </if>
+            <if test="returnDate != null">return_date,
+            </if>
+            <if test="status != null">status,
+            </if>
+            <if test="billMark != null">bill_mark,
+            </if>
+            <if test="tax != null">tax,
+            </if>
+            <if test="statusNumber != null">status_number,
+            </if>
+            <if test="operatorName != null">operator_name,</if>
+            <if test="operatorPhone != null">operator_phone,</if>
+            <if test="operatorIDNumber != null">operator_id_number,</if>
+            <if test="province != null">province,</if>
+            <if test="city != null">city,</if>
+            <if test="district != null">district,</if>
+            <if test="street != null">street,</if>
+            <if test="partyANeeds != null">party_a_needs,</if>
+            <if test="invoiceContent != null">invoice_content,</if>
+            <if test="collectedMoney != null">collected_money,</if>
+            <if test="invoiceCompany != null">invoice_company,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ID != null">#{ID},</if>
+            <if test="invoiceMoney != null ">#{invoiceMoney},
+            </if>
+            <if test="invoiceID != null ">#{invoiceID},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+            <if test="percent != null ">#{percent},
+            </if>
+            <if test="agreementID != null ">#{agreementID},
+            </if>
+            <if test="agreementName != null">#{agreementName},
+            </if>
+            <if test="createTime != null ">#{createTime},
+            </if>
+            <if test="registrant != null ">#{registrant},
+            </if>
+            <if test="registrantId != null">#{registrantId},
+            </if>
+            <if test="pMark != null">#{pMark},
+            </if>
+            <if test="returnDate != null">#{returnDate},
+            </if>
+            <if test="status != null">#{status},
+            </if>
+            <if test="billMark != null">#{billMark},
+            </if>
+            <if test="tax != null">#{tax},
+            </if>
+            <if test="statusNumber != null">#{statusNumber},
+            </if>
+            <if test="operatorName != null">#{operatorName},</if>
+            <if test="operatorPhone != null">#{operatorPhone},</if>
+            <if test="operatorIDNumber != null">#{operatorIDNumber},</if>
+            <if test="province != null">#{province},</if>
+            <if test="city != null">#{city},</if>
+            <if test="district != null">#{district},</if>
+            <if test="street != null">#{street},</if>
+            <if test="partyANeeds != null">#{partyANeeds},</if>
+            <if test="invoiceContent != null">#{invoiceContent},</if>
+            <if test="collectedMoney != null">#{collectedMoney},</if>
+            <if test="invoiceCompany != null">#{invoiceCompany},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertInvoice" parameterType="com.yuesheng.pm.entity.Invoice" databaseId="mysql">
+        insert into contract_invoicing_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ID != null">id,</if>
+            <if test="invoiceMoney != null ">invoice_money,
+            </if>
+            <if test="invoiceID != null ">invoice_id,
+            </if>
+            <if test="remark != null ">remark,
+            </if>
+            <if test="percent != null ">percent,
+            </if>
+            <if test="agreementID != null ">agreement_id,
+            </if>
+            <if test="agreementName != null">agreement_name,
+            </if>
+            <if test="createTime != null ">create_time,
+            </if>
+            <if test="registrant != null ">registrant,
+            </if>
+            <if test="registrantId != null">registrant_id,
+            </if>
+            <if test="pMark != null ">pMark,
+            </if>
+            <if test="returnDate != null">return_date,
+            </if>
+            <if test="status != null">status,
+            </if>
+            <if test="billMark != null">bill_mark,
+            </if>
+            <if test="tax != null">tax,
+            </if>
+            <if test="statusNumber != null">status_number,
+            </if>
+            <if test="operatorName != null">operator_name,</if>
+            <if test="operatorPhone != null">operator_phone,</if>
+            <if test="operatorIDNumber != null">operator_id_number,</if>
+            <if test="province != null">province,</if>
+            <if test="city != null">city,</if>
+            <if test="district != null">district,</if>
+            <if test="street != null">street,</if>
+            <if test="partyANeeds != null">party_a_needs,</if>
+            <if test="invoiceContent != null">invoice_content,</if>
+            <if test="collectedMoney != null">collected_money,</if>
+            <if test="invoiceCompany != null">invoice_company,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ID != null">#{ID},</if>
+            <if test="invoiceMoney != null ">#{invoiceMoney},
+            </if>
+            <if test="invoiceID != null ">#{invoiceID},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+            <if test="percent != null ">#{percent},
+            </if>
+            <if test="agreementID != null ">#{agreementID},
+            </if>
+            <if test="agreementName != null">#{agreementName},
+            </if>
+            <if test="createTime != null ">#{createTime},
+            </if>
+            <if test="registrant != null ">#{registrant},
+            </if>
+            <if test="registrantId != null">#{registrantId},
+            </if>
+            <if test="pMark != null">#{pMark},
+            </if>
+            <if test="returnDate != null">#{returnDate},
+            </if>
+            <if test="status != null">#{status},
+            </if>
+            <if test="billMark != null">#{billMark},
+            </if>
+            <if test="tax != null">#{tax},
+            </if>
+            <if test="statusNumber != null">#{statusNumber},
+            </if>
+            <if test="operatorName != null">#{operatorName},</if>
+            <if test="operatorPhone != null">#{operatorPhone},</if>
+            <if test="operatorIDNumber != null">#{operatorIDNumber},</if>
+            <if test="province != null">#{province},</if>
+            <if test="city != null">#{city},</if>
+            <if test="district != null">#{district},</if>
+            <if test="street != null">#{street},</if>
+            <if test="partyANeeds != null">#{partyANeeds},</if>
+            <if test="invoiceContent != null">#{invoiceContent},</if>
+            <if test="collectedMoney != null">#{collectedMoney},</if>
+            <if test="invoiceCompany != null">#{invoiceCompany},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteInvoice" parameterType="string">
+        delete from contract_invoicing_registration where id = #{ID}
+    </delete>
+
+    <delete id="deleteInvoiceByAgreementID">
+        delete from contract_invoicing_registration where agreement_id = #{agreementID}
+    </delete>
+
+    <update id="updateInvoice" parameterType="com.yuesheng.pm.entity.Invoice">
+        update contract_invoicing_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="invoiceMoney != null ">invoice_money = #{invoiceMoney},
+            </if>
+            <if test="remark != null ">remark = #{remark},
+            </if>
+            <if test="percent != null">[percent] = #{percent},
+            </if>
+            <if test="agreementID != null ">agreement_id = #{agreementID},
+            </if>
+            <if test="agreementName != null">agreement_name = #{agreementName},
+            </if>
+            <if test="createTime != null ">create_time = #{createTime},
+            </if>
+            <if test="registrant != null ">registrant = #{registrant},
+            </if>
+            <if test="registrantId != null">registrant_id = #{registrantId},
+            </if>
+            <if test="pMark != null">pMark = #{pMark},
+            </if>
+            <if test="returnDate != null">return_date = #{returnDate},
+            </if>
+            <if test="status != null">status = #{status},
+            </if>
+            <if test="billMark != null">bill_mark = #{billMark},
+            </if>
+            <if test="tax != null">tax = #{tax},
+            </if>
+            <if test="statusNumber != null">status_number = #{statusNumber},</if>
+            <if test="operatorName != null">operator_name = #{operatorName},</if>
+            <if test="operatorPhone != null">operator_phone = #{operatorPhone},</if>
+            <if test="operatorIDNumber != null">operator_id_number = #{operatorIDNumber},</if>
+            <if test="province != null">province = #{province},</if>
+            <if test="city != null">city = #{city},</if>
+            <if test="district != null">district = #{district},</if>
+            <if test="street != null">street = #{street},</if>
+            <if test="partyANeeds != null">party_a_needs = #{partyANeeds},</if>
+            <if test="invoiceContent != null">invoice_content = #{invoiceContent},</if>
+            <if test="collectedMoney != null">collected_money = #{collectedMoney},</if>
+            <if test="invoiceCompany != null">invoice_company = #{invoiceCompany},</if>
+        </trim>
+        where id = #{ID}
+    </update>
+
+
+    <update id="updateInvoice" parameterType="com.yuesheng.pm.entity.Invoice" databaseId="mysql">
+        update contract_invoicing_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="invoiceMoney != null ">invoice_money = #{invoiceMoney},
+            </if>
+            <if test="remark != null ">remark = #{remark},
+            </if>
+            <if test="percent != null">percent = #{percent},
+            </if>
+            <if test="agreementID != null ">agreement_id = #{agreementID},
+            </if>
+            <if test="agreementName != null">agreement_name = #{agreementName},
+            </if>
+            <if test="createTime != null ">create_time = #{createTime},
+            </if>
+            <if test="registrant != null ">registrant = #{registrant},
+            </if>
+            <if test="registrantId != null">registrant_id = #{registrantId},
+            </if>
+            <if test="pMark != null">pMark = #{pMark},
+            </if>
+            <if test="returnDate != null">return_date = #{returnDate},
+            </if>
+            <if test="status != null">status = #{status},
+            </if>
+            <if test="billMark != null">bill_mark = #{billMark},
+            </if>
+            <if test="tax != null">tax = #{tax},
+            </if>
+            <if test="statusNumber != null">status_number = #{statusNumber},</if>
+            <if test="operatorName != null">operator_name = #{operatorName},</if>
+            <if test="operatorPhone != null">operator_phone = #{operatorPhone},</if>
+            <if test="operatorIDNumber != null">operator_id_number = #{operatorIDNumber},</if>
+            <if test="province != null">province = #{province},</if>
+            <if test="city != null">city = #{city},</if>
+            <if test="district != null">district = #{district},</if>
+            <if test="street != null">street = #{street},</if>
+            <if test="partyANeeds != null">party_a_needs = #{partyANeeds},</if>
+            <if test="invoiceContent != null">invoice_content = #{invoiceContent},</if>
+            <if test="collectedMoney != null">collected_money = #{collectedMoney},</if>
+            <if test="invoiceCompany != null">invoice_company = #{invoiceCompany},</if>
+        </trim>
+        where id = #{ID}
+    </update>
+    <select id="selectAll" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        order by create_time desc
+    </select>
+
+    <select id="selectBypMarkAndRID" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where pMark = #{pMark}
+        and registrant_id = #{registrantId}
+    </select>
+    <select id="selectById" resultMap="Invoice">
+        select * from contract_invoicing_registration where id=#{id}
+    </select>
+    <select id="selectCheckedByDateForPage" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where create_time between #{startDate} and #{endDate}
+        and status = '已审核'
+        order by create_time desc
+    </select>
+    <select id="selectCheckedCountsByDate" parameterType="string" resultType="java.lang.Integer">
+        select count(*) from contract_invoicing_registration
+        where create_time between #{startDate} and #{endDate}
+        and status = '已审核'
+    </select>
+    <select id="selectCheckedByDate" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where create_time between #{startDate} and #{endDate}
+        and status = '已审核'
+    </select>
+    <select id="searchInvoice" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where
+        isnull(agreement_name,'') +
+        isnull(agreement_id,'') +
+        isnull(convert(varchar(100),invoice_money),'') +
+        isnull(convert(varchar(100),create_time),'') +
+        isnull(convert(varchar(100),return_date),'') +
+        isnull(registrant,'')
+        like '%' + #{search} + '%'
+        order by create_time desc
+    </select>
+    <select id="searchInvoice" resultMap="Invoice" databaseId="mysql">
+        select * from contract_invoicing_registration
+        where concat(agreement_name,agreement_id,invoice_money,create_time,return_date,registrant)
+        like concat('%',#{search},'%')
+        order by create_time desc
+    </select>
+    <select id="searchInvoiceChecked" resultMap="Invoice">
+        select * from contract_invoicing_registration
+        where
+        isnull(agreement_name,'') +
+        isnull(agreement_id,'') +
+        isnull(convert(varchar(100),invoice_money),'') +
+        isnull(convert(varchar(100),create_time),'') +
+        isnull(convert(varchar(100),return_date),'') +
+        isnull(registrant,'')
+        like '%' + #{search} + '%'
+        and status = '已审核'
+        order by create_time desc
+    </select>
+    <select id="searchInvoiceChecked" resultMap="Invoice" databaseId="mysql">
+        select * from contract_invoicing_registration
+        where concat(agreement_name,agreement_id,invoice_money,create_time,return_date,registrant)
+        like concat('%',#{search},'%')
+        and status = '已审核'
+        order by create_time desc
+    </select>
+    <select id="searchInvoiceCounts" resultType="java.lang.Integer">
+        select count(*) from contract_invoicing_registration
+        where
+        isnull(agreement_name,'') +
+        isnull(agreement_id,'') +
+        isnull(convert(varchar(100),invoice_money),'') +
+        isnull(convert(varchar(100),create_time),'') +
+        isnull(convert(varchar(100),return_date),'') +
+        isnull(registrant,'')
+        like '%' + #{search} + '%'
+    </select>
+    <select id="searchInvoiceCounts" resultType="java.lang.Integer" databaseId="mysql">
+        select count(*) from contract_invoicing_registration
+        where concat(agreement_name,agreement_id,invoice_money,create_time,return_date,registrant)
+        like concat('%',#{search},'%')
+    </select>
+    <select id="searchInvoiceCheckedCounts" resultType="java.lang.Integer">
+        select count(*) from contract_invoicing_registration
+        where
+        isnull(agreement_name,'') +
+        isnull(agreement_id,'') +
+        isnull(convert(varchar(100),invoice_money),'') +
+        isnull(convert(varchar(100),create_time),'') +
+        isnull(convert(varchar(100),return_date),'') +
+        isnull(registrant,'')
+        like '%' + #{search} + '%'
+        and status = '已审核'
+    </select>
+    <select id="searchInvoiceCheckedCounts" resultType="java.lang.Integer" databaseId="mysql">
+        select count(*) from contract_invoicing_registration
+        where concat(agreement_name,agreement_id,invoice_money,create_time,return_date,registrant)
+        like concat('%',#{search},'%')
+        and status = '已审核'
+    </select>
+
+    <select id="selectForBill" parameterType="com.yuesheng.pm.entity.Invoice" resultMap="Invoice">
+        select id from contract_invoicing_registration
+        where invoice_id = #{invoiceID}
+        and invoice_money = #{invoiceMoney}
+        and remark = #{remark}
+        and [percent] = #{percent}
+        and agreement_id = #{agreementID}
+        and registrant = #{registrant}
+        and registrant_id = #{registrantId}
+        and pMark = #{pMark}
+        and agreement_name = #{agreementName}
+    </select>
+    <select id="selectForBill" parameterType="com.yuesheng.pm.entity.Invoice" resultMap="Invoice" databaseId="mysql">
+        select id from contract_invoicing_registration
+        where invoice_id = #{invoiceID}
+        and invoice_money = #{invoiceMoney}
+        and remark = #{remark}
+        and percent = #{percent}
+        and agreement_id = #{agreementID}
+        and registrant = #{registrant}
+        and registrant_id = #{registrantId}
+        and pMark = #{pMark}
+        and agreement_name = #{agreementName}
+    </select>
+    <select id="selectByBillMark" parameterType="string" resultMap="Invoice">
+        select id from contract_invoicing_registration
+        where bill_mark = #{billMark}
+    </select>
+
+    <update id="setStatus">
+        update contract_invoicing_registration
+        set status = '已审核',status_number = 1
+        where id = #{id}
+    </update>
+    <select id="selectByTax" resultMap="Invoice">
+        select [percent] from contract_invoicing_registration
+        where agreement_id = #{agreementID}
+        and tax = #{tax}
+    </select>
+    <select id="selectByTax" resultMap="Invoice" databaseId="mysql">
+        select percent from contract_invoicing_registration
+        where agreement_id = #{agreementID}
+        and tax = #{tax}
+    </select>
+    <select id="selectByNullTax" resultMap="Invoice">
+        select [percent] from contract_invoicing_registration
+        where agreement_id = #{agreementID}
+        and (tax = null or tax = '' or tax is null)
+    </select>
+    <select id="selectByNullTax" resultMap="Invoice" databaseId="mysql">
+        select percent from contract_invoicing_registration
+        where agreement_id = #{agreementID}
+        and (tax = null or tax = '' or tax is null)
+    </select>
+    <select id="selectAllDone" resultMap="Invoice">
+        select agreement_id,tax,invoice_money from contract_invoicing_registration
+        where status = '已审核'
+    </select>
+    <select id="getByCompany" resultMap="Invoice">
+        select a.id,a.agreement_name,a.invoice_money,a.create_time,a.status,a.return_date,a.registrant,a.agreement_id from contract_invoicing_registration as a
+        left join sales_contract_registration as b
+        on a.agreement_id = b.contract_id
+        <where>
+            <if test="company != null">
+                AND b.company_name = #{company}
+            </if>
+            <if test="startDate != null">
+                AND a.create_time between #{startDate} and #{endDate}
+            </if>
+            <if test="search != null">
+                AND isnull(a.agreement_name,'') +
+                isnull(a.agreement_id,'') +
+                isnull(convert(varchar(100),a.invoice_money),'') +
+                isnull(convert(varchar(100),a.create_time),'') +
+                isnull(convert(varchar(100),a.return_date),'') +
+                isnull(a.registrant,'')
+                like '%' + #{search} + '%'
+            </if>
+        </where>
+    </select>
+    <select id="getByCompany" resultMap="Invoice" databaseId="mysql">
+        select a.id,a.agreement_name,a.invoice_money,a.create_time,a.status,a.return_date,a.registrant,a.agreement_id from contract_invoicing_registration as a
+        left join sales_contract_registration as b
+        on a.agreement_id = b.contract_id
+        <where>
+            <if test="company != null">
+                AND b.company_name = #{company}
+            </if>
+            <if test="startDate != null">
+                AND a.create_time between #{startDate} and #{endDate}
+            </if>
+            <if test="search != null">
+                AND concat(a.agreement_name,a.agreement_id,a.invoice_money,a.create_time,a.return_date,a.registrant)
+                like concat('%',#{search},'%')
+            </if>
+        </where>
+    </select>
+    <select id="list" resultMap="Invoice">
+        select id,invoice_money,create_time,status,return_date,registrant,agreement_id,invoice_content from contract_invoicing_registration
+        <where>
+            <if test="startDate != null">
+                AND create_time between #{startDate} and #{endDate}
+            </if>
+            <if test="search != null">
+                AND isnull(agreement_name,'') +
+                isnull(agreement_id,'') +
+                isnull(convert(varchar(100),invoice_money),'') +
+                isnull(convert(varchar(100),create_time),'') +
+                isnull(convert(varchar(100),return_date),'') +
+                isnull(registrant,'')
+                like '%' + #{search} + '%'
+            </if>
+        </where>
+    </select>
+    <select id="list" resultMap="Invoice" databaseId="mysql">
+        select id,invoice_money,create_time,status,return_date,registrant,agreement_id,invoice_content from contract_invoicing_registration
+        <where>
+            <if test="startDate != null">
+                AND create_time between #{startDate} and #{endDate}
+            </if>
+            <if test="search != null">
+                AND concat(agreement_name,agreement_id,invcoice_money,create_time,return_date,registrant)
+                like concat('%',#{search},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

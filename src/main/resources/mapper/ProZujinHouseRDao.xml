@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProZujinHouseRMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProZujinHouseR" id="ProZujinHouseRMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="zjId" column="zj_id" jdbcType="INTEGER"/>
+        <result property="houseId" column="house_id" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProZujinHouseRMap">
+        select
+          *
+        from pro_zujin_house_r
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProZujinHouseRMap">
+        select
+          *
+        from pro_zujin_house_r
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProZujinHouseRMap">
+        select
+        *
+        from pro_zujin_house_r
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="zjId != null">
+                and zj_id = #{zjId}
+            </if>
+            <if test="houseId != null">
+                and house_id = #{houseId}
+            </if>
+            <if test="type == 0">
+                and (type is null or type = 0)
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into pro_zujin_house_r(zj_id, house_id)
+        values (#{zjId}, #{houseId})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_zujin_house_r
+        <set>
+            <if test="zjId != null">
+                zj_id = #{zjId},
+            </if>
+            <if test="houseId != null">
+                house_id = #{houseId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_zujin_house_r where id = #{id}
+    </delete>
+    <!--通过主键删除-->
+    <delete id="deleteByZujinId">
+        delete from pro_zujin_house_r where zj_id = #{zjId}
+    </delete>
+    <update id="updateType">
+        update pro_zujin_house_r set type=#{type} where zj_id=#{zjId} and house_id=#{houseId}
+    </update>
+
+</mapper>

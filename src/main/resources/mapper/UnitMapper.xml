@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.UnitMapper">
+    <resultMap id="unit" type="com.yuesheng.pm.entity.Unit">
+        <id column="pa01301" jdbcType="VARCHAR" property="id"></id>
+        <result column="pa01302" jdbcType="VARCHAR" property="name"></result>
+        <result column="pa01303" jdbcType="VARCHAR" property="remark"></result>
+    </resultMap>
+    <resultMap id="unitJanl" type="com.yuesheng.pm.entity.Unit">
+        <id column="pa01301" jdbcType="VARCHAR" property="id"></id>
+        <result column="pa01302" jdbcType="VARCHAR" property="name"></result>
+    </resultMap>
+    <select id="seek" resultMap="unitJanl">
+        SELECT * FROM sdpa013
+        <if test="str != null">
+            WHERE pa01302 LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="seek" resultMap="unitJanl" databaseId="mysql">
+        SELECT * FROM sdpa013
+        <if test="str != null">
+            WHERE pa01302 LIKE concat('%',#{str},'%')
+        </if>
+    </select>
+    <select id="getUnit" resultMap="unitJanl" parameterType="String">
+        SELECT pa01301,pa01302 FROM sdpa013 WHERE pa01301=#{id}
+    </select>
+    <select id="getUnitByMater" resultMap="unit">
+        SELECT top 1 b.* FROM sdpm003 AS a LEFT JOIN sdpa013 AS b ON a.pm00302=b.pa01301 WHERE a.pm00301=#{materId}
+    </select>
+    <select id="getUnitByMater" resultMap="unit" databaseId="mysql">
+        SELECT b.* FROM sdpm003 AS a LEFT JOIN sdpa013 AS b ON a.pm00302=b.pa01301 WHERE a.pm00301=#{materId} limit 0,1
+    </select>
+    <select id="getUnitAllByMaterial" resultMap="unit">
+        SELECT b.* FROM sdpm003 AS a LEFT JOIN sdpa013 AS b ON a.pm00302=b.pa01301 WHERE a.pm00301=#{materId}
+    </select>
+    <select id="isExist" resultMap="unit">
+        SELECT * FROM sdpa013 WHERE pa01302=#{name}
+    </select>
+    <insert id="addUnit">
+        insert into sdpa013 (pa01301,pa01302,pa01303) values(#{id},#{name},'')
+    </insert>
+    <insert id="addUnitToMater">
+        INSERT INTO sdpm003 VALUES(#{id},#{unit.id},1,1);
+    </insert>
+    <delete id="deleteBind">
+        delete
+        from sdpm003
+        where pm00301=#{materId} and pm00302=#{id}
+    </delete>
+</mapper>

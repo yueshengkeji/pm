@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.FlowMapper">
+    <resultMap id="flow" type="com.yuesheng.pm.entity.Flow">
+        <id column="po00101" jdbcType="VARCHAR" property="id"></id>
+        <result column="po00102" jdbcType="VARCHAR" property="name"></result>
+        <result column="po00103" jdbcType="VARCHAR" property="remark"></result>
+        <result column="po00104" jdbcType="VARCHAR" property="folder"></result>
+        <result column="po00105" jdbcType="INTEGER" property="isPub"></result>
+        <result column="po00106" jdbcType="TINYINT" property="condition"></result>
+        <result column="po00107" jdbcType="VARCHAR" property="frameCoding"></result>
+        <result column="po00108" jdbcType="VARCHAR" property="pubFlow"></result>
+        <result column="po00109" jdbcType="VARCHAR" property="lastUseDate"></result>
+        <result column="po00110" jdbcType="VARCHAR" property="templement"></result>
+        <result column="po00111" jdbcType="TINYINT" property="type"></result>
+    </resultMap>
+    <resultMap id="flowJanl" type="com.yuesheng.pm.entity.Flow">
+        <id column="po00101" jdbcType="VARCHAR" property="id"></id>
+        <result column="po00102" jdbcType="VARCHAR" property="name"></result>
+        <result column="po00107" jdbcType="VARCHAR" property="frameCoding"></result>
+        <result column="po00104" jdbcType="VARCHAR" property="folder"></result>
+    </resultMap>
+    <resultMap id="folder" type="com.yuesheng.pm.entity.Folder">
+        <id column="po02801" property="code" jdbcType="VARCHAR"></id>
+        <result column="po02802" property="name" jdbcType="VARCHAR"></result>
+        <result column="po02803" property="parent" jdbcType="VARCHAR"></result>
+        <result column="po02804" property="rootId" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getFlowByFrameCoding" resultMap="flowJanl" parameterType="String">
+        SELECT * FROM sdpo001 WHERE po00107=#{coding} order by po00102 asc
+    </select>
+    <select id="getFlorderARemarkAName" resultType="java.util.Map">
+        select po00104 AS folder,po00103 AS remark,po00102 AS name from sdpo001 WHERE po00101=#{id}
+    </select>
+    <select id="getFlowByAF" resultMap="flowJanl">
+        SELECT a.* FROM sdpo001 AS a
+        RIGHT JOIN sdpo011 AS b ON a.po00110=b.po01105 WHERE b.po01101=#{folderId} AND a.po00110!=''
+    </select>
+    <select id="getFlowById" resultMap="flow">
+        SELECT * FROM sdpo001 WHERE  po00101=#{id}
+    </select>
+    <select id="getRootFolder" resultMap="folder">
+        SELECT * FROM sdpo028 WHERE po02803=#{parent}
+    </select>
+    <select id="getFolderAll" resultMap="folder">
+        SELECT * FROM sdpo028
+    </select>
+    <select id="getFlowByFolder" resultMap="flow">
+        SELECT * FROM sdpo001 WHERE po00104=#{folderId}
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpo001 VALUES(#{id},#{name},#{remark},#{folder},#{isPub},#{condition},#{frameCoding},#{pubFlow},'',#{templement},#{type})
+    </insert>
+    <update id="update">
+        UPDATE sdpo001 SET po00102=#{name},po00103=#{remark},po00104=#{folder},po00107=#{frameCoding},po00110=#{templement},po00111=#{type} WHERE po00101=#{id}
+    </update>
+    <insert id="insertAuth">
+        INSERT INTO sdpo032 VALUES(#{flowId},#{staffId},#{authType},#{type})
+    </insert>
+
+    <select id="getFLowByName" resultMap="flowJanl">
+        SELECT * FROM sdpo001
+        <where>
+            <if test="name != null and name != ''">
+                and po00102 LIKE '%'+#{name}+'%' and po00107=''
+            </if>
+        </where>
+    </select>
+    <select id="getFLowByName" resultMap="flowJanl" databaseId="mysql">
+        SELECT * FROM sdpo001
+        <where>
+            <if test="name != null and name != ''">
+                and po00102 LIKE concat('%',#{name},'%') and po00107=''
+            </if>
+        </where>
+    </select>
+
+    <select id="getAllFlow" resultMap="flow">
+        SELECT * FROM sdpo001
+        <where>
+            <if test="name != null and name != ''">
+                and po00102 LIKE '%'+#{name}+'%'
+            </if>
+        </where>
+
+    </select>
+    <select id="getAllFlow" resultMap="flow" databaseId="mysql">
+        SELECT * FROM sdpo001
+        <where>
+            <if test="name != null and name != ''">
+                and po00102 LIKE concat('%',#{name},'%')
+            </if>
+        </where>
+
+    </select>
+    <delete id="delete">
+        delete from sdpo001 where po00101=#{id}
+    </delete>
+    <select id="getFolderById" resultMap="folder">
+        SELECT * FROM sdpo028 WHERE po02801=#{folderId}
+    </select>
+    <update id="updateFolder">
+        UPDATE sdpo028 SET po02802=#{name},po02803=#{parent},po02804=#{rootId} WHERE po02801=#{id}
+    </update>
+    <insert id="insertFolder">
+        INSERT INTO sdpo028 values(#{id},#{name},#{parent},#{rootId})
+    </insert>
+
+    <select id="seekFolder" resultMap="folder">
+        SELECT * FROM sdpo028 WHERE po02802 LIKE '%'+#{str}+'%'
+    </select>
+    <select id="seekFolder" resultMap="folder" databaseId="mysql">
+        SELECT * FROM sdpo028 WHERE po02802 LIKE concat('%',#{str},'%')
+    </select>
+
+    <update id="updateLastUse">
+        update sdpo001 set po00109=#{datetime} where po00101=#{id}
+    </update>
+
+</mapper>

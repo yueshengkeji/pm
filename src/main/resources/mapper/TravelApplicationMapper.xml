@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.TravelApplicationMapper">
+
+    <resultMap id="TravelApplication" type="com.yuesheng.pm.entity.TravelApplication">
+        <id property="id" column="uuid"></id>
+        <result property="traveller" column="traveller"></result>
+        <result property="position" column="position"></result>
+        <result property="department" column="department"></result>
+        <result property="startTime" column="start_time"></result>
+        <result property="endTime" column="end_time"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="totalTime" column="total_time"></result>
+        <result property="travelType" column="travel_type"></result>
+        <result property="transportation" column="transportation"></result>
+        <result property="place" column="place"></result>
+        <result property="remark" column="remark"></result>
+        <result property="status" column="status"></result>
+        <result property="travellerId" column="travellerId"></result>
+        <result property="departmentId" column="departmentId"></result>
+        <result property="travelFee" column="travel_fee"></result>
+        <result property="stayFee" column="stay_fee"></result>
+        <result property="otherFee" column="other_fee"></result>
+        <result property="totalFee" column="total_fee"></result>
+    </resultMap>
+
+    <insert id="insertTravelApplication" parameterType="com.yuesheng.pm.entity.TravelApplication">
+        insert into travel_application
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">uuid,</if>
+            <if test="traveller != null">traveller,</if>
+            <if test="position != null">position,</if>
+            <if test="department != null">department,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="totalTime != null">total_time,</if>
+            <if test="travelType != null">travel_type,</if>
+            <if test="transportation != null">transportation,</if>
+            <if test="place != null">place,</if>
+            <if test="remark != null">remark,</if>
+            <if test="status != null">status,</if>
+            <if test="travellerId != null">travellerId,</if>
+            <if test="departmentId != null">departmentId,</if>
+            <if test="travelFee != null">travel_fee,</if>
+            <if test="stayFee != null">stay_fee,</if>
+            <if test="otherFee != null">other_fee,</if>
+            <if test="totalFee != null">total_fee,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="traveller != null">#{traveller},</if>
+            <if test="position != null">#{position},</if>
+            <if test="department != null">#{department},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="totalTime != null">#{totalTime},</if>
+            <if test="travelType != null">#{travelType},</if>
+            <if test="transportation != null">#{transportation},</if>
+            <if test="place != null">#{place},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="status != null">#{status},</if>
+            <if test="travellerId != null">#{travellerId},</if>
+            <if test="departmentId != null">#{departmentId},</if>
+            <if test="travelFee != null">#{travelFee},</if>
+            <if test="stayFee != null">#{stayFee},</if>
+            <if test="otherFee != null">#{otherFee},</if>
+            <if test="totalFee != null">#{totalFee},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteTravelApplication" parameterType="string">
+        delete from travel_application
+        where uuid = #{id} and status = 0
+    </delete>
+
+    <update id="updateTravelApplication" parameterType="com.yuesheng.pm.entity.TravelApplication">
+        update travel_application
+        <set>
+            <if test="traveller != null">traveller = #{traveller},</if>
+            <if test="position != null">position = #{position},</if>
+            <if test="department != null">department = #{department},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="totalTime != null">total_time = #{totalTime},</if>
+            <if test="travelType != null">travel_type = #{travelType},</if>
+            <if test="transportation != null">transportation = #{transportation},</if>
+            <if test="place != null">place = #{place},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="travelFee != null">travel_fee = #{travelFee},</if>
+            <if test="stayFee != null">stay_fee = #{stayFee},</if>
+            <if test="otherFee != null">other_fee = #{otherFee},</if>
+            <if test="totalFee != null">total_fee = #{totalFee},</if>
+        </set>
+        where uuid = #{id}
+    </update>
+
+    <select id="selectById" resultMap="TravelApplication">
+        select * from travel_application where uuid=#{id}
+    </select>
+
+    <select id="selectTravelApplicationByTraveller" parameterType="string" resultMap="TravelApplication">
+        select * from travel_application
+        where travellerId = #{travellerId}
+        order by create_time desc;
+    </select>
+
+    <select id="selectByTraveller" parameterType="string" resultMap="TravelApplication">
+        select * from travel_application
+        where travellerId = #{travellerId}
+        order by create_time desc;
+    </select>
+
+    <select id="selectCountsByTraveller" parameterType="string" resultType="integer">
+        select count(*) from travel_application
+        where travellerId = #{travellerId}
+    </select>
+
+    <select id="selectTravelApplicationByPosition" parameterType="string" resultMap="TravelApplication">
+        select * from travel_application
+        where departmentId = #{departmentId}
+        order by create_time desc;
+    </select>
+
+    <select id="selectByPosition" parameterType="string" resultMap="TravelApplication">
+        select * from travel_application
+        where departmentId = #{departmentId}
+        order by create_time desc;
+    </select>
+
+    <select id="selectByPositionDate" parameterType="string" resultMap="TravelApplication">
+        select * from travel_application
+        where departmentId = #{departmentId}
+        and convert(varchar(7),start_time,120) = #{dateSearch}
+        order by create_time desc;
+    </select>
+
+    <select id="selectCountsByPosition" parameterType="string" resultType="integer">
+        select count(*) from travel_application
+        where departmentId = #{departmentId}
+    </select>
+
+    <select id="selectCountsByPositionDate" parameterType="string" resultMap="TravelApplication">
+        select count(*) from travel_application
+        where departmentId = #{departmentId}
+        and convert(varchar(7),start_time,120) = #{dateSearch}
+    </select>
+
+    <select id="selectTravelApplicationByDateSearch" parameterType="string" resultMap="TravelApplication">
+        select * from travel_application
+        where convert(varchar(7),start_time,120) = #{dateSearch}
+        order by create_time desc;
+    </select>
+
+    <select id="selectByDateSearch" parameterType="string" resultMap="TravelApplication">
+        select * from travel_application
+        where convert(varchar(7),start_time,120) = #{dateSearch}
+        order by create_time desc;
+    </select>
+
+    <select id="selectByDateSearchDepartment" parameterType="string" resultMap="TravelApplication">
+        select * from travel_application
+        where convert(varchar(7),start_time,120) = #{dateSearch}
+        and departmentId = #{departmentId}
+        order by create_time desc;
+    </select>
+
+    <select id="selectCountsByDateSearch" parameterType="string" resultType="integer">
+        select count(*) from travel_application
+        where convert(varchar(7),start_time,120) = #{dateSearch}
+    </select>
+
+    <select id="selectCountsByDateSearchDepartment" parameterType="string" resultMap="TravelApplication">
+        select count(*) from travel_application
+        where convert(varchar(7),start_time,120) = #{dateSearch}
+        and departmentId = #{departmentId}
+    </select>
+
+    <select id="selectByDateAndDepartment" parameterType="string" resultMap="TravelApplication">
+        select * from travel_application
+        where convert(varchar(7),start_time,120) = #{dateSearch}
+        and departmentId = #{departmentId}
+    </select>
+
+    <select id="selectTravelApplicationBySearch" parameterType="string" resultMap="TravelApplication">
+        select * from travel_application
+        where
+        isNull(traveller,'') +
+        isNull(department,'') +
+        isNull(convert(varchar(100),start_time),'') +
+        isNull(convert(varchar(100),create_time),'') +
+        isNull(transportation,'') +
+        isNull(place,'') +
+        isNull(total_time,'')
+        like '%' + #{search} + '%'
+        order by create_time desc;
+    </select>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.DingTalkStaffInfoMapper">
+    <resultMap id="DingTalkStaffInfo" type="com.yuesheng.pm.entity.DingTalkStaffInfo">
+        <result property="id" column="id"></result>
+        <result property="staffId" column="staff_id"></result>
+        <result property="dingTalkUserId" column="ding_talk_user_id"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="unionId" column="union_id"></result>
+    </resultMap>
+
+    <insert id="insertDing">
+        insert into ding_talk_staff_info
+        values (#{id},#{staffId},#{dingTalkUserId},#{createTime},#{unionId})
+    </insert>
+
+    <select id="selectByDing" resultMap="DingTalkStaffInfo">
+        select TOP 1 * from ding_talk_staff_info
+        where ding_talk_user_id = #{userId}
+    </select>
+
+    <update id="update">
+        update ding_talk_staff_info
+        set ding_talk_user_id = #{userId}
+        where staff_id = #{staff.id}
+    </update>
+
+    <select id="selectByStaffId" resultMap="DingTalkStaffInfo">
+        select * from ding_talk_staff_info
+        where staff_id = #{staffId}
+    </select>
+
+    <delete id="deleteByStaffId">
+        delete from ding_talk_staff_info
+        where staff_id = #{staffId}
+    </delete>
+
+    <select id="selectAll" resultMap="DingTalkStaffInfo">
+        select * from ding_talk_staff_info
+    </select>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.WorkArticlePutDetailMapper">
+    <resultMap id="articleDetailPut" type="com.yuesheng.pm.entity.WorkArticlePutDetail">
+        <id column="po20301" property="id" jdbcType="VARCHAR"></id>
+        <result column="po20303" property="remark" jdbcType="VARCHAR"></result>
+        <result column="po20304" property="series" jdbcType="INTEGER"></result>
+        <result column="po20307" property="sum" jdbcType="DECIMAL"></result>
+        <result column="po20308" property="price" jdbcType="DECIMAL"></result>
+        <result column="po20309" property="money" jdbcType="DECIMAL"></result>
+        <result column="po20311" property="beforeSum" jdbcType="DECIMAL"></result>
+        <association property="material" column="po20305"
+                     select="com.yuesheng.pm.mapper.WorkArticleMaterMapper.getMaterById"></association>
+        <association property="articlePut" javaType="com.yuesheng.pm.entity.WorkArticlePut">
+            <id column="po20302" property="id" jdbcType="VARCHAR"></id>
+        </association>
+    </resultMap>
+
+    <select id="queryListByArticle" resultMap="articleDetailPut">
+        select *
+        from sdpo203
+        where po20302 = #{articleId}
+    </select>
+
+    <select id="queryAll" resultMap="articleDetailPut">
+        select distinct a.*,po20203 from sdpo203 as a
+        RIGHT JOIN sdpo202 ON a.po20302=po20201
+        RIGHT JOIN sdpo201 on a.po20305=po20101
+        <where>
+            and po20208=1
+            <if test="startDate != null">
+                and po20203 between #{startDate} and #{endDate}
+            </if>
+            <if test="searchText != null">
+                and po20101+po20102+po20103+po20104+po20105+CAST(po20112 AS varchar(100)) LIKE
+                '%'+#{searchText}+'%'
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert">
+
+        insert into sdpo203
+        (
+          po20301,po20302,po20303,po20304,po20305,po20306,po20307,po20308,po20309,po20310,po20311
+        )
+        Values
+        (
+          #{id},#{articlePut.id},#{remark},#{series},#{material.id},#{material.unit.name},#{sum},#{price},#{money},'',#{beforeSum}
+        )
+
+    </insert>
+
+    <delete id="deleteByPut">
+        delete
+        from sdpo203
+        where po20302 = #{putId}
+    </delete>
+
+</mapper>

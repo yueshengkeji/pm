@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.FlowHistoryMapper">
+    <resultMap id="history" type="com.yuesheng.pm.entity.FlowHistory">
+        <id column="po00101" jdbcType="VARCHAR" property="id"></id>
+        <result column="po00102" jdbcType="VARCHAR" property="name"></result>
+        <result column="po00103" jdbcType="VARCHAR" property="remark"></result>
+        <result column="po00104" jdbcType="VARCHAR" property="folderCoding"></result>
+        <result column="po00107" jdbcType="VARCHAR" property="frameCoding"></result>
+    </resultMap>
+    <insert id="addHistory">
+        INSERT  INTO sdpo001_History
+        (po00101,po00102,po00103,po00104,po00107)
+        VALUES(#{id},#{name},#{remark},#{folderCoding},#{frameCoding});
+    </insert>
+    <select id="getFlowByName" resultMap="history">
+        select * from sdpo001_History where po00102=#{name}
+    </select>
+</mapper>

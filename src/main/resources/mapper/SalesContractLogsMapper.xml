@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.SalesContractLogsMapper">
+    <resultMap id="SalesContractLogs" type="com.yuesheng.pm.entity.SalesContractLogs">
+        <result property="id" column="id"></result>
+        <result property="agreementID" column="agreement_id"></result>
+        <result property="type" column="type"></result>
+        <result property="modifyType" column="modify_type"></result>
+        <result property="modifyMSG" column="modify_MSG"></result>
+        <result property="createTime" column="create_time"></result>
+        <association property="modifyStaff" column="modify_staff"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById">
+        </association>
+    </resultMap>
+
+    <insert id="insertLogs" parameterType="com.yuesheng.pm.entity.SalesContractLogs">
+        insert into sales_contract_logs
+        <trim suffix=")" suffixOverrides="," prefix="(">
+            <if test="id != null">id,</if>
+            <if test="agreementID != null">agreement_id,</if>
+            <if test="type != null">[type],</if>
+            <if test="modifyType != null">modify_type,</if>
+            <if test="modifyMSG != null">modify_MSG,</if>
+            <if test="modifyStaff != null">modify_staff,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="agreementID">#{agreementID},</if>
+            <if test="type != null">#{type},</if>
+            <if test="modifyType != null">#{modifyType},</if>
+            <if test="modifyMSG != null">#{modifyMSG},</if>
+            <if test="modifyStaff != null">#{modifyStaff.id},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertLogs" parameterType="com.yuesheng.pm.entity.SalesContractLogs" databaseId="mysql">
+        insert into sales_contract_logs
+        <trim suffix=")" suffixOverrides="," prefix="(">
+            <if test="id != null">id,</if>
+            <if test="agreementID != null">agreement_id,</if>
+            <if test="type != null">type,</if>
+            <if test="modifyType != null">modify_type,</if>
+            <if test="modifyMSG != null">modify_MSG,</if>
+            <if test="modifyStaff != null">modify_staff,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="agreementID">#{agreementID},</if>
+            <if test="type != null">#{type},</if>
+            <if test="modifyType != null">#{modifyType},</if>
+            <if test="modifyMSG != null">#{modifyMSG},</if>
+            <if test="modifyStaff != null">#{modifyStaff.id},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <select id="selectLogs" resultMap="SalesContractLogs">
+        select modify_MSG,create_time from sales_contract_logs
+        where agreement_id = #{agreementID}
+        and [type] = #{type}
+        order by create_time desc
+    </select>
+
+    <select id="selectLogs" resultMap="SalesContractLogs" databaseId="mysql">
+        select modify_MSG,create_time from sales_contract_logs
+        where agreement_id = #{agreementID}
+        and type = #{type}
+        order by create_time desc
+    </select>
+
+</mapper>

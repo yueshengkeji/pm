@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProSubcontractMapper">
+    <resultMap id="ProSubcontract" type="com.yuesheng.pm.entity.ProSubcontract">
+        <result property="id" column="id"></result>
+        <result property="name" column="name"></result>
+        <result property="state" column="state"></result>
+        <result property="remark" column="remark"></result>
+        <result property="dateTime" column="datetime"></result>
+        <result property="money" column="money"></result>
+        <result property="signDate" column="sign_date"></result>
+        <result property="startDate" column="start_date"></result>
+        <result property="endDate" column="end_date"></result>
+        <result property="type" column="type"></result>
+        <association property="project" column="project_id"
+                     select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+        <association property="staff" column="staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="partyA" column="party_a_id"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="partyB" column="party_b_id"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+    </resultMap>
+
+    <resultMap id="ProSubcontractFile" type="com.yuesheng.pm.entity.ProSubcontractFile">
+        <result property="contractId" column="pro_subcontractFJ01"></result>
+        <result property="attachId" column="pro_subcontractFJ02"></result>
+        <result property="name" column="pro_subcontractFJ03"></result>
+        <result property="fileUrl" column="pro_subcontractFJ04"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.ProSubcontract">
+        insert into pro_subcontract
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="state != null">state,</if>
+            <if test="remark != null">remark,</if>
+            <if test="dateTime != null">datetime,</if>
+            <if test="money != null">money,</if>
+            <if test="signDate != null">sign_date,</if>
+            <if test="project != null">project_id,</if>
+            <if test="project != null">project_name,</if>
+            <if test="staff != null">staff_id,</if>
+            <if test="partyA != null">party_a_id,</if>
+            <if test="partyA != null">party_a_name,</if>
+            <if test="partyB != null">party_b_id,</if>
+            <if test="partyB != null">party_b_name,</if>
+            <if test="type != null">type,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="state != null">#{state},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="dateTime != null">#{dateTime},</if>
+            <if test="money != null">#{money},</if>
+            <if test="signDate != null">#{signDate},</if>
+            <if test="project != null">#{project.id},</if>
+            <if test="project != null">#{project.name},</if>
+            <if test="staff != null">#{staff.id},</if>
+            <if test="partyA != null">#{partyA.id},</if>
+            <if test="partyA != null">#{partyA.name},</if>
+            <if test="partyB != null">#{partyB.id},</if>
+            <if test="partyB != null">#{partyB.name},</if>
+            <if test="type != null">#{type},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.ProSubcontract">
+        update pro_subcontract
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="dateTime != null">datetime = #{dateTime},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="signDate != null">sign_date = #{signDate},</if>
+            <if test="project != null">project_id = #{project.id},</if>
+            <if test="project != null">project_name = #{project.name},</if>
+            <if test="staff != null">staff_id = #{staff.id},</if>
+            <if test="partyA != null">party_a_id = #{partyA.id},</if>
+            <if test="partyA != null">party_a_name = #{partyA.name},</if>
+            <if test="partyB != null">party_b_id = #{partyB.id},</if>
+            <if test="partyB != null">party_b_name = #{partyB.name},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateState">
+        update pro_subcontract
+        set state = #{state}
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from pro_subcontract
+        where id = #{id}
+    </delete>
+
+    <select id="selectAll" resultMap="ProSubcontract">
+        select * from pro_subcontract
+        <where>
+            <if test="searchYear != null">
+                AND datetime LIKE '%'+#{searchYear}+'%'
+            </if>
+            <if test="approveStatus != null">
+                AND state = #{approveStatus}
+            </if>
+            <if test="staffId != null">
+                AND staff_id = #{staffId}
+            </if>
+            <if test="searchText != null">
+                AND isnull(name,'') + isnull(party_a_name,'') + isnull(project_name,'') + isnull(party_b_name,'') +
+                isnull(remark,'') LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="type != null">
+                AND type=#{type}
+            </if>
+        </where>
+        ${order}
+    </select>
+
+    <select id="selectAll" resultMap="ProSubcontract" databaseId="mysql">
+        select * from pro_subcontract
+        <where>
+            <if test="searchYear != null">
+                AND datetime LIKE concat('%',#{searchYear},'%')
+            </if>
+            <if test="approveStatus != null">
+                AND state = #{approveStatus}
+            </if>
+            <if test="staffId != null">
+                AND staff_id = #{staffId}
+            </if>
+            <if test="searchText != null">
+                AND concat(name,party_a_name,project_name,party_b_name,remark)
+                LIKE concat('%',#{searchText},'%')
+            </if>
+            <if test="type != null">
+                AND type=#{type}
+            </if>
+        </where>
+        ${order}
+    </select>
+
+    <select id="selectAllCounts" resultType="integer">
+        select count(id) from pro_subcontract
+        <where>
+            <if test="searchYear != null">
+                AND datetime LIKE '%'+#{searchYear}+'%'
+            </if>
+            <if test="approveStatus != null">
+                AND state = #{approveStatus}
+            </if>
+            <if test="staffId != null">
+                AND staff_id = #{staffId}
+            </if>
+            <if test="searchText != null">
+                AND isnull(name,'') + isnull(party_a_name,'') + isnull(project_name,'') + isnull(party_b_name,'') +
+                isnull(remark,'') LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="type != null">
+                AND type=#{type}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAllCounts" resultType="integer" databaseId="mysql">
+        select count(id) from pro_subcontract
+        <where>
+            <if test="searchYear != null">
+                AND datetime LIKE concat('%',#{searchYear},'%')
+            </if>
+            <if test="approveStatus != null">
+                AND state = #{approveStatus}
+            </if>
+            <if test="staffId != null">
+                AND staff_id = #{staffId}
+            </if>
+            <if test="searchText != null">
+                AND concat(name,party_a_name,project_name,party_b_name,remark)
+                LIKE concat('%',#{searchText},'%')
+            </if>
+            <if test="type != null">
+                AND type=#{type}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectById" resultMap="ProSubcontract">
+        select * from pro_subcontract
+        where id = #{id}
+    </select>
+
+    <insert id="addFile" parameterType="com.yuesheng.pm.entity.ProSubcontractFile">
+        insert into pro_subcontractFJ (pro_subcontractFJ01,pro_subcontractFJ02,pro_subcontractFJ03,pro_subcontractFJ04)
+        values (#{contractId},#{attachId},#{name},#{fileUrl})
+    </insert>
+
+    <select id="getFiles" resultMap="ProSubcontractFile">
+        select * from pro_subcontractFJ
+        where pro_subcontractFJ01 = #{id}
+    </select>
+
+    <delete id="deleteFile">
+        delete from pro_subcontractFJ
+        where pro_subcontractFJ02 = #{id}
+    </delete>
+
+    <select id="getSubcontract" resultMap="ProSubcontract">
+        select * from pro_subcontract
+        where name LIKE '%' + #{str} + '%'
+    </select>
+
+    <select id="getSubcontract" resultMap="ProSubcontract" databaseId="mysql">
+        select * from pro_subcontract
+        where name LIKE concat('%',#{str},'%')
+    </select>
+</mapper>

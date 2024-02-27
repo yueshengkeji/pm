@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.StorageMapper">
+    <resultMap id="storage" type="com.yuesheng.pm.entity.Storage">
+        <id column="pm00401" jdbcType="VARCHAR" property="id"></id>
+        <result column="pm00402" jdbcType="VARCHAR" property="name"></result>
+    </resultMap>
+
+    <resultMap id="mater" type="com.yuesheng.pm.entity.StorageMater">
+        <result column="pm00501" jdbcType="VARCHAR" property="storageId"></result>
+        <result column="pm00503" jdbcType="DECIMAL" property="sum"></result>
+        <result column="pm00504" jdbcType="DECIMAL" property="price"></result>
+        <result column="pm00505" jdbcType="DECIMAL" property="money"></result>
+        <result column="pm00506" jdbcType="VARCHAR" property="pm00506"></result>
+        <association property="material" column="pm00502"
+                     select="com.yuesheng.pm.mapper.MaterialMapper.getMaterialByid"></association>
+    </resultMap>
+    <insert id="insert">
+        insert into sdpm004 (pm00401, pm00402, pm00403, pm00404, pm00405, pm00406, pm00407, pm00408, pm00409, pm00410,
+                             pm00411, pm00412, pm00413, pm00414)
+        values (#{id}, #{name}, '', #{staff.name}, '', #{createDate}, '', #{staff.coding}, '', '', '', '', #{staff.id},
+                #{sortNumber})
+    </insert>
+    <select id="getStorageById" resultMap="storage" parameterType="String">
+        SELECT pm00401, pm00402
+        FROM sdpm004
+        WHERE pm00401 = #{id}
+    </select>
+    <select id="getStorages" resultMap="storage">
+        SELECT pm00401, pm00402
+        FROM sdpm004
+        ORDER BY pm00414, pm00402 DESC
+    </select>
+
+    <insert id="addStorageMaters" parameterType="java.util.List">
+        INSERT INTO sdpm005 (pm00501,pm00502,pm00503,pm00504,pm00505,pm00506)
+        VALUES
+        <foreach collection="maters" item="mater" separator=",">
+            (#{mater.storageId},#{mater.material.id},#{mater.sum},#{mater.price},#{mater.money},#{mater.pm00506})
+        </foreach>
+    </insert>
+
+    <insert id="addStorageMater" parameterType="com.yuesheng.pm.entity.StorageMater">
+        INSERT INTO sdpm005 (pm00501, pm00502, pm00503, pm00504, pm00505, pm00506)
+        VALUES (#{storageId}, #{material.id}, #{sum}, #{price}, #{money}, #{pm00506})
+    </insert>
+
+    <select id="getStorageMater" resultMap="mater">
+        SELECT *
+        FROM sdpm005
+        WHERE pm00501 = #{id}
+          AND pm00502 = #{materId}
+    </select>
+
+    <update id="updateStorageMater" parameterType="com.yuesheng.pm.entity.StorageMater">
+        UPDATE sdpm005
+        SET pm00503=#{sum},
+            pm00504=#{price},
+            pm00505=#{money}
+        WHERE pm00501 = #{storageId}
+          AND pm00502 = #{material.id}
+    </update>
+    <update id="updateStoragePrice">
+        UPDATE sdpm005
+        SET pm00504=#{price},
+            pm00505=#{money}
+        WHERE pm00501 = #{storageId}
+          AND pm00502 = #{material.id}
+    </update>
+    <select id="getMaterByStorageId" resultMap="mater">
+        SELECT *
+        FROM sdpm005
+                 LEFT JOIN sdpm005_order on pm00501 = storage_id and pm00502 = material_id
+        WHERE pm00501 = #{storageId}
+          AND pm00503 &gt; 0
+        order by put_datetime desc
+    </select>
+    <select id="searchMaterByStorageId" resultMap="mater">
+        SELECT * FROM sdpm005
+        LEFT JOIN sdpm002 on pm00201=pm00502 and pm00201 is not null
+        WHERE pm00501=#{storageId} AND pm00503 &gt; 0
+        <if test="searchText != null">
+            and pm00201+pm00202+pm00205+pm00221+pm00222+cast(pm00503 as varchar)+cast(pm00504 as varchar)+cast(pm00505
+            as varchar) LIKE '%'+#{searchText}+'%'
+        </if>
+    </select>
+    <select id="searchMaterByStorageId" resultMap="mater" databaseId="mysql">
+        SELECT * FROM sdpm005
+        LEFT JOIN sdpm002 on pm00201=pm00502 and pm00201 is not null
+        WHERE pm00501=#{storageId} AND pm00503 &gt; 0
+        <if test="searchText != null">
+            and concat(pm00201,pm00202,pm00205,pm00221,pm00222,pm00503,pm00504,pm00505) LIKE concat('%',#{searchText},'%')
+        </if>
+    </select>
+
+    <select id="getMaterByStorageIds" resultMap="mater">
+        SELECT *
+        FROM sdpm005
+        WHERE pm00501 = #{storageId}
+    </select>
+    <select id="getMaterialSum" resultType="Double">
+        select sum(pm00503)
+        from sdpm005
+        where pm00502 = #{materialId}
+    </select>
+    <select id="existsStorageOrder" resultMap="mater">
+        select top 1 storage_id as pm00501,material_id as pm00502
+        from sdpm005_order
+        where storage_id = #{storageId}
+          and material_id = #{materId}
+    </select>
+    <select id="existsStorageOrder" resultMap="mater" databaseId="mysql">
+        select storage_id as pm00501, material_id as pm00502
+        from sdpm005_order
+        where storage_id = #{storageId}
+          and material_id = #{materId} limit 0,1
+    </select>
+    <insert id="insertStorageOrder">
+        insert into sdpm005_order
+        values (#{storageId}, #{materId}, #{datetime})
+    </insert>
+    <update id="updateStorageOrder">
+        update sdpm005_order
+        set put_datetime=#{datetime}
+        where storage_id = #{storageId}
+          and material_id = #{materId}
+    </update>
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.HouseBillMapper">
+    <resultMap id="house" type="com.yuesheng.pm.entity.HouseBillEntity">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="series" property="series" jdbcType="VARCHAR"></result>
+        <result column="company_name" property="companyName" jdbcType="VARCHAR"></result>
+        <result column="mark" property="mark" jdbcType="VARCHAR"></result>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"></result>
+        <result column="money" property="money" jdbcType="DECIMAL"></result>
+        <result column="in_money" property="inMoney" jdbcType="DECIMAL"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <result column="date" property="date" jdbcType="VARCHAR"></result>
+        <result column="contract_date" property="contractDate" jdbcType="VARCHAR"></result>
+        <result column="end_date" property="endDate" jdbcType="VARCHAR"></result>
+        <association property="staff" column="staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+    <insert id="insert">
+        insert into pro_house_bill
+        (id,series,company_name,mark,project_name,money,in_money,remark,date,contract_date,end_date,staff_id)
+        values(#{id},#{series},#{companyName},#{mark},#{projectName},#{money},#{inMoney},#{remark},#{date},#{contractDate},#{endDate},#{staff.id});
+    </insert>
+    <update id="update">
+        update pro_house_bill set
+        company_name=#{companyName},mark=#{mark},project_name=#{projectName},money=#{money},in_money=#{inMoney},remark=#{remark},contract_date=#{contractDate},endDate=#{endDate}
+        where id=#{id};
+    </update>
+    <delete id="delete">
+        delete from pro_house_bill where id=#{id};
+    </delete>
+    <select id="queryList" resultMap="house">
+        select * from pro_house_bill
+        where 1=1
+        <if test="start != null">
+            and ${dateType} between #{start} and #{end}
+        </if>
+        <if test="str != null">
+            and company_name+mark+project_name+isNull(remark,'')+contract_date+isNull(money,'') LIKE '%'+#{str}+'%'
+        </if>
+        ${order}
+    </select>
+    <select id="queryListCount" resultType="Integer">
+        select COUNT(id) from pro_house_bill
+        where 1=1
+        <if test="start != null">
+            and ${dateType} between #{start} and #{end}
+        </if>
+        <if test="str != null">
+            and company_name+mark+project_name+isNull(remark,'')+contract_date+isNull(money,'') LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="queryById" resultMap="house">
+        select * from pro_house_bill where id=#{id}
+    </select>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.MyApproveAttachedMapper">
+    <resultMap id="attached" type="com.yuesheng.pm.entity.MyApproveAttached" autoMapping="false">
+        <id column="po00701" property="id" jdbcType="VARCHAR"></id>
+        <result column="po00702" property="approveId" jdbcType="VARCHAR"></result>
+        <result column="po00703" property="sendPersong" jdbcType="VARCHAR"></result>
+        <result column="po00704" property="approvePerson" jdbcType="VARCHAR"></result>
+        <result column="po00705" property="acceptDate" jdbcType="VARCHAR"></result>
+        <result column="po00706" property="po00706" jdbcType="VARCHAR"></result>
+        <result column="po00707" property="po00707" jdbcType="VARCHAR"></result>
+        <result column="po00708" property="po00708" jdbcType="INTEGER"></result>
+        <result column="po00709" property="po00709" jdbcType="VARCHAR"></result>
+        <result column="po00710" property="po00710" jdbcType="INTEGER"></result>
+        <result column="po00711" property="po00711" jdbcType="INTEGER"></result>
+        <result column="po00712" property="po00712" jdbcType="INTEGER"></result>
+    </resultMap>
+    <insert id="addApproveAttached" parameterType="com.yuesheng.pm.entity.MyApproveAttached">
+        INSERT INTO sdpo007
+        (po00701,po00702,po00703,po00704,po00705,po00706,po00707,po00708,po00709,
+        po00710,po00711)
+        VALUES(#{id},#{approveId},#{sendPersong},#{approvePerson},#{acceptDate},#{po00706},#{po00707},#{po00708},
+        #{po00709},#{po00710},#{po00711});
+    </insert>
+    <update id="updateAttached" parameterType="com.yuesheng.pm.entity.MyApproveAttached">
+        UPDATE sdpo007 SET po00708=#{po00708},po00709=#{po00709},
+        po00710=#{po00710},po00711=#{po00711},po00712=#{po00712} WHERE po00702=#{approveId} AND po00701=#{id};
+    </update>
+    <select id="getAttachedById" resultMap="attached">
+        SELECT * FROM sdpo007 WHERE po00701=#{id};
+    </select>
+    <select id="getAttchedByApprove" resultMap="attached">
+        SELECT * FROM sdpo007 WHERE po00702=#{approveId};
+    </select>
+    <delete id="deleteByApproveId">
+        DELETE FROM sdpo007 WHERE po00702=#{approveId};
+    </delete>
+    <update id="updateState">
+        update sdpo007 Set po00708=#{po00708} where po00701=#{id}
+    </update>
+</mapper>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.AttachMapper">
+    <resultMap id="attach" type="com.yuesheng.pm.entity.Attach">
+        <id column="pk00801" property="id" jdbcType="VARCHAR"></id>
+        <result column="pk00802" property="name" jdbcType="VARCHAR"></result>
+        <result column="pk00803" property="fileName" jdbcType="VARCHAR"></result>
+        <result column="pk00804" property="fileBytes" jdbcType="BLOB"></result>
+        <result column="pk00805" property="uploadDate" jdbcType="VARCHAR"></result>
+        <result column="pk00806" property="updateDate" jdbcType="VARCHAR"></result>
+        <result column="pk00810" property="type" jdbcType="INTEGER"></result>
+        <result column="pk00809" property="pdfImgPathStr" jdbcType="VARCHAR"></result>
+        <result column="pk00811" property="pk00811" jdbcType="VARCHAR"></result>
+        <association property="uploadUser" column="pk00807"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+    </resultMap>
+
+    <select id="getById" resultMap="attach">
+        SELECT pk00801,
+               pk00802,
+               pk00803,
+               pk00805,
+               pk00806,
+               pk00807,
+               pk00808,
+               pk00809,
+               pk00810,
+               pk00811,
+               pk00812,
+               pk00813
+        FROM sdpk008
+        WHERE pk00801 = #{id}
+    </select>
+    <delete id="deleteAttach">
+        DELETE
+        FROM sdpk008
+        WHERE pk00801 = #{id}
+    </delete>
+    <delete id="deleteByModoleId">
+        DELETE
+        a FROM sdpk008 AS a RIGHT JOIN sdpd013 AS r ON a.pk00801=r.pd01302 WHERE r.pd01301=
+        #{moduleId};
+        DELETE
+        FROM sdpd013
+        WHERE pd01301 = #{moduleId}
+    </delete>
+    <insert id="addAttachForFj">
+        INSERT INTO sdpk008 (pk00801, pk00802, pk00803, pk00804, pk00805, pk00806, pk00807, pk00808, pk00809, pk00810,
+                             pk00811, pk00812, pk00813)
+        VALUES (#{id}, #{name}, #{fileName}, #{fileBytes}, #{uploadDate}, #{updateDate}, #{uploadUser.coding},
+                #{uploadUser.coding}, #{pdfImgPathStr}, #{type}, #{pk00811}, #{pk00812}, #{pk00813})
+    </insert>
+    <insert id="addAttachRelation">
+        INSERT INTO ${table} (${field}, ${field2})
+        VALUES (#{moduleId}, #{id})
+    </insert>
+    <delete id="deleteAttchRelation">
+        DELETE
+        FROM ${table}
+        WHERE ${field} = #{moduleId}
+    </delete>
+
+    <select id="getAttachByRelation" resultMap="attach">
+        SELECT a.pk00801,a.pk00802,a.pk00803,a.pk00805,a.pk00806,a.pk00810,a.pk00807,a.pk00809,a.pk00811 FROM sdpk008 AS a RIGHT JOIN ${table} AS r
+        ON a.pk00801=r.${field2} WHERE r.${field}=#{moduleId}
+        <if test="id != null">
+            and a.pk00801=#{id}
+        </if>
+        order by a.pk00805 asc
+    </select>
+    <delete id="deleteAttachRelation">
+        DELETE b FROM ${table} AS b WHERE b.${field}=#{moduleId}
+    </delete>
+    <delete id="deleteAttachRelationById">
+        DELETE b FROM ${table} AS b WHERE b.${field}=#{moduleId} and ${field2}=#{attachId}
+    </delete>
+
+    <select id="getAttachByDate" resultMap="attach">
+        select a.pk00801,a.pk00802,a.pk00803,a.pk00805,a.pk00806,a.pk00810,a.pk00807,a.pk00809,a.pk00811
+        from sdpk008
+        where pk00805 between #{startDate} and #{endDate}
+    </select>
+
+    <select id="getTableInfo" resultType="String">
+        SELECT top 1 name
+        FROM SysObjects
+        WHERE ID = object_id(#{tableName})
+          AND OBJECTPROPERTY(ID, 'IsTable') = 1
+    </select>
+    <select id="getTableInfo" resultType="String" databaseId="mysql">
+        SELECT TABLE_NAME
+        FROM information_schema.tables
+        WHERE table_schema = 'pm2'
+          AND table_name = #{tableName}
+    </select>
+
+    <delete id="delete">
+        DELETE a FROM sdpk008 AS a INNER JOIN ${table} AS b ON a.pk00801=b.${field2} where b.${field}=#{moduleId}
+        <if test="attachId != null">
+            and a.pk00801=#{attachId}
+        </if>
+    </delete>
+    <update id="updatePdfImgs">
+        update sdpk008 set pk00809=#{pdfImgPathStr} where pk00801=#{id}
+    </update>
+</mapper>

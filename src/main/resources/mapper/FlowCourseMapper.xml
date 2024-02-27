@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.FlowCourseMapper">
+    <resultMap id="flowCourse" type="com.yuesheng.pm.entity.FlowCourse">
+        <id column="po02001" property="id" jdbcType="VARCHAR"></id>
+        <result column="po02002" property="flowId" jdbcType="VARCHAR"></result>
+        <result column="po02003" property="serial" jdbcType="INTEGER"></result>
+        <result column="po02004" property="name" jdbcType="VARCHAR"></result>
+        <result column="po02005" property="po02005" jdbcType="TINYINT"></result>
+        <result column="po02006" property="po02006" jdbcType="INTEGER"></result>
+        <result column="po02007" property="po02007" jdbcType="TINYINT"></result>
+        <result column="po02008" property="pubPerson" jdbcType="INTEGER"></result>
+        <result column="po02009" property="po02009" jdbcType="TINYINT"></result>
+        <result column="po02010" property="po02010" jdbcType="TINYINT"></result>
+        <result column="po02011" property="po02011" jdbcType="INTEGER"></result>
+        <result column="po02012" property="po02012" jdbcType="TINYINT"></result>
+        <result column="po02013" property="po02013" jdbcType="INTEGER"></result>
+        <result column="po02014" property="po02014" jdbcType="INTEGER"></result>
+        <result column="po02015" property="po02015" jdbcType="INTEGER"></result>
+        <result column="po02016" property="po02016" jdbcType="INTEGER"></result>
+        <result column="po02017" property="po02017" jdbcType="VARCHAR"></result>
+        <result column="po02018" property="po02018" jdbcType="INTEGER"></result>
+        <result column="po02019" property="po02019" jdbcType="VARCHAR"></result>
+        <result column="po02021" property="po02021" jdbcType="TINYINT"></result>
+        <result column="invoke_name" property="invokeName" jdbcType="VARCHAR"></result>
+        <collection property="personList" column="po02001" select="com.yuesheng.pm.mapper.CoursePersonMapper.getPersonByCourseId" ></collection>
+    </resultMap>
+    <resultMap id="flowCourseB" type="com.yuesheng.pm.entity.FlowCourse">
+        <id column="po020b01" property="id" jdbcType="VARCHAR"></id>
+        <result column="po020b02" property="flowId" jdbcType="VARCHAR"></result>
+        <result column="po020b03" property="serial" jdbcType="INTEGER"></result>
+        <result column="po020b04" property="name" jdbcType="VARCHAR"></result>
+        <result column="po020b05" property="po02005" jdbcType="INTEGER"></result>
+        <result column="po020b07" property="po02007" jdbcType="INTEGER"></result>
+        <result column="po020b08" property="pubPerson" jdbcType="INTEGER"></result>
+        <result column="po020b09" property="frameId" jdbcType="INTEGER"></result>
+        <result column="po020b14" property="po02013" jdbcType="INTEGER"></result>
+        <result column="po020b06" property="po02006" jdbcType="INTEGER"></result>
+        <result column="po020b20" property="po02019" jdbcType="VARCHAR"></result>
+        <result column="invoke_name" property="invokeName" jdbcType="VARCHAR"></result>
+        <collection property="personList" column="{currentId=po020b01,histroryId=po020b02}"
+                    select="com.yuesheng.pm.mapper.CoursePersonAttachedMapper.getPersonByCourseFlowId"></collection>
+    </resultMap>
+    <select id="getFlowCourseBByInstance" resultMap="flowCourseB">
+        select * from sdpo020b_instance where po020b01=#{courseId}
+    </select>
+    <select id="getFlowCourseBById" resultMap="flowCourseB">
+        select * from sdpo020b where po020b01=#{courseId}
+    </select>
+    <select id="getFlowCourseFirst" parameterType="String" resultMap="flowCourse">
+        SELECT * FROM sdpo020
+        LEFT JOIN sdpo020_Relation ON po02001=po020_Relation02
+        WHERE po02002=#{flowId} AND po020_Relation03 IS NULL ORDER BY po02003 ASC
+    </select>
+    <select id="getFlowCourseByFlow" parameterType="String" resultMap="flowCourse">
+        SELECT distinct a.*,b.invoke_name FROM sdpo020 as a
+        left join pro_course_invoke as b on b.course_id=a.po02001
+        WHERE po02002=#{flowId} ORDER BY po02003 ASC
+    </select>
+    <delete id="deleteBByFlowId">
+        delete from sdpo020b where po020b02=#{flowId}
+    </delete>
+    <delete id="deleteInstanceByFlowId">
+        delete from sdpo020b_Instance where po020b02=#{flowId}
+    </delete>
+    <insert id="addFlowCourseBt" parameterType="com.yuesheng.pm.entity.FlowCourse">
+        INSERT INTO sdpo020b (po020b01,po020b02,po020b03,po020b04,po020b05,po020b06,po020b07,
+        po020b08,po020b09,po020b10,po020b11,po020b12,po020b13,po020b14,po020b15,po020b16,po020b17,po020b18,po020b19,po020b20,po020b26)
+        VALUES(#{id},#{flowId},#{serial},#{name},#{po02005},#{po02006},#{po02007},#{pubPerson},#{frameId},#{po02009},#{po02010},
+        #{po02011},#{po02012},#{po02013},#{po02014},#{po02015},#{po02016},#{po02017},#{po02018},#{po02019},#{po02021})
+    </insert>
+    <insert id="addFLowCourseBHistory">
+        INSERT INTO sdpo020b_history (po020b01,po020b02,po020b03,po020b04,po020b05,po020b06,po020b07,
+                              po020b08,po020b09,po020b10,po020b11,po020b12,po020b13,po020b14,po020b15,po020b16,po020b17,po020b18,po020b19,po020b20,po020b26)
+        VALUES(#{id},#{flowId},#{serial},#{name},#{po02005},#{po02006},#{po02007},#{pubPerson},#{frameId},#{po02009},#{po02010},
+               #{po02011},#{po02012},#{po02013},#{po02014},#{po02015},#{po02016},#{po02017},#{po02018},#{po02019},#{po02021})
+    </insert>
+    <insert id="addFlowCourseBInstance" parameterType="com.yuesheng.pm.entity.FlowCourse">
+        INSERT INTO sdpo020b_Instance (po020b01,po020b02,po020b03,po020b04,po020b05,po020b06,po020b07,
+        po020b08,po020b09,po020b10,po020b11,po020b12,po020b13,po020b14,po020b15,po020b16,po020b17,po020b18,po020b19,po020b20,po020b26)
+        VALUES(#{id},#{flowId},#{serial},#{name},#{po02005},#{po02006},#{po02007},#{pubPerson},#{frameId},#{po02009},#{po02010},
+        #{po02011},#{po02012},#{po02013},#{po02014},#{po02015},#{po02016},#{po02017},#{po02018},#{po02019},#{po02021})
+    </insert>
+    <insert id="addFlowCourseBInstanceHistory" parameterType="com.yuesheng.pm.entity.FlowCourse">
+        INSERT INTO sdpo020b_Instance_history (po020b01,po020b02,po020b03,po020b04,po020b05,po020b06,po020b07,
+        po020b08,po020b09,po020b10,po020b11,po020b12,po020b13,po020b14,po020b15,po020b16,po020b17,po020b18,po020b19,po020b20,po020b26)
+        VALUES(#{id},#{flowId},#{serial},#{name},#{po02005},#{po02006},#{po02007},#{pubPerson},#{frameId},#{po02009},#{po02010},
+        #{po02011},#{po02012},#{po02013},#{po02014},#{po02015},#{po02016},#{po02017},#{po02018},#{po02019},#{po02021})
+    </insert>
+    <delete id="deleteCourseBInstanceHistory">
+        delete from sdpo020b_Instance_history where po020b02=#{flowId}
+    </delete>
+    <select id="getInstanceById" resultMap="flowCourseB">
+        select * from sdpo020b_Instance where po020b01=#{id} and po020b02=#{flowId}
+    </select>
+    <select id="getInstanceByFlowId" resultMap="flowCourseB">
+        select * from sdpo020b where po020b02=#{flowId}
+    </select>
+    <select id="getById" resultMap="flowCourseB">
+        SELECT * FROM sdpo020b WHERE po020b01=#{id} and po020b02=#{flowId}
+    </select>
+    <select id="getFlowCourseById" resultMap="flowCourse" parameterType="String">
+        SELECT distinct a.*,b.invoke_name FROM sdpo020 as a
+        left join pro_course_invoke as b on b.course_id=a.po02001
+        WHERE po02001=#{id}
+    </select>
+    <select id="getCourseBByCourseId" resultMap="flowCourseB">
+        select * from sdpo020b where po020b01=#{id}
+    </select>
+    <select id="getThanFlowCourseByCourseId" resultMap="flowCourseB">
+        select distinct *
+        from sdpo020b
+                 left join pro_course_invoke as b on b.course_id = po020b01
+        where po020b01 = #{courseId}
+          and po020b02 = #{historyId}
+    </select>
+    <update id="updateThanFlowCourseBByCourseId">
+        update sdpo020b
+        set po020b05=#{po02005}
+        where po020b01=#{id} and po020b02=#{flowId}
+    </update>
+    <select id="getNotifyCourseBByMsgId" resultMap="flowCourseB">
+        SELECT * FROM sdpo020b WHERE po020b01=#{courseId} AND po020b02=#{historyId} ORDER BY po020b03 ASC
+    </select>
+
+    <select id="getNextCourses" resultMap="flowCourse">
+        SELECT a.* FROM sdpo020 AS a
+        RIGHT JOIN sdpo020_Relation AS b ON a.po02001=b.po020_Relation02
+        WHERE b.po020_Relation03=#{id}
+    </select>
+    <select id="getParentId" resultType="java.lang.String">
+        SELECT po020_Relation03 FROM sdpo020_Relation WHERE po020_Relation02=#{id}
+    </select>
+    <update id="update">
+        UPDATE sdpo020 SET po02004=#{name},po02005=#{po02005},
+        po02008=#{pubPerson},po02003=#{serial}
+        <if test="po02006 != null">
+            ,po02006=#{po02006}
+        </if>
+        <if test="po02013 != null">
+            ,po02013=#{po02013}
+        </if>
+        WHERE po02001=#{id}
+    </update>
+
+    <insert id="insert">
+        INSERT INTO sdpo020
+        VALUES (#{id},#{flowId},#{serial},#{name},#{po02005},#{po02006},0,#{pubPerson},
+        0,0,0,0,#{po02013},0,0,0,'0',0,#{po02019},1)
+    </insert>
+    <delete id="delete">
+        delete from sdpo020 where po02001=#{courseId}
+    </delete>
+
+    <update id="updateJudgeSql">
+        UPDATE sdpo020 SET po02019=#{po02019} WHERE po02001=#{id}
+    </update>
+
+    <select id="execJudgeSql" resultType="HashMap">
+        ${execSql}
+    </select>
+
+    <resultMap id="courseInvoke" type="com.yuesheng.pm.entity.CourseInvoke">
+        <id property="courseId" column="course_id" jdbcType="VARCHAR"></id>
+        <result property="invoke_name" column="invokeName" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getInvoke" resultMap="courseInvoke">
+        select * from pro_course_invoke where course_id=#{id}
+    </select>
+    <update id="updateInvoke">
+        update pro_course_invoke set invoke_name=#{invokeName} where course_id=#{id}
+    </update>
+    <delete id="deleteInvoke">
+        delete from pro_course_invoke where course_id=#{id}
+    </delete>
+    <insert id="insertInvoke">
+        insert into pro_course_invoke (course_id,invoke_name) values(#{id},#{invokeName})
+    </insert>
+    <select id="getNextCoursesAll" resultMap="flowCourse">
+        Select * From sdpo020
+        Where po02002=#{flowId} And po02003>#{courseNo}
+    </select>
+</mapper>

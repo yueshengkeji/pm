@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CoursePersonMapper">
+    <resultMap id="coursePerson" type="com.yuesheng.pm.entity.CoursePerson">
+        <id column="po00201" property="id" jdbcType="VARCHAR"></id>
+        <result column="po00202" property="flowId" jdbcType="VARCHAR"></result>
+        <result column="po00203" property="serial" jdbcType="INTEGER"></result>
+        <result column="po00204" property="staffType" jdbcType="INTEGER"></result>
+        <result column="po00208" property="courseId" jdbcType="VARCHAR"></result>
+        <result column="po00209" property="type" jdbcType="VARCHAR"></result>
+        <result column="po00205" property="staffId" jdbcType="VARCHAR"></result>
+        <!--<association property="staff" column="po00205" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>-->
+    </resultMap>
+    <select id="getPersonByCourseId" resultMap="coursePerson" parameterType="String">
+        SELECT po00201,po00202,po00203,po00204,po00205,po00208,po00209 FROM sdpo002 WHERE po00208=#{courseId};
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpo002 VALUES (#{id},#{flowId},#{serial},#{staffType},#{staffId},'',0,#{courseId},#{type},1,0,1);
+    </insert>
+    <update id="update">
+        UPDATE sdpo002 SET po00204=#{staffType},po00205=#{staffId},po00209=#{type} WHERE po00201=#{id};
+    </update>
+    <delete id="delete">
+        DELETE FROM sdpo002 WHERE po00201=#{id};
+    </delete>
+    <delete id="deleteByCourse">
+        DELETE FROM sdpo002 WHERE po00208=#{courseId};
+    </delete>
+</mapper>

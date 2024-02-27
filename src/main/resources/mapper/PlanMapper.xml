@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PlanMapper">
+    <resultMap id="plan" type="com.yuesheng.pm.entity.Plan">
+        <id column="pm07101" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm07103" property="task" jdbcType="VARCHAR"></result>
+        <result column="pm07104" property="billsCode" jdbcType="VARCHAR"></result>
+        <result column="pm07105" property="name" jdbcType="VARCHAR"></result>
+        <result column="pm07106" property="date" jdbcType="VARCHAR"></result>
+        <result column="pm07108" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="pm07109" property="appMark" jdbcType="TINYINT"></result>
+        <result column="pm07111" property="planDate" jdbcType="VARCHAR"></result>
+        <result column="pm07112" property="remark" jdbcType="VARCHAR"></result>
+        <association property="project" column="pm07102"
+                     select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+        <association property="approve" column="pm07107"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="staff" column="pm07110"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+    </resultMap>
+
+    <select id="getPlanById" resultMap="plan">
+        SELECT * FROM sdpm071 WHERE  pm07101=#{id}
+    </select>
+    <select id="getPlansByProject" resultMap="plan">
+        SELECT * FROM sdpm071 WHERE pm07102=#{projectId}
+    </select>
+    <select id="searchPlan" resultMap="plan">
+        SELECT * FROM sdpm071 WHERE pm07104+pm07105 LIKE '%'+#{name}+'%'
+    </select>
+    <select id="searchPlan" resultMap="plan" databaseId="mysql">
+        SELECT * FROM sdpm071 WHERE concat(pm07104,pm07105) LIKE concat('%',#{name},'%')
+    </select>
+
+    <select id="getPlans" resultMap="plan">
+        SELECT DISTINCT a.* FROM sdpm071 AS a
+        LEFT JOIN sdpa001 AS b ON a.pm07102=b.pa00101
+        LEFT JOIN sdpm070 AS c ON c.pm07001=a.pm07101
+        LEFT JOIN sdpm002 AS d ON d.pm00201=c.pm07004
+        <if test="projectAuth != null">
+            left join project_auth on b.pa00101=project_id
+        </if>
+        <where>
+            <if test="str != null">
+                and a.pm07104+a.pm07105+a.pm07106+a.pm07112+b.pa00102+d.pm00202+d.pm00205 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="staff != null">
+                and a.pm07110=#{staff}
+            </if>
+            <if test="projectAuth != null">
+                and staff_id=#{projectAuth}
+            </if>
+        </where>
+        ${order}
+    </select>
+    <select id="getPlans" resultMap="plan" databaseId="mysql">
+        SELECT DISTINCT a.* FROM sdpm071 AS a
+        LEFT JOIN sdpa001 AS b ON a.pm07102=b.pa00101
+        LEFT JOIN sdpm070 AS c ON c.pm07001=a.pm07101
+        LEFT JOIN sdpm002 AS d ON d.pm00201=c.pm07004
+        <if test="projectAuth != null">
+            left join project_auth on b.pa00101=project_id
+        </if>
+        <where>
+            <if test="str != null">
+                and concat(a.pm07104,a.pm07105,a.pm07106,a.pm07112,b.pa00102,d.pm00202,d.pm00205) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="staff != null">
+                and a.pm07110=#{staff}
+            </if>
+
+            <if test="projectAuth != null">
+                and staff_id=#{projectAuth}
+            </if>
+        </where>
+        ${order}
+    </select>
+
+    <select id="getPlansCount" resultType="Integer">
+        SELECT count(DISTINCT a.pm07101) FROM sdpm071 AS a
+        LEFT JOIN sdpa001 AS b ON a.pm07102=b.pa00101
+        LEFT JOIN sdpm070 AS c ON c.pm07001=a.pm07101
+        LEFT JOIN sdpm002 AS d ON d.pm00201=c.pm07004
+        <if test="projectAuth != null">
+            left join project_auth on b.pa00101=project_id
+        </if>
+        <where>
+            <if test="str != null">
+                and a.pm07104+a.pm07105+a.pm07106+a.pm07112+b.pa00102+d.pm00202+d.pm00205 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="staff != null">
+                and a.pm07110=#{staff}
+            </if>
+            <if test="projectAuth != null">
+                and staff_id=#{projectAuth}
+            </if>
+        </where>
+    </select>
+    <select id="getPlansCount" resultType="Integer" databaseId="mysql">
+        SELECT count(DISTINCT a.pm07101) FROM sdpm071 AS a
+        LEFT JOIN sdpa001 AS b ON a.pm07102=b.pa00101
+        LEFT JOIN sdpm070 AS c ON c.pm07001=a.pm07101
+        LEFT JOIN sdpm002 AS d ON d.pm00201=c.pm07004
+        <if test="projectAuth != null">
+            left join project_auth on b.pa00101=project_id
+        </if>
+        <where>
+            <if test="str != null">
+                and concat(a.pm07104,a.pm07105,a.pm07106,a.pm07112,b.pa00102,d.pm00202,d.pm00205) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="staff != null">
+                and a.pm07110=#{staff}
+            </if>
+            <if test="projectAuth != null">
+                and staff_id=#{projectAuth}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sdpm071 VALUES (#{id},#{project.id},#{task},#{billsCode},#{name},#{date},'','',0,#{staff.coding},#{planDate},#{remark})
+    </insert>
+
+    <delete id="delete">
+        delete
+        from sdpm071
+        where pm07101 = #{id}
+    </delete>
+
+    <update id="update">
+        UPDATE sdpm071 SET pm07102=#{project.id},pm07105=#{name},pm07111=#{planDate},pm07112=#{remark} WHERE pm07101=#{id}
+    </update>
+    <delete id="deleteByProject">
+        DELETE FROM sdpm071 WHERE pm07002=#{projectId}
+    </delete>
+    <update id="approve">
+        update sdpm071
+        set pm07107=#{approve.coding},
+            pm07109=#{appMark},
+            pm07108=#{approveDate}
+        where pm07101 = #{id}
+    </update>
+</mapper>

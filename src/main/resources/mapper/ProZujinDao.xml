@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProZujinMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProZujin" id="ProZujinMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="series" column="series" jdbcType="VARCHAR"/>
+        <result property="company" column="company" jdbcType="VARCHAR"/>
+        <result property="brand" column="brand" jdbcType="VARCHAR"/>
+        <result property="payType" column="pay_type" jdbcType="INTEGER"/>
+        <result property="zlType" column="zl_type" jdbcType="INTEGER"/>
+        <result property="acreage" column="acreage" jdbcType="DECIMAL"/>
+        <result property="zlPerson" column="zl_person" jdbcType="VARCHAR"/>
+        <result property="zlPersonTel" column="zl_person_tel" jdbcType="VARCHAR"/>
+        <result property="companyTypeId" column="company_type_id" jdbcType="INTEGER"/>
+        <result property="staffName" column="staff_name" jdbcType="VARCHAR"/>
+        <result property="isDz" column="is_dz" jdbcType="TINYINT"/>
+        <result property="isSh" column="is_sh" jdbcType="TINYINT"/>
+        <result property="ysMoney" column="ys_money" jdbcType="DECIMAL"/>
+        <result property="sjMoney" column="sj_money" jdbcType="DECIMAL"/>
+        <result property="kpMoney" column="kp_money" jdbcType="DECIMAL"/>
+        <result property="cwMoney" column="cw_money" jdbcType="DECIMAL"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="dateTime" column="date_time" jdbcType="VARCHAR"/>
+        <result property="lastStaffId" column="last_staff_id" jdbcType="VARCHAR"/>
+        <result property="lastDateTime" column="last_date_time" jdbcType="VARCHAR"/>
+        <result property="dzNumber" column="dz_number" jdbcType="DECIMAL"/>
+        <result property="endDatetime" column="end_datetime" jdbcType="VARCHAR"/>
+        <result property="startDatetime" column="start_datetime" jdbcType="VARCHAR"/>
+
+        <result property="yearRental" column="year_rental" jdbcType="DECIMAL"/>
+
+        <result property="bzjType" column="bzj_type" jdbcType="VARCHAR"/>
+        <result property="bzjMoney" column="bzj_money" jdbcType="DECIMAL"/>
+        <result property="returnBzjMoney" column="return_money" jdbcType="DECIMAL"/>
+        <result property="type" column="type" jdbcType="TINYINT"/>
+        <result property="files" column="files" jdbcType="VARCHAR"/>
+        <association property="yt" javaType="com.yuesheng.pm.entity.ProZujinYt">
+            <id column="company_type_id" property="id" jdbcType="VARCHAR"></id>
+            <result column="yt_name" property="name" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+
+    <select id="queryBrand" resultMap="ProZujinMap">
+        select zj.*,yt.name as yt_name from pro_zujin as zj
+        LEFT JOIN pro_zujin_yt as yt on zj.company_type_id=yt.id
+        <where>
+            <if test="searchBrand != null">
+                and isnull(zj.brand,'') like '%'+#{searchBrand}+'%'
+            </if>
+        </where>
+    </select>
+
+    <select id="queryMoneyTotal" resultType="HashMap">
+        select SUM(ys_money) as 'ysMoney',
+         SUM(sj_money) as 'sjMoney',
+         SUM(cw_money) as 'cwMoney',
+         SUM(kp_money) as 'kpMoney',
+         SUM(year_rental) as 'yearRental',
+         SUM(bzj_money) as 'bzjMoney',
+         SUM(return_money) as 'returnMoney'
+         from pro_zujin
+    </select>
+    <select id="queryMoneyTotalv2" resultType="HashMap">
+        select SUM(ys_money) as 'ysMoney',
+         SUM(sj_money) as 'sjMoney',
+         SUM(cw_money) as 'cwMoney',
+         SUM(kp_money) as 'kpMoney',
+         SUM(year_rental) as 'yearRental',
+         SUM(bzj_money) as 'bzjMoney',
+         SUM(return_money) as 'returnMoney'
+         from pro_zujin where is_sh=#{type} and date_time LIKE #{year}+'%'
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProZujinMap">
+        select
+          * from pro_zujin
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProZujinMap">
+        select
+          *
+        from pro_zujin
+        limit #{offset}, #{limit}
+    </select>
+    <select id="queryEarlyMoney" resultType="Double">
+        select (SUM(moneys.proMoney) - SUM(zj.cw_money)) from pro_zujin as zj
+        LEFT JOIN (SELECT SUM(pro_money) as 'proMoney' , pro_detail_id FROM pro_detail_c where pro_date &lt;= #{endDatetime} group by pro_detail_id) as moneys
+            on cast(zj.id as varchar(50))=pro_detail_id
+            where moneys.proMoney &gt; zj.cw_money
+    </select>
+    <select id="queryEarlyMoney" resultType="Double" databaseId="mysql">
+        select (SUM(moneys.proMoney) - SUM(zj.cw_money)) from pro_zujin as zj
+        LEFT JOIN (SELECT SUM(pro_money) as 'proMoney' , pro_detail_id FROM pro_detail_c where pro_date &lt;= #{endDatetime} group by pro_detail_id) as moneys
+            on zj.id=pro_detail_id
+            where moneys.proMoney &gt; zj.cw_money
+    </select>
+    <select id="queryByParam" resultMap="ProZujinMap">
+        select distinct zj.*,yt.name as yt_name from pro_zujin as zj
+        LEFT JOIN pro_zujin_yt as yt on company_type_id=yt.id
+        <if test="searchText != null">
+            LEFT JOIN pro_zujin_house_r as r on zj.id=r.zj_id
+            left join pro_zujin_house pzh on r.house_id=pzh.id
+        </if>
+        <if test="early != null">
+            LEFT JOIN (SELECT SUM(pro_money) as 'proMoney' , pro_detail_id FROM pro_detail_c where pro_date &lt;= #{endDatetime} group by pro_detail_id) as moneys
+            on zj.id=pro_detail_id
+        </if>
+        <where>
+            <if test="series != null">
+                and series = #{series}
+            </if>
+            <if test="isSh != null">
+                and is_sh = #{isSh}
+            </if>
+            <if test="early != null">
+                and moneys.proMoney &gt; zj.cw_money
+            </if>
+            <if test="endDatetime != null and expire == 1">
+                and end_datetime &gt;= #{endDatetime}
+            </if>
+            <if test="endDatetime != null and expire == 0">
+                and end_datetime &lt;= #{endDatetime}
+            </if>
+            <if test="endDatetime != null and expire == 2">
+                and end_datetime between  #{startDateTime} and #{endDatetime}
+            </if>
+            <if test="rage == 1">
+                and ys_money &gt; cw_money
+            </if>
+            <if test="searchText != null">
+                and
+                isNull(series,'')+isNull(company,'')+isNull(brand,'')+isNull(convert(varchar(20),zj.acreage),'')+isNull(zl_person,'')+
+                isNull(zl_person_tel,'')+isNull(staff_name,'')+isNull(convert(varchar(20),ys_money),'')+isNull(convert(varchar(20),sj_money),'')+isNull(convert(varchar(20),kp_money),'')+
+                isNull(zj.remark,'')+isNull(pzh.pw_number,'') LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="bzj == 1">
+                and isNull(bzj_money,0) &gt; 0
+            </if>
+            <if test="zlType != null">
+                and zl_type in (${zlType})
+            </if>
+            <if test="ytId != null">
+                and company_type_id = #{ytId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+        </where>
+    </select>
+    <select id="queryCountByParam" resultType="Integer">
+        select COUNT(zj.id) from pro_zujin as zj
+        <if test="searchText != null">
+            LEFT JOIN pro_zujin_house_r as r on zj.id=r.zj_id
+            left join pro_zujin_house pzh on r.house_id=pzh.id
+        </if>
+        <if test="early != null">
+            LEFT JOIN (SELECT SUM(pro_money) as 'proMoney' , pro_detail_id FROM pro_detail_c where pro_date &lt;= #{endDatetime} group by pro_detail_id) as moneys
+            on zj.id=pro_detail_id
+        </if>
+        <where>
+            <if test="early != null">
+                and moneys.proMoney &gt; zj.cw_money
+            </if>
+            <if test="endDatetime != null and expire == 1">
+                and end_datetime &gt;= #{endDatetime}
+            </if>
+            <if test="endDatetime != null and expire == 0">
+                and end_datetime &lt;= #{endDatetime}
+            </if>
+            <if test="endDatetime != null and expire == 2">
+                and end_datetime between  #{startDateTime} and #{endDatetime}
+            </if>
+            <if test="rage == 1">
+                and ys_money &gt; cw_money
+            </if>
+            <if test="searchText != null">
+                and
+                isNull(series,'')+isNull(company,'')+isNull(brand,'')+isNull(convert(varchar(20),zj.acreage),'')+isNull(zl_person,'')+
+                isNull(zl_person_tel,'')+isNull(staff_name,'')+isNull(convert(varchar(20),ys_money),'')+isNull(convert(varchar(20),sj_money),'')+isNull(convert(varchar(20),kp_money),'')+
+                isNull(zj.remark,'')+isNull(pzh.pw_number,'') LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="bzj == 1">
+                and isNull(bzj_money,0) &gt; 0 and isNull(bzj_money,0) > abs(isNull(return_money,0))
+            </if>
+            <if test="zlType != null">
+                and zl_type in (${zlType})
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProZujinMap">
+        select
+        * from pro_zujin
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="series != null and series != ''">
+                and series = #{series}
+            </if>
+            <if test="company != null and company != ''">
+                and company = #{company}
+            </if>
+            <if test="brand != null and brand != ''">
+                and brand = #{brand}
+            </if>
+            <if test="payType != null">
+                and pay_type = #{payType}
+            </if>
+            <if test="zlType != null">
+                and zl_type = #{zlType}
+            </if>
+            <if test="acreage != null">
+                and acreage = #{acreage}
+            </if>
+            <if test="zlPerson != null and zlPerson != ''">
+                and zl_person = #{zlPerson}
+            </if>
+            <if test="zlPersonTel != null and zlPersonTel != ''">
+                and zl_person_tel = #{zlPersonTel}
+            </if>
+            <if test="companyTypeId != null">
+                and company_type_id = #{companyTypeId}
+            </if>
+            <if test="staffName != null and staffName != ''">
+                and staff_name = #{staffName}
+            </if>
+            <if test="isDz != null">
+                and is_dz = #{isDz}
+            </if>
+            <if test="isSh != null">
+                and is_sh = #{isSh}
+            </if>
+            <if test="ysMoney != null">
+                and ys_money = #{ysMoney}
+            </if>
+            <if test="sjMoney != null">
+                and sj_money = #{sjMoney}
+            </if>
+            <if test="kpMoney != null">
+                and kp_money = #{kpMoney}
+            </if>
+            <if test="cwMoney != null">
+                and cw_money = #{cwMoney}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="dateTime != null and dateTime != ''">
+                and date_time = #{dateTime}
+            </if>
+            <if test="lastStaffId != null and lastStaffId != ''">
+                and last_staff_id = #{lastStaffId}
+            </if>
+            <if test="lastDateTime != null and lastDateTime != ''">
+                and last_date_time = #{lastDateTime}
+            </if>
+            <if test="endDatetime != null and endDatetime != ''">
+                and end_datetime between #{dateTime} and #{endDatetime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into pro_zujin(series, company, brand, pay_type, zl_type, acreage, zl_person, zl_person_tel, company_type_id, staff_name, is_dz, is_sh, ys_money, sj_money, kp_money, cw_money, remark, staff_id, date_time, last_staff_id, last_date_time,dz_number,year_rental,end_datetime,bzj_money,type,start_datetime,files)
+        values (#{series}, #{company}, #{brand}, #{payType}, #{zlType}, #{acreage}, #{zlPerson}, #{zlPersonTel}, #{companyTypeId}, #{staffName}, #{isDz}, #{isSh}, #{ysMoney}, #{sjMoney}, #{kpMoney}, #{cwMoney}, #{remark}, #{staffId}, #{dateTime}, #{lastStaffId}, #{lastDateTime},#{dzNumber},#{yearRental},#{endDatetime},#{bzjMoney},#{type},#{startDatetime},#{files})
+    </insert>
+
+    <update id="updateMoneyCount">
+        update pro_zujin
+        <set>
+            <if test="ysMoney != null">
+                ys_money = #{ysMoney},
+            </if>
+            <if test="sjMoney != null">
+                sj_money = #{sjMoney},
+            </if>
+            <if test="kpMoney != null">
+                kp_money = #{kpMoney},
+            </if>
+            <if test="cwMoney != null">
+                cw_money = #{cwMoney},
+            </if>
+
+            <if test="lastStaffId != null">
+                last_staff_id = #{lastStaffId},
+            </if>
+            <if test="lastDateTime != null">
+                last_date_time = #{lastDateTime},
+            </if>
+            <if test="yearRental != null and yearRental != 0">
+                year_rental = #{yearRental},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateBzj">
+        update pro_zujin
+        <set>
+            <if test="bzjMoney != null">
+                bzj_money = #{bzjMoney},
+            </if>
+            <if test="bzjType != null">
+                bzj_type = #{bzjType},
+            </if>
+            <if test="returnBzjMoney != null">
+                return_money = #{returnBzjMoney},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_zujin
+        <set>
+            <if test="series != null">
+                series = #{series},
+            </if>
+            <if test="company != null">
+                company = #{company},
+            </if>
+            <if test="brand != null">
+                brand = #{brand},
+            </if>
+            <if test="payType != null">
+                pay_type = #{payType},
+            </if>
+            <if test="zlType != null">
+                zl_type = #{zlType},
+            </if>
+            <if test="acreage != null">
+                acreage = #{acreage},
+            </if>
+            <if test="zlPerson != null and zlPerson != ''">
+                zl_person = #{zlPerson},
+            </if>
+            <if test="zlPersonTel != null and zlPersonTel != ''">
+                zl_person_tel = #{zlPersonTel},
+            </if>
+            <if test="companyTypeId != null">
+                company_type_id = #{companyTypeId},
+            </if>
+            <if test="staffName != null and staffName != ''">
+                staff_name = #{staffName},
+            </if>
+            <if test="isDz != null">
+                is_dz = #{isDz},
+            </if>
+            <if test="isSh != null">
+                is_sh = #{isSh},
+            </if>
+            <if test="ysMoney != null">
+                ys_money = #{ysMoney},
+            </if>
+            <if test="sjMoney != null">
+                sj_money = #{sjMoney},
+            </if>
+            <if test="kpMoney != null">
+                kp_money = #{kpMoney},
+            </if>
+            <if test="cwMoney != null">
+                cw_money = #{cwMoney},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="lastStaffId != null">
+                last_staff_id = #{lastStaffId},
+            </if>
+            <if test="lastDateTime != null">
+                last_date_time = #{lastDateTime},
+            </if>
+            <if test="dzNumber != null">
+                dz_number = #{dzNumber},
+            </if>
+
+            <if test="yearRental != null">
+                year_rental = #{yearRental},
+            </if>
+            <if test="endDatetime != null and endDatetime != ''">
+                end_datetime = #{endDatetime},
+            </if>
+            <if test="startDatetime != null and startDatetime != ''">
+                start_datetime = #{startDatetime},
+            </if>
+            <if test="files != null">
+                files = #{files},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_zujin where id = #{id}
+    </delete>
+
+    <select id="queryExpire" resultMap="ProZujinMap">
+        select *
+        from pro_zujin where type != 9 and end_datetime &lt;= #{endDate}
+    </select>
+
+    <update id="updateType">
+        update pro_zujin set type=#{type} where id=#{id}
+    </update>
+</mapper>

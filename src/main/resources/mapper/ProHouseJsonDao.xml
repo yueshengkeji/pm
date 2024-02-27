@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProHouseJsonMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProHouseJson" id="ProHouseJsonMap">
+        <result property="key" column="map_key" jdbcType="VARCHAR"/>
+        <result property="json" column="json" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProHouseJsonMap">
+        select
+          map_key, json
+        from pro_house_json
+        where map_key = #{key}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProHouseJsonMap">
+        select
+          map_key, json
+        from pro_house_json
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProHouseJsonMap">
+        select
+        map_key, json
+        from pro_house_json
+        <where>
+            <if test="key != null and key != ''">
+                and map_key = #{key}
+            </if>
+            <if test="json != null and json != ''">
+                and json = #{json}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="" useGeneratedKeys="true">
+        insert into pro_house_json(map_key, json)
+        values (#{key}, #{json})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_house_json
+        <set>
+            <if test="json != null and json != ''">
+                json = #{json},
+            </if>
+        </set>
+        where map_key = #{key}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_house_json where map_key = #{key}
+    </delete>
+
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.DingTalkDepartmentMapper">
+    <resultMap id="DingTalkDepartment" type="com.yuesheng.pm.entity.DingTalkDepartment">
+        <result property="name" column="name"></result>
+        <result property="dept_id" column="dept_id"></result>
+        <result property="sectionId" column="section_id"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.DingTalkDepartment">
+        insert into ding_talk_department values (#{name},#{dept_id},#{sectionId})
+    </insert>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.DingTalkDepartment">
+        update ding_talk_department
+        set name = #{name}
+        where dept_id = #{dept_id}
+    </update>
+
+    <delete id="delete" parameterType="com.yuesheng.pm.entity.DingTalkDepartment">
+        delete from ding_talk_department
+        where dept_id = #{dept_id}
+    </delete>
+
+    <select id="selectByDeptId" resultMap="DingTalkDepartment">
+        select * from ding_talk_department
+        where dept_id = #{deptId}
+    </select>
+
+    <select id="selectBySectionId" resultMap="DingTalkDepartment">
+        select * from ding_talk_department
+        where section_id = #{sectionId}
+    </select>
+
+    <select id="selectAll" resultMap="DingTalkDepartment">
+        select * from ding_talk_department
+    </select>
+</mapper>

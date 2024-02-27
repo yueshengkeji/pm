@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProTaskProgressReportMapper">
+    <resultMap id="ProTaskProgressReport" type="com.yuesheng.pm.entity.ProTaskProgressReport">
+        <result property="id" column="id"></result>
+        <result property="projectName" column="project_name"></result>
+        <result property="projectId" column="project_id"></result>
+        <result property="constructionNode" column="construction_node"></result>
+        <result property="constructorsNumber" column="constructors_number"></result>
+        <result property="content" column="content"></result>
+        <result property="planForTomorrow" column="plan_for_tomorrow"></result>
+        <result property="picUrl" column="pic_url"></result>
+        <result property="progressNow" column="progress_now"></result>
+        <result property="createTime" column="create_time"></result>
+        <association property="staff" column="staff"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.ProTaskProgressReport">
+        insert into pro_task_progress_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="projectName != null">project_name,</if>
+            <if test="projectId != null">project_id,</if>
+            <if test="constructionNode != null">construction_node,</if>
+            <if test="constructorsNumber != null">constructors_number,</if>
+            <if test="content != null">content,</if>
+            <if test="planForTomorrow != null">plan_for_tomorrow,</if>
+            <if test="picUrl != null">pic_url,</if>
+            <if test="progressNow != null">progress_now,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="staff != null">staff,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="projectName != null">#{projectName},</if>
+            <if test="projectId != null">#{projectId},</if>
+            <if test="constructionNode != null">#{constructionNode},</if>
+            <if test="constructorsNumber != null">#{constructorsNumber},</if>
+            <if test="content != null">#{content},</if>
+            <if test="planForTomorrow != null">#{planForTomorrow},</if>
+            <if test="picUrl != null">#{picUrl},</if>
+            <if test="progressNow != null">#{progressNow},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="staff != null">#{staff.id},</if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="string">
+        delete from pro_task_progress_report where id = #{id}
+    </delete>
+
+    <select id="selectAllForPage" resultMap="ProTaskProgressReport">
+        select * from  pro_task_progress_report
+    </select>
+
+    <select id="selectAllCounts" resultType="integer">
+        select count(*) from pro_task_progress_report
+    </select>
+
+    <select id="selectByPro" resultMap="ProTaskProgressReport">
+        select * from pro_task_progress_report
+        where project_name = #{projectName}
+    </select>
+
+    <select id="selectById" resultMap="ProTaskProgressReport">
+        select * from pro_task_progress_report
+        where id = #{id}
+    </select>
+</mapper>

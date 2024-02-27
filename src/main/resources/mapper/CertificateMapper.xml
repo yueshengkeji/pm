@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CertificateMapper">
+
+    <resultMap id="CerResult" type="com.yuesheng.pm.entity.Certificate">
+        <id property="id" column="id"/>
+        <result property="serialNumber" column="serial_number"/>
+        <result property="name" column="name"/>
+        <result property="fileUrl" column="file_url"/>
+        <result property="gainTime" column="gain_time"/>
+        <result property="expirationTime" column="expiration_time"/>
+        <result property="uploadUserId" column="upload_user_id"/>
+        <result property="uploadUserName" column="upload_user_name"/>
+        <result property="uploadTime" column="upload_time"/>
+        <result property="updateUserId" column="update_user_id"/>
+        <result property="updateUserName" column="update_user_name"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="state" column="state"/>
+        <result property="catalogueId" column="catalogue_id"/>
+        <result property="pushMsg" column="push_msg"/>
+        <result property="subsidy" column="subsidy"></result>
+        <association property="holder" column="holder" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <insert id="insertCertificate">
+        insert into t_certificate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serialNumber != null">serial_number,</if>
+            <if test="name != null">name,</if>
+            <if test="fileUrl != null">file_url,</if>
+            <if test="gainTime != null">gain_time,</if>
+            <if test="expirationTime != null">expiration_time,</if>
+            <if test="uploadUserId != null">upload_user_id,</if>
+            <if test="uploadUserName != null">upload_user_name,</if>
+            <if test="uploadTime != null">upload_time,</if>
+            <if test="updateUserId != null">update_user_id,</if>
+            <if test="updateUserName != null">update_user_name,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="state != null">state,</if>
+            <if test="catalogueId != null">catalogue_id,</if>
+            <if test="pushMsg != null">push_msg,</if>
+            <if test="subsidy != null">subsidy,</if>
+            <if test="holder != null">holder,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="name != null">#{name},</if>
+            <if test="fileUrl != null">#{fileUrl},</if>
+            <if test="gainTime != null">#{gainTime},</if>
+            <if test="expirationTime != null">#{expirationTime},</if>
+            <if test="uploadUserId != null">#{uploadUserId},</if>
+            <if test="uploadUserName != null">#{uploadUserName},</if>
+            <if test="uploadTime != null">#{uploadTime},</if>
+            <if test="updateUserId != null">#{updateUserId},</if>
+            <if test="updateUserName != null">#{updateUserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="state != null">#{state},</if>
+            <if test="catalogueId != null">#{catalogueId},</if>
+            <if test="pushMsg != null">#{pushMsg},</if>
+            <if test="subsidy != null">#{subsidy},</if>
+            <if test="holder != null">#{holder.id},</if>
+        </trim>
+    </insert>
+
+    <insert id="insert">
+        insert into t_authorization(staff_id,certificate_id) values(#{staff.id},#{cerId});
+    </insert>
+
+    <update id="updateCertificate">
+        update t_certificate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serialNumber != null">serial_number = #{serialNumber},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="fileUrl != null">file_url = #{fileUrl},</if>
+            <if test="gainTime != null">gain_time = #{gainTime},</if>
+            <if test="expirationTime != null">expiration_time = #{expirationTime},</if>
+            <if test="uploadUserId != null">upload_user_id = #{uploadUserId},</if>
+            <if test="uploadUserName != null">upload_user_name = #{uploadUserName},</if>
+            <if test="uploadTime != null">upload_time = #{uploadTime},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            <if test="updateUserName != null">update_user_name = #{updateUserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="catalogueId != null">catalogue_id = #{catalogueId},</if>
+            <if test="pushMsg != null">push_msg = #{pushMsg},</if>
+            <if test="subsidy != null">subsidy = #{subsidy},</if>
+            <if test="holder != null">holder = #{holder.id}</if>
+        </trim>
+        where id = #{id};
+    </update>
+
+    <delete id="deleteCertificate">
+        delete from t_certificate where id = #{id};
+        delete from t_authorization where certificate_id = #{id};
+    </delete>
+
+    <delete id="deletePerson">
+        delete from t_authorization where staff_id = #{staffId} and certificate_id = #{cerId};
+    </delete>
+
+    <select id="selectAllCertificate" resultMap="CerResult">
+        select * from t_certificate
+        <if test="str != null">
+            where name like '%'+#{str}+'%'
+        </if>
+    </select>
+
+    <select id="selectCertificateOfAuthorization" resultMap="CerResult">
+        select a.* from t_certificate as a left join t_authorization as b
+        on a.id = b.certificate_id
+        where a.state = 1 and b.staff_id = #{id}
+        <if test="str != null">
+            and name like '%'+#{str}+'%'
+        </if>
+    </select>
+
+    <select id="isBind" resultType="java.lang.Boolean">
+        select staff_id from t_authorization where staff_id = #{staffId} and certificate_id = #{cerId};
+    </select>
+
+    <select id="selectStaffByCertificateId" resultType="com.yuesheng.pm.entity.Staff">
+        select a.pj00401 as id,a.pj00402 as name
+        from sdpj004 as a left join t_authorization as b
+        on a.pj00401 = b.staff_id where b.certificate_id = #{cerId}
+    </select>
+
+    <select id="selectCerByCat" resultMap="CerResult">
+        select * from t_certificate where catalogue_id = #{id}
+    </select>
+
+    <select id="selectByCer" resultMap="CerResult">
+        select * from t_certificate where id = #{id}
+    </select>
+
+</mapper>

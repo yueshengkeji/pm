@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ContractPayPlanMapper">
+    <resultMap id="payPlan" type="com.yuesheng.pm.entity.ContractPayPlan">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="pay_money" property="payMoney" jdbcType="VARCHAR"></result>
+        <result column="contract_id" property="contractId" jdbcType="DECIMAL"></result>
+        <result column="pay_type_id" property="payTypeId" jdbcType="VARCHAR"></result>
+        <result column="flow_id" property="flowId" jdbcType="VARCHAR"></result>
+        <result column="state" property="state" jdbcType="TINYINT"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <insert id="insert">
+        insert into pro_cpay_plan (id,pay_money,contract_id,pay_type_id,flow_id,state,remark)
+        values(#{id},#{payMoney},#{contractId},#{payTypeId},#{flowId},#{state},#{remark});
+    </insert>
+    <update id="updateState">
+        update pro_cpay_plan set state=#{state} where id=#{id};
+    </update>
+    <select id="queryByContractId" resultMap="payPlan">
+        select * from pro_cpay_plan where contract_id=#{contractId}
+    </select>
+    <delete id="deleteByContractId">
+        delete from pro_cpay_plan where contract_id=#{contractId};
+    </delete>
+</mapper>

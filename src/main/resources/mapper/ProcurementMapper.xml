@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProcurementMapper">
+    <resultMap id="pro" type="com.yuesheng.pm.entity.Procurement">
+        <id column="pm01301" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm01302" property="pmDate" jdbcType="VARCHAR"></result>
+        <result column="pm01303" property="pmNumber" jdbcType="VARCHAR"></result>
+        <result column="pm01316" property="tax" jdbcType="DECIMAL"></result>
+        <result column="pm01307" property="remark" jdbcType="DECIMAL"></result>
+        <result column="pm01308" property="voucherDate" jdbcType="VARCHAR"></result>
+        <result column="pm01310" property="voucherCoding" jdbcType="VARCHAR"></result>
+        <result column="pm01309" property="fqDate" jdbcType="VARCHAR"></result>
+        <result column="pm01314" property="state" jdbcType="INTEGER"></result>
+        <result column="pm01321" property="putState" jdbcType="TINYINT"></result>
+        <result column="pm01318" property="isContract" jdbcType="TINYINT"></result>
+        <result column="pm01324" property="isInvoice" jdbcType="VARCHAR"></result>
+        <result column="pm01322" property="saleMoney" jdbcType="VARCHAR"></result>
+        <result column="dh01302" property="dhDate" jdbcType="VARCHAR"></result>
+        <result column="pm01323" property="expressCode" jdbcType="VARCHAR"></result>
+        <association property="staff" column="pm01310"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="voucherName" javaType="String" column="pm01310"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getNameByCoding">
+            <result javaType="String" jdbcType="VARCHAR" property="name" column="pj00402"></result>
+        </association>
+        <association property="auditName" column="pm01313"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getNameByCoding">
+            <result property="name" javaType="String" jdbcType="VARCHAR" column="pj00402"></result>
+        </association>
+        <association property="company" column="pm01304"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="contract" column="pm01305"
+                     select="com.yuesheng.pm.mapper.ContractMapper.getContractById"></association>
+        <association property="city" column="pm01306"
+                     select="com.yuesheng.pm.mapper.CityMapper.getCityById"></association>
+    </resultMap>
+
+    <resultMap id="proJanl" type="com.yuesheng.pm.entity.Procurement">
+        <id column="pm01301" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm01302" property="pmDate" jdbcType="VARCHAR"></result>
+        <result column="pm01303" property="pmNumber" jdbcType="VARCHAR"></result>
+        <result column="pm01314" property="state" jdbcType="VARCHAR"></result>
+        <result column="pm01323" property="expressCode" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getProSaleMoney" resultType="String">
+        select pm01322 from sdpm013 where pm01301=#{id}
+    </select>
+    <select id="getProcurementSimpleById" resultMap="proJanl">
+        SELECT a.pm01301,a.pm01302,a.pm01303,a.pm01314 FROM sdpm013 as a WHERE a.pm01301=#{id}
+    </select>
+    <select id="getProcurementById" parameterType="String" resultMap="pro">
+        SELECT * FROM sdpm013 LEFT JOIN sdpm013_dh on pm01301=dh01301
+        WHERE pm01301=#{pId}
+    </select>
+    <select id="getProJanlById" resultMap="proJanl">
+        SELECT pm01301,pm01303,pm01302 FROM sdpm013 WHERE pm01301=#{id}
+    </select>
+    <insert id="addProDhDate">
+        INSERT INTO sdpm013_dh (dh01301,dh01302) values(#{id},#{dhDate})
+    </insert>
+    <insert id="addProcurement" parameterType="com.yuesheng.pm.entity.Procurement">
+        INSERT INTO sdpm013 (pm01301,pm01302,pm01303,pm01304,pm01305,pm01306,pm01307,
+        pm01308,pm01309,pm01310,pm01311,pm01316,pm01320,pm01326,pm01312,pm01318,pm01324,pm01322,pm01314)
+        values(#{id},#{pmDate},#{pmNumber},#{company.id},#{contract.id},#{city.id},
+        #{remark},#{voucherDate},#{fqDate},#{voucherCoding},#{voucherCoding},
+        #{tax},#{staff.id},#{pm01326},#{pm01312},#{isContract},#{isInvoice},#{saleMoney},#{state})
+    </insert>
+    <insert id="insertDiscard">
+        INSERT INTO sdpm013_discard (pm01301,pm01302,pm01303,pm01304,pm01305,pm01306,pm01307,
+        pm01308,pm01309,pm01310,pm01311,pm01316,pm01320,pm01326,pm01312,pm01318,pm01324,pm01322,pm01314,pm01321)
+        values(#{id},#{pmDate},#{pmNumber},#{company.id},#{contract.id},#{city.id},
+        #{remark},#{voucherDate},#{fqDate},#{voucherCoding},#{voucherCoding},
+        #{tax},#{staff.id},#{pm01326},#{pm01312},#{isContract},#{isInvoice},#{saleMoney},#{state},#{putState})
+    </insert>
+    <select id="getProcurements" resultMap="pro">
+        SELECT * FROM sdpm013 WHERE pm01308 BETWEEN #{start} AND #{end} ORDER BY pm01308 DESC
+    </select>
+    <select id="getProcurementAll" resultMap="pro">
+        SELECT * FROM sdpm013 ORDER BY pm01308 DESC
+    </select>
+    <select id="getCount" resultType="Integer">
+        SELECT count(pm01301) FROM sdpm013 WHERE pm01308 BETWEEN #{start} AND #{end}
+    </select>
+    <update id="updateProcurement" parameterType="com.yuesheng.pm.entity.Procurement">
+        UPDATE sdpm013 SET pm01303=#{pmNumber},pm01316=#{tax},pm01304=#{company.id},pm01307=#{remark},pm01314=#{state},
+        pm01305=#{contract.id},pm01306=#{city.id},pm01311=#{voucherCoding},pm01322=#{saleMoney} WHERE pm01301=#{id}
+    </update>
+    <update id="updateProContract">
+        UPDATE sdpm013 SET pm01304=#{company.id},
+        pm01305=#{contract.id},
+        pm01311=#{voucherCoding} WHERE pm01301=#{id}
+    </update>
+    <update id="updateTax">
+        update sdpm013 set pm01316=#{tax},pm01326=#{pm01326} WHERE pm01301=#{id}
+    </update>
+    <update id="updateProCompany">
+        update sdpm013 set pm01326=#{pm01326} WHERE pm01301=#{id}
+    </update>
+    <update id="updatePutState">
+        UPDATE sdpm013 SET pm01321=#{state} WHERE pm01301=#{proId}
+    </update>
+    <update id="updateVoucherDate">
+        UPDATE sdpm013
+        <set>
+            pm01314=#{state},
+            pm01313=#{auditCoding},
+            pm01317=#{approveDate},
+            <if test="voucherDate != null">
+                pm01308=#{voucherDate},
+            </if>
+        </set>
+        WHERE pm01301=#{id}
+    </update>
+    <select id="getProcurementByContract" parameterType="String" resultMap="pro">
+        SELECT * FROM sdpm013 WHERE pm01305=#{contract}
+    </select>
+    <update id="approve">
+        update sdpm013
+        <set>
+            pm01314=#{state},
+            pm01313=#{coding},
+            pm01317=#{date}
+        </set>
+        where pm01301 = #{id}
+    </update>
+    <delete id="deleteProcurement" parameterType="String">
+        DELETE FROM sdpm013 WHERE pm01301=#{id}
+    </delete>
+    <delete id="deleteDiscard">
+        DELETE FROM sdpm013_dh WHERE dh01301=#{id}
+    </delete>
+    <select id="getProByParam" resultMap="pro">
+        SELECT DISTINCT a.*,a2.dh01302 FROM sdpm013${discard} AS a
+        LEFT JOIN sdpm013_dh as a2 on a.pm01301=a2.dh01301
+        <if test="searchMaterial != null">
+            LEFT JOIN sdpm014${discard} AS b ON a.pm01301=b.pm01401
+            LEFT JOIN sdpm002 AS c ON b.pm01403=c.pm00201
+        </if>
+        LEFT JOIN sdpf003 AS d ON d.pf00301=a.pm01304
+        LEFT JOIN sdpj004 AS e ON e.pj00401=a.pm01320
+        LEFT JOIN sdpd004 AS f ON f.pd00401=a.pm01305
+        <if test="as != null">
+            LEFT JOIN sdpo003 AS g on g.po00307=a.pm01301
+        </if>
+        <if test="isDownload == 1">
+            RIGHT JOIN pro_download_history as h ON h.pro_id=a.pm01301 and state=0
+        </if>
+        <where>
+            <if test="state != null">
+                AND a.pm01314 IN (${state})
+            </if>
+            <if test="searchMaterial != null">
+                AND CAST(b.pm01406 AS VARCHAR)+b.pm01413+c.pm00202+c.pm00205+c.pm00206+c.pm00221 LIKE
+                '%'+#{searchMaterial}+'%'
+            </if>
+            <if test="str != null">
+                AND a.pm01302+a.pm01303+a.pm01307+d.pf00302+e.pj00402 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm01302 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="staffId != null">
+                AND a.pm01320=#{staffId}
+            </if>
+            <if test="putState != null">
+                AND a.pm01321 in(${putState})
+            </if>
+            <if test="companyId != null">
+                AND a.pm01304=#{companyId}
+            </if>
+            <if test="isContract != null">
+                AND a.pm01318 IN(${isContract})
+            </if>
+            <if test="isInvoice != null">
+                AND a.pm01324 IN(${isInvoice})
+            </if>
+            <if test="filter != null">
+                AND ${filter}
+            </if>
+            <if test="as != null">
+                AND g.po00307 is null
+            </if>
+            <if test="searchProject != null">
+                AND d.pf00302 LIKE '%'+#{searchProject}+'%'
+            </if>
+            <if test="isColie != null">
+                AND pm01326 = #{isColie}
+            </if>
+        </where>
+    </select>
+    <select id="getProByParam" resultMap="pro" databaseId="mysql">
+        SELECT DISTINCT a.*,a2.dh01302 FROM sdpm013${discard} AS a
+        LEFT JOIN sdpm013_dh as a2 on a.pm01301=a2.dh01301
+        <if test="searchMaterial != null">
+            LEFT JOIN sdpm014${discard} AS b ON a.pm01301=b.pm01401
+            LEFT JOIN sdpm002 AS c ON b.pm01403=c.pm00201
+        </if>
+        LEFT JOIN sdpf003 AS d ON d.pf00301=a.pm01304
+        LEFT JOIN sdpj004 AS e ON e.pj00401=a.pm01320
+        LEFT JOIN sdpd004 AS f ON f.pd00401=a.pm01305
+        <if test="as != null">
+            LEFT JOIN sdpo003 AS g on g.po00307=a.pm01301
+        </if>
+        <if test="isDownload == 1">
+            RIGHT JOIN pro_download_history as h ON h.pro_id=a.pm01301 and state=0
+        </if>
+        <where>
+            <if test="state != null">
+                AND a.pm01314 IN (${state})
+            </if>
+            <if test="searchMaterial != null">
+                AND concat(b.pm01406,b.pm01413,c.pm00202,c.pm00205,c.pm00206,c.pm00221) LIKE
+                concat('%',#{searchMaterial},'%')
+            </if>
+            <if test="str != null">
+                AND concat(a.pm01302,a.pm01303,a.pm01307,d.pf00302,e.pj00402) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm01302 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="staffId != null">
+                AND a.pm01320=#{staffId}
+            </if>
+            <if test="putState != null">
+                AND a.pm01321 in(${putState})
+            </if>
+            <if test="companyId != null">
+                AND a.pm01304=#{companyId}
+            </if>
+            <if test="isContract != null">
+                AND a.pm01318 IN(${isContract})
+            </if>
+            <if test="isInvoice != null">
+                AND a.pm01324 IN(${isInvoice})
+            </if>
+            <if test="filter != null">
+                AND ${filter}
+            </if>
+            <if test="as != null">
+                AND g.po00307 is null
+            </if>
+            <if test="searchProject != null">
+                AND d.pf00302 LIKE concat('%',#{searchProject},'%')
+            </if>
+            <if test="isColie != null">
+                AND pm01326 = #{isColie}
+            </if>
+        </where>
+    </select>
+    <select id="getProCountByParam" resultType="java.lang.Integer">
+        SELECT count(DISTINCT a.pm01301) FROM sdpm013${discord} AS a
+        LEFT JOIN sdpm013_dh as a2 on a.pm01301=a2.dh01301
+        <if test="searchMaterial != null">
+            LEFT JOIN sdpm014${discard} AS b ON a.pm01301=b.pm01401
+            LEFT JOIN sdpm002 AS c ON b.pm01403=c.pm00201
+        </if>
+        LEFT JOIN sdpf003 AS d ON d.pf00301=a.pm01304
+        LEFT JOIN sdpj004 AS e ON e.pj00401=a.pm01320
+        LEFT JOIN sdpd004 AS f ON f.pd00401=a.pm01305
+        <if test="as != null">
+            LEFT JOIN sdpo003 AS g on g.po00307=a.pm01301
+        </if>
+        <if test="isDownload == 1">
+            RIGHT JOIN pro_download_history as h ON h.pro_id=a.pm01301 and state=0
+        </if>
+        <where>
+            <if test="state != null">
+                AND a.pm01314 IN (${state})
+            </if>
+            <if test="searchMaterial != null">
+                AND CAST(b.pm01406 AS VARCHAR)+b.pm01413+c.pm00202+c.pm00205+c.pm00206+c.pm00221 LIKE
+                '%'+#{searchMaterial}+'%'
+            </if>
+            <if test="str != null">
+                AND a.pm01302+a.pm01303+a.pm01307+d.pf00302+e.pj00402 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm01302 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="staffId != null">
+                AND a.pm01320=#{staffId}
+            </if>
+            <if test="putState != null">
+                AND a.pm01321 in(${putState})
+            </if>
+            <if test="companyId != null">
+                AND a.pm01304=#{companyId}
+            </if>
+            <if test="isContract != null">
+                AND a.pm01318 IN(${isContract})
+            </if>
+            <if test="isInvoice != null">
+                AND a.pm01324 IN(${isInvoice})
+            </if>
+            <if test="filter != null">
+                AND ${filter}
+            </if>
+            <if test="as != null">
+                AND g.po00307 is null
+            </if>
+            <if test="searchProject != null">
+                AND d.pf00302 LIKE '%'+#{searchProject}+'%'
+            </if>
+            <if test="isColie != null">
+                AND pm01326 = #{isColie}
+            </if>
+        </where>
+    </select>
+    <select id="getProCountByParam" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT count(DISTINCT a.pm01301) FROM sdpm013${discord} AS a
+        LEFT JOIN sdpm013_dh as a2 on a.pm01301=a2.dh01301
+        <if test="searchMaterial != null">
+            LEFT JOIN sdpm014${discard} AS b ON a.pm01301=b.pm01401
+            LEFT JOIN sdpm002 AS c ON b.pm01403=c.pm00201
+        </if>
+        LEFT JOIN sdpf003 AS d ON d.pf00301=a.pm01304
+        LEFT JOIN sdpj004 AS e ON e.pj00401=a.pm01320
+        LEFT JOIN sdpd004 AS f ON f.pd00401=a.pm01305
+        <if test="as != null">
+            LEFT JOIN sdpo003 AS g on g.po00307=a.pm01301
+        </if>
+        <if test="isDownload == 1">
+            RIGHT JOIN pro_download_history as h ON h.pro_id=a.pm01301 and state=0
+        </if>
+        <where>
+            <if test="state != null">
+                AND a.pm01314 IN (${state})
+            </if>
+            <if test="searchMaterial != null">
+                AND concat(b.pm01406,b.pm01413,c.pm00202,c.pm00205,c.pm00206,c.pm00221) LIKE
+                concat('%',#{searchMaterial},'%')
+            </if>
+            <if test="str != null">
+                AND concat(a.pm01302,a.pm01303,a.pm01307,d.pf00302,e.pj00402) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm01302 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="staffId != null">
+                AND a.pm01320=#{staffId}
+            </if>
+            <if test="putState != null">
+                AND a.pm01321 in(${putState})
+            </if>
+            <if test="companyId != null">
+                AND a.pm01304=#{companyId}
+            </if>
+            <if test="isContract != null">
+                AND a.pm01318 IN(${isContract})
+            </if>
+            <if test="isInvoice != null">
+                AND a.pm01324 IN(${isInvoice})
+            </if>
+            <if test="filter != null">
+                AND ${filter}
+            </if>
+            <if test="as != null">
+                AND g.po00307 is null
+            </if>
+            <if test="searchProject != null">
+                AND d.pf00302 LIKE concat('%',#{searchProject},'%')
+            </if>
+            <if test="isColie != null">
+                AND pm01326 = #{isColie}
+            </if>
+        </where>
+    </select>
+
+    <select id="getProMoneyByCompany" resultType="java.lang.Double">
+        SELECT sum(b.pm01414) FROM sdpm014 AS b
+        RIGHT JOIN sdpm013 AS a ON b.pm01401=a.pm01301
+        WHERE a.pm01304=#{companyId} AND a.pm01314=1
+    </select>
+    <update id="deleteContract">
+        UPDATE sdpm013 SET pm01305='',pm01311=#{voucherCoding} WHERE pm01305=#{contractId}
+    </update>
+    <select id="getProNumberByDate" resultType="java.lang.Integer">
+        SELECT COUNT(pm01304) FROM sdpm013
+        WHERE pm01304=#{companyId}
+        <if test="start != null">
+            AND pm01302 BETWEEN #{start} AND #{end}
+        </if>
+        GROUP BY pm01304 ORDER BY COUNT(pm01304) DESC
+    </select>
+    <update id="discard">
+        update sdpm013 set pm01312=#{discordState} where id=#{proId}
+    </update>
+    <select id="getProByMaterial" resultMap="pro">
+        select a.* from sdpm013 as a RIGHT JOIN sdpm014 as b on a.pm01301=b.pm01401
+        where b.pm01403=#{materialId} and b.pm01422=#{projectId}
+    </select>
+    <select id="getProcurementByDate" resultMap="pro">
+        select * from sdpm013 where pm01308 between #{startDate} and #{endDate}
+    </select>
+    <update id="expressCode">
+        update sdpm013 set pm01323=#{expressCode} where pm01301=#{id}
+    </update>
+    <select id="getPutState" resultType="Integer">
+        select pm01321 from sdpm013 where pm01301=#{id}
+    </select>
+    <update id="updateState">
+        update sdpm013 set pm01314=#{state} where pm01301=#{id}
+    </update>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ExpenseFileMapper">
+    <resultMap id="ExpenseFile" type="com.yuesheng.pm.entity.ExpenseFile">
+        <result property="id" column="expenseFJ01"></result>
+        <result property="fileName" column="expenseFJ02"></result>
+        <result property="fileUrl" column="expenseFJ03"></result>
+        <result property="mark" column="expenseFJ04"></result>
+    </resultMap>
+
+    <select id="selectByUrl" resultMap="ExpenseFile">
+        select * from expenseFJ where expenseFJ03 = #{fileUrl}
+    </select>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.ExpenseFile">
+        insert into expenseFJ
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">expenseFJ01,</if>
+            <if test="fileName != null">expenseFJ02,</if>
+            <if test="fileUrl != null">expenseFJ03,</if>
+            <if test="mark != null">expenseFJ04,</if>
+        </trim>
+        <trim prefix="values (" suffixOverrides="," suffix=")">
+            <if test="id != null">#{id},</if>
+            <if test="fileName != null">#{fileName},</if>
+            <if test="fileUrl != null">#{fileUrl},</if>
+            <if test="mark != null">#{mark},</if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="string">
+        delete from expenseFJ where id = #{id}
+    </delete>
+    <delete id="deleteByUrl" parameterType="string">
+        delete from expenseFJ where expenseFJ03 = #{fileUrl}
+    </delete>
+
+    <select id="selectByMark" resultMap="ExpenseFile">
+        select * from expenseFJ where expenseFJ04 = #{mark}
+    </select>
+</mapper>

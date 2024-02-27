@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CoursePersonAttachedMapper">
+    <resultMap id="coursePersonByB" type="com.yuesheng.pm.entity.CoursePersonAttached">
+        <id column="po002b01" property="coursePersonId" jdbcType="VARCHAR"></id>
+        <result column="po002b02" property="flowHistoryId" jdbcType="VARCHAR"></result>
+        <result column="po002b03" property="serial" jdbcType="INTEGER"></result>
+        <result column="po002b04" property="staffType" jdbcType="INTEGER"></result>
+        <result column="po002b05" property="staffId" jdbcType="VARCHAR"></result>
+        <result column="po002b06" property="b06" jdbcType="VARCHAR"></result>
+        <result column="po002b07" property="b07" jdbcType="INTEGER"></result>
+        <result column="po002b08" property="courseId" jdbcType="VARCHAR"></result>
+        <result column="po002b09" property="type" jdbcType="INTEGER"></result>
+        <result column="po002b11" property="frameId" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <insert id="addPersonAttached" parameterType="com.yuesheng.pm.entity.CoursePersonAttached">
+        INSERT INTO sdpo002b (po002b01,po002b02,po002b03,po002b04,po002b05,po002b06,po002b07,po002b08,po002b09,po002b10,po002b11,po002b12,po002b13)
+         VALUES(#{coursePersonId},#{flowHistoryId},#{serial},#{staffType},#{staffId},#{b06},#{b07},#{courseId},#{type},#{b10},#{frameId},#{b12},#{b13});
+    </insert>
+    <insert id="addHistory" >
+        INSERT INTO sdpo002b_history (po002b01,po002b02,po002b03,po002b04,po002b05,po002b06,po002b07,po002b08,po002b09,po002b10,po002b11,po002b12,po002b_History13)
+        VALUES(#{coursePersonId},#{flowHistoryId},#{serial},#{staffType},#{staffId},#{b06},#{b07},#{courseId},#{type},#{b10},#{frameId},#{b12},#{b13});
+    </insert>
+    <delete id="deleteHistory" >
+        delete from sdpo002b_history where po002b02=#{flowHistoryId}
+    </delete>
+    <delete id="deleteByFlowHistoryId">
+        delete from sdpo002b where po002b02=#{flowHistoryId}
+    </delete>
+    <select id="getByFlowHistoryId" resultMap="coursePersonByB">
+        select * from sdpo002b where po002b02=#{flowHistoryId}
+    </select>
+    <select id="getPersonByCourseFlowId" resultMap="coursePersonByB">
+        SELECT * FROM sdpo002b WHERE po002b02=#{histroryId} AND po002b08=#{currentId};
+    </select>
+    <select id="getPersonsByType" resultMap="coursePersonByB">
+        SELECT * FROM sdpo002b WHERE po002b02=#{histroryId} AND po002b08=#{currentId} AND po002b09=#{type};
+    </select>
+</mapper>

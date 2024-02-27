@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.DingTalkTaskFlowRecordMapper">
+    <resultMap id="DingTalkTaskFlowRecord" type="com.yuesheng.pm.entity.DingTalkTaskFlowRecord">
+        <result property="id" column="id"></result>
+        <result property="flowApproveId" column="flow_approve_id"></result>
+        <result property="staffId" column="staff_id"></result>
+        <result property="creatorId" column="creator_id"></result>
+        <result property="taskId" column="task_id"></result>
+        <result property="isDone" column="is_done"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.DingTalkTaskFlowRecord">
+        insert into ding_talk_task_flow_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="flowApproveId != null">flow_approve_id,</if>
+            <if test="staffId != null">staff_id,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="taskId != null">task_id,</if>
+            <if test="isDone != null">is_done,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="flowApproveId != null">#{flowApproveId},</if>
+            <if test="staffId != null">#{staffId},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="taskId != null">#{taskId},</if>
+            <if test="isDone != null">#{isDone},</if>
+        </trim>
+    </insert>
+
+    <update id="update">
+        update ding_talk_task_flow_record
+        set is_done = #{isDone}
+        where flow_approve_id = #{flowApproveId}
+        and staff_id = #{staffId}
+    </update>
+
+    <select id="selectTask" resultMap="DingTalkTaskFlowRecord">
+        select * from ding_talk_task_flow_record
+        where flow_approve_id = #{flowApproveId}
+        and staff_id = #{staffId}
+        and is_done = 0
+    </select>
+</mapper>

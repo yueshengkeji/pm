@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PaymentDetailMapper">
+    <resultMap id="detail" type="com.yuesheng.pm.entity.PaymentDetail">
+        <id column="pd01702" property="id" jdbcType="VARCHAR"></id>
+        <result column="pd01703" property="applyDate" jdbcType="VARCHAR"></result>
+        <result column="pd01704" property="ratify" jdbcType="DECIMAL"></result>
+        <result column="pd01705" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pd01708" property="date" jdbcType="VARCHAR"></result>
+        <result column="pd01709" property="lastUpdate" jdbcType="VARCHAR"></result>
+        <result column="pd01715" property="series" jdbcType="VARCHAR"></result>
+        <result column="pd01716" property="applyMoney" jdbcType="DECIMAL"></result>
+        <result column="pd01734" property="payCount" jdbcType="INTEGER"></result>
+        <result column="pd01736" property="rate" jdbcType="DECIMAL"></result>
+        <result column="pd01733" property="projectId" jdbcType="VARCHAR"></result>
+        <result column="pd01701" property="contractId" jdbcType="VARCHAR"></result>
+        <result column="pd01726" property="staffId" jdbcType="VARCHAR"></result>
+        <association property="payment" column="pd01740"
+                     select="com.yuesheng.pm.mapper.PaymentMapper.getPaymentById"></association>
+        <association property="company" column="pd01713"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="paymentType" column="pd01732"
+                     select="com.yuesheng.pm.mapper.PaymentMapper.getPaymentType"></association>
+        <association property="contract" column="pd01701"
+                     select="com.yuesheng.pm.mapper.ContractMapper.getContractById"></association>
+    </resultMap>
+
+    <resultMap id="detailSimple" type="com.yuesheng.pm.entity.PaymentDetail">
+        <id column="pd01702" property="id" jdbcType="VARCHAR"></id>
+        <result column="pd01703" property="applyDate" jdbcType="VARCHAR"></result>
+        <result column="pd01704" property="ratify" jdbcType="DECIMAL"></result>
+        <result column="pd01705" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pd01708" property="date" jdbcType="VARCHAR"></result>
+        <result column="pd01709" property="lastUpdate" jdbcType="VARCHAR"></result>
+        <result column="pd01715" property="series" jdbcType="VARCHAR"></result>
+        <result column="pd01716" property="applyMoney" jdbcType="DECIMAL"></result>
+        <result column="pd01734" property="payCount" jdbcType="INTEGER"></result>
+        <result column="pd01736" property="rate" jdbcType="DECIMAL"></result>
+        <result column="pd01733" property="projectId" jdbcType="VARCHAR"></result>
+
+        <association property="paymentType" column="pd01732"
+                     select="com.yuesheng.pm.mapper.PaymentMapper.getPaymentType"></association>
+        <association property="contract" column="pd01701"
+                     select="com.yuesheng.pm.mapper.ContractMapper.getContractById"></association>
+    </resultMap>
+
+    <select id="getApplyPaymentMoneyByContract" resultType="Double">
+        select SUM(pd01716) as money from sdpd017 where pd01717=0
+        and pd01701=#{contractId}
+    </select>
+
+    <select id="getDetailByPayId" resultMap="detailSimple">
+        SELECT * FROM sdpd017 WHERE pd01740=#{payId}
+    </select>
+    <select id="getDetailByCompany" resultMap="detailSimple">
+        SELECT * FROM sdpd017 WHERE pd01713=#{company}
+        AND type=1
+        AND pd01703 BETWEEN #{start} AND #{end} ORDER BY pd01703 DESC
+    </select>
+    <select id="getDetailByContract" resultMap="detail">
+        SELECT * FROM sdpd017 WHERE pd01701=#{contractId} ORDER BY pd01703 DESC
+    </select>
+    <insert id="addRealityDetail" parameterType="com.yuesheng.pm.entity.RealityPay">
+        INSERT INTO sdpb020 VALUES(#{id},#{detail.date},#{detail.series},#{detail.projectId},'',#{detail.rate},#{detail.applyMoney},'RMB',#{detail.ratify},
+        #{type},#{detail.id},0,0,0,0,#{detail.remark},#{detail.date},#{detail.date},#{detail.staff.coding},#{detail.staff.coding},'',0,'','',
+        #{detail.company.id},#{detail.staff.section.id},#{detail.staff.id},'','',#{billsSeries},#{detail.date},0,#{detail.paymentType.id},
+        0,0,#{realityId})
+    </insert>
+
+    <update id="updatePayMoney">
+        UPDATE sdpd017 SET pd01725=#{ratify} WHERE pd01702=#{id};
+        UPDATE sdpd004 SET pd00448=pd00448+#{ratify} WHERE pd00401=#{contract.id};
+    </update>
+    <select id="getContractPayCount" resultType="Integer">
+        select Max(IsNull((pd01734),0)) from sdpd017 where pd01701= #{contract}
+    </select>
+    <select id="getContractPayCount" resultType="Integer" databaseId="mysql">
+        select Max(IfNull((pd01734),0)) from sdpd017 where pd01701= #{contract}
+    </select>
+    <insert id="addDetail">
+        insert into sdpd017  values(#{contract.id},#{id},#{applyDate},#{ratify},#{remark},0,'',#{date},#{date},'','','',#{company.id},
+        '',#{series},#{applyMoney},0,'','','',#{staff.section.id},'',0,0,#{yMoney},#{staff.id},'',0,0,0,0,#{paymentType.id},
+        #{projectId},#{payCount},'RMB',#{rate},0,0,0,#{payment.id})
+    </insert>
+    <select id="getDetailById" resultMap="detail">
+        SELECT * FROM sdpd017 WHERE pd01702=#{id}
+    </select>
+    <select id="getPayMoneyByDate" resultType="java.lang.Double">
+        <if test="state == 0">
+            select SUM(pd01716) from sdpd017 WHERE pd01717=#{state} AND pd01703 BETWEEN #{start} AND #{end}
+        </if>
+        <if test="state == 1">
+            select SUM(pd01704) from sdpd017 WHERE pd01717=#{state} AND pd01719 BETWEEN #{start} AND #{end}
+        </if>
+
+    </select>
+    <select id="getPayDetailByDate" resultMap="detail">
+        <if test="state == 0">
+            select * from sdpd017
+            WHERE pd01717=#{state} AND pd01703 BETWEEN #{startDate} AND #{endDate}
+        </if>
+        <if test="state == 1">
+            select * from sdpd017
+            WHERE pd01717=#{state} AND pd01719 BETWEEN #{startDate} AND #{endDate}
+        </if>
+    </select>
+    <select id="getPayMoneyByContract" resultType="java.lang.Double">
+        SELECT SUM(pd01716) FROM  sdpd017 WHERE pd01701=#{id} AND pd01717=0
+    </select>
+    <select id="getProDetailDp" resultMap="com.yuesheng.pm.mapper.ProDetailDpMapper.detailDp">
+        select a.pd01716 AS pay_money,a.pd01719 as pay_date,b.pd05302 as remark,a.pd01702 as id from sdpd017 as a
+        LEFT JOIN sdpd053 as b ON a.pd01732=b.pd05301 where a.pd01713=#{companyId} and a.pd01733=#{projectId} AND a.pd01717=1 AND a.pd01719 &gt; '2018-12-31'
+    </select>
+
+    <select id="getPaymentMoney" resultType="com.yuesheng.pm.model.PaymentData">
+        select SUM(pd01704) as money,pf00301 as cid,pf00302 as cname from sdpd017 LEFT JOIN
+        sdpf003 ON pf00301=pd01713
+        WHERE pd01717=1 AND pd01719 BETWEEN #{start} AND dateadd(dd,1,#{end}) GROUP BY pf00301,pf00302 ORDER BY money DESC
+    </select>
+    <select id="getApplyPaymentMoney" resultType="com.yuesheng.pm.model.PaymentData" databaseId="sqlserver">
+        select SUM(pd01716) as money from sdpd017 where pd01717=0
+        <if test="year != null">
+            and pd01703 LIKE #{year}+'%'
+        </if>
+
+    </select>
+    <select id="getApplyPaymentMoney" resultType="com.yuesheng.pm.model.PaymentData" databaseId="mysql">
+        select SUM(pd01716) as money from sdpd017 where pd01717=0
+        <if test="year != null">
+            and pd01703 LIKE concat(#{year},'%')
+        </if>
+
+    </select>
+
+    <select id="getDetailByCompanyGroup" resultType="com.yuesheng.pm.model.PaymentData">
+        select pd01713 as cid,pf00302 as cname,sum(pd01716) as money from sdpd017 left join sdpf003
+        on pd01713=pf00301
+        where pd01703 between #{startTime} and #{endTime}
+        and pd01717=#{approveState}
+        group by pd01713,pf00302 order by pf00302
+    </select>
+
+    <select id="getPayMoneyByCompany" resultType="Double">
+        select SUM(pd01716) from sdpd017
+        where pd01703 between #{startTime} and #{endTime}
+        and pd01717=#{approveState}
+        and pd01713=#{companyId}
+    </select>
+
+    <update id="approve">
+        update sdpd017
+        set pd01704=#{ratify},
+            pd01717=#{approveStatus},
+            pd01718=#{approveStaff.coding},
+            pd01719=#{approveDate},
+            pd01720=#{approveContent}
+        where pd01702 = #{id}
+    </update>
+    <delete id="deleteByPayment">
+        delete from sdpd017 where pd01740=#{paymentId}
+    </delete>
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ContractWordRecordMapper">
+    <resultMap id="ContractWordRecord" type="com.yuesheng.pm.entity.ContractWordRecord">
+        <result property="id" column="id"></result>
+        <result property="richText" column="rich_text"></result>
+        <result property="contractId" column="contract_id"></result>
+        <result property="recordTime" column="record_time"></result>
+        <result property="type" column="type"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.ContractWordRecord">
+        insert into contract_word_record
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="id != null">id,</if>
+            <if test="richText != null">rich_text,</if>
+            <if test="contractId != null">contract_id,</if>
+            <if test="recordTime != null">record_time,</if>
+            <if test="type != null">type</if>
+        </trim>
+        <trim prefix="values(" suffixOverrides="," suffix=")">
+            <if test="id != null">#{id},</if>
+            <if test="richText != null">#{richText},</if>
+            <if test="contractId != null">#{contractId},</if>
+            <if test="recordTime != null">#{recordTime},</if>
+            <if test="type != null">#{type}</if>
+        </trim>
+    </insert>
+
+    <select id="selectLastOneByContractId" resultMap="ContractWordRecord">
+        select TOP 1 * from contract_word_record
+        where contract_id = #{contractId}
+        order by record_time desc
+    </select>
+</mapper>

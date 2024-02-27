@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.WorkArticleMapper">
+    <resultMap id="workArticle" type="com.yuesheng.pm.entity.WorkArticle">
+        <id column="po20401" property="id" jdbcType="VARCHAR"></id>
+        <result column="po20402" property="series" jdbcType="VARCHAR"></result>
+        <result column="po20403" property="outDate" jdbcType="VARCHAR"></result>
+        <result column="po20406" property="remark" jdbcType="VARCHAR"></result>
+        <result column="po20408" property="date" jdbcType="VARCHAR"></result>
+        <result column="po20411" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="po20409" property="approveStatus" jdbcType="TINYINT"></result>
+        <result column="po20412" property="type" jdbcType="INTEGER"></result>
+        <association property="staff" column="po20405" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="approveStaff" column="po20410" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <collection property="materOutList" column="po20401" select="com.yuesheng.pm.mapper.WorkArticleMaterMapper.getArticleMaterByArticleId"></collection>
+    </resultMap>
+    <resultMap id="simple" type="com.yuesheng.pm.entity.WorkArticle">
+        <id column="po20401" property="id" jdbcType="VARCHAR"></id>
+        <result column="po20402" property="series" jdbcType="VARCHAR"></result>
+        <result column="po20403" property="outDate" jdbcType="VARCHAR"></result>
+        <result column="po20405" property="remark" jdbcType="VARCHAR"></result>
+        <result column="po20408" property="date" jdbcType="VARCHAR"></result>
+        <result column="po20411" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="po20409" property="approveStatus" jdbcType="TINYINT"></result>
+        <association property="staff" column="po20405" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="approveStaff" column="po20410" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <select id="getWorkArticleById" resultMap="workArticle">
+        SELECT * FROM sdpo204 WHERE po20401=#{id}
+    </select>
+    <select id="getSimpleById" resultMap="simple">
+        SELECT * FROM sdpo204 WHERE po20401=#{id}
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpo204 (po20401,po20402,po20403,po20404,po20405,po20406,po20407,po20408,po20409,po20410,po20411,po20412)
+        VALUES (#{id},#{series},#{outDate},#{staff.section.id},#{staff.id},#{remark},#{staff.coding},#{date},#{approveStatus},'',#{approveDate},#{type})
+    </insert>
+    <delete id="delete">
+        DELETE FROM sdpo204 WHERE po20401=#{id}
+    </delete>
+    <update id="update">
+        UPDATE sdpo204 SET po20402=#{series},po20403=#{outDate},po20406=#{remark} WHERE po20401=#{id}
+    </update>
+    <select id="querys" resultMap="simple">
+        SELECT DISTINCT a.* FROM sdpo204 AS a
+        LEFT JOIN sdpo205 AS b ON a.po20401=b.po20502
+        LEFT JOIN sdpo201 AS c ON c.po20101=b.po20505
+        WHERE a.po20405 in(#{staffId})
+        <if test="str != null">
+            AND a.po20402+a.po20403+a.po20405+CAST(b.po20507 AS VARCHAR(20))+
+            CAST(b.po20508 AS VARCHAR(20))+CAST(b.po20509 AS VARCHAR(20))+
+            b.po20510+c.po20102+c.po20103+po20104 LIKE '%'+#{str}+'%'
+        </if>
+        ${order}
+    </select>
+    <select id="querys" resultMap="simple" databaseId="mysql">
+        SELECT DISTINCT a.* FROM sdpo204 AS a
+        LEFT JOIN sdpo205 AS b ON a.po20401=b.po20502
+        LEFT JOIN sdpo201 AS c ON c.po20101=b.po20505
+        WHERE a.po20405 in(#{staffId})
+        <if test="str != null">
+            AND cconcat(a.po20402,a.po20403,a.po20405,b.po20507,
+            b.po20508,b.po20509,b.po20510,c.po20102,c.po20103,po20104) LIKE concat('%',#{str},'%')
+        </if>
+        ${order}
+    </select>
+
+    <select id="querysCount" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT a.po20401) FROM sdpo204 AS a
+        LEFT JOIN sdpo205 AS b ON a.po20401=b.po20502
+        LEFT JOIN sdpo201 AS c ON c.po20101=b.po20505
+        WHERE a.po20405 in(#{staffId})
+        <if test="str != null">
+            AND a.po20402+a.po20403+a.po20405+CAST(b.po20507 AS VARCHAR(20))+
+            CAST(b.po20508 AS VARCHAR(20))+CAST(b.po20509 AS VARCHAR(20))+
+            b.po20510+c.po20102+c.po20103+c.po20104 LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+
+    <select id="querysCount" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT COUNT(DISTINCT a.po20401) FROM sdpo204 AS a
+        LEFT JOIN sdpo205 AS b ON a.po20401=b.po20502
+        LEFT JOIN sdpo201 AS c ON c.po20101=b.po20505
+        WHERE a.po20405 in(#{staffId})
+        <if test="str != null">
+            AND cconcat(a.po20402,a.po20403,a.po20405,b.po20507,
+            b.po20508,b.po20509,b.po20510,c.po20102,c.po20103,po20104) LIKE concat('%',#{str},'%')
+        </if>
+    </select>
+
+    <update id="approve">
+        update sdpo204
+        <set>
+            <if test="series != null and series != ''">
+                po20402=#{series},
+            </if>
+            <if test="outDate != null and outDate != ''">
+                po20403=#{outDate},
+            </if>
+            <if test="section != null">
+                po20404=#{section.id},
+            </if>
+            <if test="staff != null">
+                po20405=#{staff.id},
+                po20407=#{staff.coding},
+            </if>
+            <if test="remark != null and remark != ''">
+                po20406=#{remark},
+            </if>
+            <if test="date != null and date != ''">
+                po20408=#{date},
+            </if>
+            <if test="approveStatus != null and approveStatus != ''">
+                po20409=#{approveStatus},
+            </if>
+            <if test="approveStaff != null">
+                po20410=#{approveStaff.coding},
+            </if>
+            <if test="approveDate != null">
+                po20411=#{approveDate},
+            </if>
+        </set>
+        WHERE po20401 = #{id}
+    </update>
+</mapper>

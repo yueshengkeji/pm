@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.FlowMessageMapper">
+    <resultMap id="flowMessage" type="com.yuesheng.pm.entity.FlowMessage">
+        <id column="po00301" property="id" jdbcType="VARCHAR"></id>
+        <result column="po00302" property="startDate" jdbcType="VARCHAR"></result>
+        <result column="po00303" property="staffId" jdbcType="VARCHAR"></result>
+        <result column="po00304" property="title" jdbcType="VARCHAR"></result>
+        <result column="po00305" property="content" jdbcType="VARCHAR"></result>
+        <result column="po00306" property="frameCoding" jdbcType="VARCHAR"></result>
+        <result column="po00307" property="frameId" jdbcType="VARCHAR"></result>
+        <result column="po00308" property="state" jdbcType="INTEGER"></result>
+        <result column="po00309" property="po00309" jdbcType="INTEGER"></result>
+        <result column="po00310" property="po00310" jdbcType="INTEGER"></result>
+        <result column="po00311" property="histroryId" jdbcType="VARCHAR"></result>
+        <result column="po00312" property="po00312" jdbcType="INTEGER"></result>
+        <result column="po00313" property="date" jdbcType="VARCHAR"></result>
+        <result column="po00314" property="po00314" jdbcType="VARCHAR"></result>
+        <result column="po00315" property="sql" jdbcType="VARCHAR"></result>
+        <result column="po00316" property="frameColumn" jdbcType="VARCHAR"></result>
+        <result column="po00317" property="po00317" jdbcType="VARCHAR"></result>
+        <result column="eb00203" property="frameName" jdbcType="VARCHAR"></result>
+        <association property="flow" javaType="com.yuesheng.pm.entity.FlowHistory">
+            <id column="po00101" jdbcType="VARCHAR" property="id"></id>
+            <result column="po00102" jdbcType="VARCHAR" property="name"></result>
+        </association>
+    </resultMap>
+
+    <select id="getOverMessage" resultMap="flowMessage">
+        select * from sdpo003 where po00302 between #{startDatetime} and #{endDatetime} and po00308 in(2,3,4)
+    </select>
+
+    <insert id="addFlowMessage" parameterType="com.yuesheng.pm.entity.FlowMessage">
+        INSERT INTO sdpo003 (po00301,po00302,po00303,po00304,po00305,po00306,po00307,
+        po00308,po00309,po00310,po00311,po00312,po00313,po00314,po00315,po00316,po00317)
+        values(#{id},#{startDate},#{staffId},#{title},#{content},#{frameCoding},#{frameId},
+        #{state},#{po00309},#{po00310},#{histroryId},#{po00312},#{date},#{po00314},#{sql},#{frameColumn},#{po00317})
+    </insert>
+    <insert id="addFlowMessageHistory" parameterType="com.yuesheng.pm.entity.FlowMessage">
+        INSERT INTO sdpo003_History (po00301,po00302,po00303,po00304,po00305,po00306,po00307,
+        po00308,po00309,po00310,po00311,po00312,po00313,po00314,po00315,po00316,po003_History17)
+        values(#{id},#{startDate},#{staffId},#{title},#{content},#{frameCoding},#{frameId},
+        #{state},#{po00309},#{po00310},#{histroryId},#{po00312},#{date},#{po00314},#{sql},#{frameColumn},#{po00317})
+    </insert>
+    <delete id="deleteHistory">
+        delete from sdpo003_History  Where po00301=#{id}
+    </delete>
+    <select id="getMsgListByApproveDate" resultMap="flowMessage">
+        select distinct a.*,e.* from sdpo003 as a
+        LEFT JOIN sdpo001_History AS e ON a.po00311=e.po00101
+        left join sdpo004 AS c ON a.PO00301=c.po00402
+        <where>
+            <if test="startDate != null">
+                and c.po00408 between #{startDate} and #{endDate}
+            </if>
+            <if test="staffId != null">
+                and a.po00303=#{staffId}
+            </if>
+            <if test="str != null">
+                and a.po00304+a.po00305+e.po00102 LIKE '%'+replace(#{str},' ','')+'%'
+            </if>
+            <if test="title != null">
+                and a.po00304 LIKE '%'+replace(#{title},' ','_')+'%'
+            </if>
+            <if test="flow != null and flow.name != null">
+                and e.po00102=#{flow.name}
+            </if>
+
+            <if test="state != 0 ">
+                and a.po00308=#{state}
+            </if>
+        </where>
+        order by po00302 DESC
+    </select>
+    <select id="getMsgListByApproveDate" resultMap="flowMessage" databaseId="mysql">
+        select distinct a.*,e.* from sdpo003 as a
+        LEFT JOIN sdpo001_History AS e ON a.po00311=e.po00101
+        left join sdpo004 AS c ON a.PO00301=c.po00402
+        <where>
+            <if test="startDate != null">
+                and c.po00408 between #{startDate} and #{endDate}
+            </if>
+            <if test="staffId != null">
+                and a.po00303=#{staffId}
+            </if>
+            <if test="str != null">
+                and concat(a.po00304,a.po00305,e.po00102) LIKE conocat('%',replace(#{str},' ',''),'%')
+            </if>
+            <if test="title != null">
+                and a.po00304 LIKE concat('%',replace(#{title},' ','_'),'%')
+            </if>
+            <if test="flow != null and flow.name != null">
+                and e.po00102=#{flow.name}
+            </if>
+
+            <if test="state != 0 ">
+                and a.po00308=#{state}
+            </if>
+        </where>
+        order by po00302 DESC
+    </select>
+
+    <select id="getMsgList" resultMap="flowMessage">
+        select * from sdpo003 as a
+        LEFT JOIN sdpo001_History AS e ON a.po00311=e.po00101
+        <where>
+            <if test="startDate != null">
+                and a.po00302 between #{startDate} and #{endDate}
+            </if>
+            <if test="staffId != null">
+                and a.po00303=#{staffId}
+            </if>
+            <if test="str != null">
+                and a.po00304+a.po00305+e.po00102 LIKE '%'+replace(#{str},' ','')+'%'
+            </if>
+            <if test="title != null">
+                and a.po00304 LIKE '%'+replace(#{title},' ','_')+'%'
+            </if>
+            <if test="flow != null and flow.name != null">
+                and e.po00102=#{flow.name}
+            </if>
+
+            <if test="state != 0 ">
+                and a.po00308=#{state}
+            </if>
+        </where>
+        order by po00302 DESC
+    </select>
+    <select id="getMsgList" resultMap="flowMessage" databaseId="mysql">
+        select * from sdpo003 as a
+        LEFT JOIN sdpo001_History AS e ON a.po00311=e.po00101
+        <where>
+            <if test="startDate != null">
+                and a.po00302 between #{startDate} and #{endDate}
+            </if>
+            <if test="staffId != null">
+                and a.po00303=#{staffId}
+            </if>
+            <if test="str != null">
+                and concat(a.po00304,a.po00305,e.po00102) LIKE concat('%',replace(#{str},' ',''),'%')
+            </if>
+            <if test="title != null">
+                and a.po00304 LIKE concat('%',replace(#{title},' ','_'),'%')
+            </if>
+            <if test="flow != null and flow.name != null">
+                and e.po00102=#{flow.name}
+            </if>
+
+            <if test="state != 0 ">
+                and a.po00308=#{state}
+            </if>
+        </where>
+        order by po00302 DESC
+    </select>
+
+    <select id="getMessageById" resultMap="flowMessage">
+        SELECT a.*,b.eb00203 FROM sdpo003 AS a LEFT JOIN sdeb002 AS b ON b.eb00201=a.po00306 WHERE po00301=#{id}
+    </select>
+    <update id="updateMessage">
+        UPDATE sdpo003 SET po00308=#{status},po00313=#{date} WHERE po00301=#{id}
+    </update>
+    <update id="updateMsgDate">
+      UPDATE sdpo003 SET po00302=#{date} WHERE po00301=#{id}
+    </update>
+
+    <select id="getMessageByStaff" resultMap="flowMessage">
+        select a.*,b.po00101,b.po00102,c.eb00203 from sdpo003 as a
+        LEFT JOIN sdpo001_history AS b ON a.po00311=b.po00101
+        LEFT JOIN sdeb002 AS c ON c.eb00201=a.po00306
+        WHERE a.po00303=#{staffId}
+        <choose>
+            <when test="str != null and null != type">
+                AND a.po00308 in(#{type}) AND a.po00302+a.po00303+a.po00304+a.po00305+b.po00102+c.eb00203 LIKE '%'+#{str}+'%'
+            </when>
+            <when test="str != null">
+                AND a.po00302+a.po00303+a.po00304+a.po00305+b.po00102+c.eb00203 LIKE '%'+#{str}+'%'
+            </when>
+            <when test="type != null">
+                AND a.po00308 in(#{type})
+            </when>
+        </choose>
+        ${order}
+    </select>
+    <select id="getMessageByStaff" resultMap="flowMessage" databaseId="mysql">
+        select a.*,b.po00101,b.po00102,c.eb00203 from sdpo003 as a
+        LEFT JOIN sdpo001_history AS b ON a.po00311=b.po00101
+        LEFT JOIN sdeb002 AS c ON c.eb00201=a.po00306
+        WHERE a.po00303=#{staffId}
+        <choose>
+            <when test="str != null and null != type">
+                AND a.po00308 in(#{type}) AND concat(a.po00302,a.po00303,a.po00304,a.po00305,b.po00102,c.eb00203)
+                                                  LIKE concat('%',#{str},'%')
+            </when>
+            <when test="str != null">
+                AND concat(a.po00302,a.po00303,a.po00304,a.po00305,b.po00102,c.eb00203) LIKE concat('%',#{str},'%')
+            </when>
+            <when test="type != null">
+                AND a.po00308 in(#{type})
+            </when>
+        </choose>
+        ${order}
+    </select>
+    <select id="getMessageByCount" resultType="java.lang.Integer">
+        select count(a.po00301) from sdpo003 as a
+        LEFT JOIN sdpo001_history AS b ON a.po00311=b.po00101
+        LEFT JOIN sdeb002 AS c ON c.eb00201=a.po00306
+        WHERE a.po00303=#{staffId}
+        <choose>
+            <when test="str != null and null != type">
+                AND a.po00308 in(#{type}) AND a.po00302+a.po00303+a.po00304+a.po00305+b.po00102+c.eb00203 LIKE '%'+#{str}+'%'
+            </when>
+            <when test="str != null">
+                AND a.po00302+a.po00303+a.po00304+a.po00305+b.po00102+c.eb00203 LIKE '%'+#{str}+'%'
+            </when>
+            <when test="type != null">
+                AND a.po00308 in(#{type})
+            </when>
+        </choose>
+    </select>
+    <select id="getMessageByCount" resultType="java.lang.Integer" databaseId="mysql">
+        select count(a.po00301) from sdpo003 as a
+        LEFT JOIN sdpo001_history AS b ON a.po00311=b.po00101
+        LEFT JOIN sdeb002 AS c ON c.eb00201=a.po00306
+        WHERE a.po00303=#{staffId}
+        <choose>
+            <when test="str != null and null != type">
+                AND a.po00308 in(#{type}) AND concat(a.po00302,a.po00303,a.po00304,a.po00305,b.po00102,c.eb00203)
+                        LIKE concat('%',#{str},'%')
+            </when>
+            <when test="str != null">
+                and concat(a.po00302,a.po00303,a.po00304,a.po00305,b.po00102,c.eb00203)
+                LIKE concat('%',#{str},'%')
+            </when>
+            <when test="type != null">
+                AND a.po00308 in(#{type})
+            </when>
+        </choose>
+    </select>
+    <select id="getSql" resultType="String">
+        SELECT po00315 FROM sdpo003 WHERE po00306=#{frameCoding}
+    </select>
+
+    <delete id="deleteMessage">
+        delete from sdpo003 Where po00301=#{id}
+    </delete>
+
+    <select id="getMsgByFrameId" resultMap="flowMessage">
+        SELECT * FROM sdpo003 WHERE po00307=#{id}
+    </select>
+
+    <update id="updateFlag">
+        UPDATE sdpo003 SET po00317=#{flag} WHERE po00301=#{id}
+    </update>
+    <select id="getSqlById" resultType="String">
+        select po00315 from sdpo003 where po00301=#{id}
+    </select>
+    <select id="getNoDate" resultMap="flowMessage">
+        select * from sdpo003 where po00313 = '' and po00308=2
+    </select>
+    <update id="updateFinishDate">
+        update sdpo003 set po00313=#{date} where po00301=#{id}
+    </update>
+    <select id="getByFlowHistory" resultMap="flowMessage">
+        select * from sdpo003 where po00311=#{historyId}
+    </select>
+</mapper>

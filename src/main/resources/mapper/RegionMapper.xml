@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.RegionMapper">
+    <resultMap id="region" type="com.yuesheng.pm.entity.Region">
+        <id column="pj01501" property="id" jdbcType="VARCHAR"></id>
+        <result column="pj01502" property="coding" jdbcType="VARCHAR"></result>
+        <result column="pj01503" property="name" jdbcType="VARCHAR"></result>
+        <result column="pj01504" property="remark" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <resultMap id="city" type="com.yuesheng.pm.entity.City">
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="parent_id" property="remark" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getRegions" resultMap="region" databaseId="sqlserver">
+        SELECT * FROM sdpj015
+        <where>
+            <if test="name != null">
+                and pj01502+pj01503 like '%'+#{name}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="getRegions" resultMap="region" databaseId="mysql">
+        SELECT * FROM sdpj015
+        <where>
+            <if test="name != null">
+                and concat(pj01502,pj01503) like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getCityById" parameterType="String" resultMap="region">
+        SELECT * FROM sdpj015 WHERE pj01501=#{id}
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpj015 VALUES (#{id},#{coding},#{name},#{remark});
+    </insert>
+    <update id="update">
+        update sdpj015 set pj01503=#{name},pj01504=#{remark} where id=#{id};
+    </update>
+    <select id="getCitys" resultMap="city">
+        SELECT * FROM City
+    </select>
+    <select id="selectByName" resultMap="region">
+        SELECT * FROM sdpj015 where pj01503=#{name}
+    </select>
+</mapper>

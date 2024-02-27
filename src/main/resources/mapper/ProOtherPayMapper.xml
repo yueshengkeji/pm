@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProOtherPayMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProOtherPay" id="ProOtherPayMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="payMoney" column="pay_money" jdbcType="NUMERIC"/>
+        <result property="payTypeTag" column="pay_type_tag" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="TINYINT"/>
+        <result property="datetime" column="datetime" jdbcType="TIMESTAMP"/>
+        <result property="payDatetime" column="pay_datetime" jdbcType="TIMESTAMP"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <association property="company" javaType="com.yuesheng.pm.entity.Company">
+            <id column="company_id" property="id" jdbcType="VARCHAR"></id>
+            <result column="company_name" property="name" jdbcType="VARCHAR"></result>
+            <result column="open_account" property="openAccount" jdbcType="VARCHAR"/>
+            <result column="bank_number" property="bankNumber" jdbcType="VARCHAR"/>
+        </association>
+        <association property="project" javaType="com.yuesheng.pm.entity.Project">
+            <id column="project_id" property="id"></id>
+            <result column="project_name" property="name"></result>
+        </association>
+        <association property="staff" column="staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProOtherPayMap">
+        select
+          *
+        from pro_other_pay
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProOtherPayMap">
+        select
+          *
+        from pro_other_pay
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="queryNoPay" resultMap="ProOtherPayMap">
+        select
+            *
+        from pro_other_pay
+        where pay_datetime is null
+        <if test="title != null">
+            and isnull(title,'')+isnull(remark,'') like '%'+ #{title}+'%'
+        </if>
+        <if test="company != null">
+            and company_name = #{company.name}
+        </if>
+        <if test="payMoney != null">
+            and pay_money = #{payMoney}
+        </if>
+        <if test="payTypeTag != null and payTypeTag != ''">
+            and pay_type_tag = #{payTypeTag}
+        </if>
+        <if test="staff != null">
+            and staff_id = #{staff.id}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProOtherPayMap">
+        select
+        *
+        from pro_other_pay
+        <where>
+            <if test="title != null">
+                and isnull(title,'')+isnull(remark,'') like '%'+ #{title}+'%'
+            </if>
+            <if test="company != null">
+                and company_name = #{company.name}
+            </if>
+            <if test="payMoney != null">
+                and pay_money = #{payMoney}
+            </if>
+            <if test="payTypeTag != null and payTypeTag != ''">
+                and pay_type_tag = #{payTypeTag}
+            </if>
+            <if test="staff != null">
+                and staff_id = #{staff.id}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="datetime != null">
+                and pay_datetime between #{datetime} and #{remark}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into pro_other_pay (id,company_id, company_name, project_id, project_name, pay_money, pay_type_tag, staff_id, state, datetime,title,remark,bank_number,open_account)
+        values (#{id},#{company.id}, #{company.name}, #{project.id}, #{project.name}, #{payMoney}, #{payTypeTag}, #{staff.id}, #{state}, #{datetime},#{title},#{remark},#{company.bankNumber},#{company.openAccount})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_other_pay
+        <set>
+            <if test="company != null">
+                company_id = #{company.id},
+                company_name = #{company.name},
+                bank_number = #{company.bankNumber},
+                open_account = #{company.openAccount},
+            </if>
+            <if test="project != null">
+                project_id = #{project.id},
+                project_name = #{project.name},
+            </if>
+            <if test="payMoney != null">
+                pay_money = #{payMoney},
+            </if>
+            <if test="payTypeTag != null and payTypeTag != ''">
+                pay_type_tag = #{payTypeTag},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="payDatetime != null">
+                pay_datetime = #{payDatetime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_other_pay where id = #{id}
+    </delete>
+
+    <insert id="saveFile">
+        insert into sdpo010 values(#{payId},#{fileId})
+    </insert>
+
+    <delete id="deleteFileByFileId">
+        delete from sdpo010 where po01002=#{fileId}
+    </delete>
+    <delete id="deleteFileByPayId">
+        delete from sdpo010 where po01001=#{payId}
+    </delete>
+    <select id="queryFile" resultType="String">
+        select po01002 from sdpo010 where po01001=#{payId}
+    </select>
+    <select id="getSumMoney" resultType="Double">
+        <if test="state == 1">
+            select SUM(pay_money) from pro_other_pay
+            where state = 1 and pay_type_tag=#{tagName}
+            <if test="startDate != null">
+                and pay_datetime between #{startDate} and #{endDate}
+            </if>
+        </if>
+        <if test="state == 0">
+            select SUM(pay_money) from pro_other_pay
+            where state = 0 and pay_type_tag=#{tagName}
+            <if test="startDate != null">
+                and datetime between #{startDate} and #{endDate}
+            </if>
+        </if>
+    </select>
+</mapper>

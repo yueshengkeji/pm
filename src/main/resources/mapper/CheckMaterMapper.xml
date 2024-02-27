@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CheckMaterMapper">
+    <resultMap id="checkMater" type="com.yuesheng.pm.entity.CheckMater">
+        <id column="pm01501" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm01502" property="checkDate" jdbcType="VARCHAR"></result>
+        <result column="pm01503" property="checkNumber" jdbcType="VARCHAR"></result>
+        <result column="pm01505" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pm01507" property="date" jdbcType="VARCHAR"></result>
+        <result column="pm01512" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="pm01513" property="state" jdbcType="INTEGER"></result>
+        <association property="staff" column="pm01509"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="storage" column="pm01504"
+                     select="com.yuesheng.pm.mapper.StorageMapper.getStorageById"></association>
+    </resultMap>
+    <select id="getMaxCheckNumber" resultType="String">
+        select pm01503 from sdpm015 where pm01502=#{date} order by pm01502 desc
+    </select>
+    <insert id="addMater">
+        insert into sdpm015
+        (pm01501,pm01502,pm01503,pm01504,pm01505,pm01506,pm01507,pm01508,pm01509,pm01510,pm01511,pm01512,pm01513)
+        values(#{id},#{checkDate},#{checkNumber},#{storage.id},#{remark},'',#{date},'',#{staff.coding},'','','',0)
+    </insert>
+    <update id="updateCheckMater">
+        UPDATE sdpm015 SET pm01502=#{checkDate},pm01503=#{checkNumber},pm01504=#{storage.id},pm01505=#{remark}
+        ,pm01509=#{staff.coding},pm01513=#{state}
+        <if test="approveDate != null">
+            ,pm01512=#{approveDate}
+        </if>
+        <if test="approveStaff != null">
+            ,pm01511=#{approveStaff.coding}
+        </if>
+        WHERE pm01501=#{id};
+    </update>
+    <delete id="deleteCheckMater">
+        DELETE FROM sdpm015 WHERE pm01501=#{id};
+    </delete>
+    <select id="getCheckMater" resultMap="checkMater">
+        SELECT DISTINCT a.* FROM sdpm015 AS a
+        LEFT JOIN sdpm016 AS b ON a.pm01501=b.pm01601
+        LEFT JOIN sdpm002 AS b2 ON b2.pm00201=b.pm01603
+        LEFT JOIN sdpm004 AS c ON c.pm00401=a.pm01504
+        <where>
+            <if test="str != null">
+                and a.pm01503+a.pm01505+a.pm01502+b2.pm00201+b2.pm00202+b2.pm00205+b2.pm00221+c.pm00402 LIKE
+                '%'+#{str}+'%'
+            </if>
+            <if test="start != null and end != null">
+                and a.pm01502 BETWEEN #{start} AND #{end}
+            </if>
+        </where>
+    </select>
+    <select id="getCheckMaterCount" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT a.pm01501) FROM sdpm015 AS a
+        LEFT JOIN sdpm016 AS b ON a.pm01501=b.pm01601
+        LEFT JOIN sdpm002 AS b2 ON b2.pm00201=b.pm01603
+        LEFT JOIN sdpm004 AS c ON c.pm00401=a.pm01504
+        <where>
+            <if test="str != null">
+                and a.pm01503+a.pm01505+a.pm01502+b2.pm00201+b2.pm00202+b2.pm00205+b2.pm00221+c.pm00402 LIKE
+                '%'+#{str}+'%'
+            </if>
+            <if test="start != null and end != null">
+                and a.pm01502 BETWEEN #{start} AND #{end}
+            </if>
+        </where>
+    </select>
+    <select id="getCheckById" resultMap="checkMater">
+        SELECT * FROM sdpm015 WHERE pm01501=#{id};
+    </select>
+</mapper>

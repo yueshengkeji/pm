@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProSendMaterialMapper">
+    <resultMap id="proSendMaterial" type="com.yuesheng.pm.entity.ProSendMaterial">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="pro_id" property="proId" jdbcType="VARCHAR"></result>
+        <result column="y_num" property="sendNum" jdbcType="DECIMAL"></result>
+        <result column="s_num" property="sNum" jdbcType="DECIMAL"></result>
+        <result column="send_date" property="sendDate" jdbcType="VARCHAR"></result>
+        <result column="img_page" property="imgPage" jdbcType="VARCHAR"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <association property="material" column="material_id"
+                     select="com.yuesheng.pm.mapper.MaterialMapper.getMaterialByid"></association>
+    </resultMap>
+    <insert id="insert">
+        insert into pro_send_material values(#{proId},#{id},#{material.id},#{sendNum},#{sNum},#{sendDate},#{imgPage},#{remark});
+    </insert>
+    <delete id="delete">
+        delete from pro_send_material where id=#{id};
+    </delete>
+    <delete id="deleteByProId">
+        delete from pro_send_material where pro_id=#{proId};
+    </delete>
+    <select id="queryByProId" resultMap="proSendMaterial">
+        select * from pro_send_material where pro_id=#{proId};
+    </select>
+</mapper>

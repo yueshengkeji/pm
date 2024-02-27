@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.InfoMapper">
+    <resultMap id="info" type="com.yuesheng.pm.entity.Info">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="title" property="title" jdbcType="VARCHAR"></result>
+        <result column="content" property="content" jdbcType="VARCHAR"></result>
+        <result column="send_time" property="sendDate" jdbcType="VARCHAR"></result>
+        <association property="staff" column="send_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+    <resultMap id="infoList" type="com.yuesheng.pm.entity.InfoState">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="main_id" property="mainId" jdbcType="VARCHAR"></result>
+        <result column="staff_id" property="staffId" jdbcType="VARCHAR"></result>
+        <result column="state" property="state" jdbcType="INTEGER"></result>
+        <result column="read_date" property="readDate" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="queryList" resultMap="info">
+        SELECT id,title,send_time,send_id FROM info
+        <if test="str != null">
+            WHERE title+content+send_time LIKE '%'+#{str}+'%'
+        </if>
+        ORDER BY send_time DESC
+    </select>
+    <select id="queryListByInfo" resultMap="info">
+        SELECT id,title,send_time,send_id FROM info
+        <if test="title != null and title != ''">
+            WHERE title+content+send_time LIKE '%'+#{title}+'%'
+        </if>
+    </select>
+    <select id="queryListByInfo" resultMap="info" databaseId="mysql">
+        SELECT id,title,send_time,send_id FROM info
+        <if test="title != null and title != ''">
+            WHERE concat(title,content,send_time) LIKE concat('%',#{title},'%')
+        </if>
+    </select>
+    <select id="queryListCount" resultType="java.lang.Integer">
+        SELECT count(id) FROM info
+        <if test="str != null">
+            WHERE title+content+send_time LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="queryListCount" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT count(id) FROM info
+        <if test="str != null">
+            WHERE concat(title,content,send_time) LIKE concat('%',#{title},'%')
+        </if>
+    </select>
+    <select id="queryById" resultMap="info">
+        SELECT * FROM info WHERE id=#{id}
+    </select>
+    <delete id="deleteById">
+        DELETE FROM info WHERE id=#{id};
+        DELETE FROM info_state WHERE main_id=#{id};
+    </delete>
+    <insert id="insert">
+        INSERT INTO info values(#{id},#{title},#{content},#{staff.id},#{sendDate})
+    </insert>
+    <insert id="insertState">
+        INSERT INTO info_state VALUES(#{id},#{mainId},#{staffId},#{state},'')
+    </insert>
+    <select id="queryCount" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM info_state WHERE main_id=#{infoId} AND state=1
+    </select>
+    <update id="updateState">
+        UPDATE info_state SET state=#{state},read_date=#{readDate} WHERE id=#{id}
+    </update>
+    <update id="updateStateByInfo">
+        UPDATE info_state SET state=#{state},read_date=#{readDate} WHERE main_id=#{mainId} and staff_id=#{staffId}
+    </update>
+    <select id="queryInfoState" resultMap="infoList">
+        select * from info_state WHERE main_id=#{mainId} and staff_id=#{staffId}
+    </select>
+
+    <select id="queryReadStaff" resultMap="com.yuesheng.pm.mapper.StaffMapper.staff">
+        SELECT b.pj00401,b.pj00402,b.pj00403,b.pj00421,a.read_date AS pj00411 FROM info_state AS a LEFT JOIN sdpj004 AS b ON a.staff_id=b.pj00401 WHERE a.main_id=#{infoId}
+    </select>
+    <select id="queryInfoStates" resultMap="infoList">
+        SELECT a.* FROM info_state AS a LEFT JOIN info AS b ON a.main_id=b.id WHERE a.staff_id=#{staffId} AND a.state=0
+        AND
+        b.send_time BETWEEN CONVERT(varchar(30), dateadd(day,-5,GETDATE()), 20) AND CONVERT(varchar(30),getdate(),20)
+    </select>
+    <update id="update">
+        update info set title=#{title},content=#{content} where id=#{id}
+    </update>
+</mapper>

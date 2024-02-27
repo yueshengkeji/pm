@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.SalesContractTaxMapper">
+    <resultMap id="SalesContractTax" type="com.yuesheng.pm.entity.SalesContractTax">
+        <result property="id" column="id"></result>
+        <result property="agreementID" column="agreement_id"></result>
+        <result property="percentForAM" column="percent_for_AM"></result>
+        <result property="taxExtra" column="tax_extra"></result>
+        <result property="adderID" column="adder_id"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.SalesContractTax">
+        insert into sales_contract_tax
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="agreementID != null">agreement_id,</if>
+            <if test="percentForAM != null">percent_for_AM,</if>
+            <if test="taxExtra != null">tax_extra,</if>
+            <if test="adderID != null">adder_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="agreementID != null">#{agreementID},</if>
+            <if test="percentForAM != null">#{percentForAM},</if>
+            <if test="taxExtra != null">#{taxExtra},</if>
+            <if test="adderID != null">#{adderID},</if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="string">
+        delete from sales_contract_tax
+        where id = #{id}
+    </delete>
+
+    <select id="selectByAgreementID" parameterType="string" resultMap="SalesContractTax">
+        select * from sales_contract_tax
+        where agreement_id = #{agreementID}
+    </select>
+</mapper>

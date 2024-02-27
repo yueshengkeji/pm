@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ContractMapper">
+    <!--合同登记-->
+    <resultMap id="contract" type="com.yuesheng.pm.entity.Contract">
+        <id column="pd00401" property="id" jdbcType="VARCHAR"></id>
+        <result column="pd00402" property="name" jdbcType="VARCHAR"></result>
+        <result jdbcType="DECIMAL" column="pd00409" property="price"></result>
+        <result column="pd00419" property="date" jdbcType="VARCHAR"></result>
+        <result column="pd00416" property="state" jdbcType="TINYINT"></result>
+        <result column="pd00424" property="lose" jdbcType="VARCHAR"></result>
+        <result column="pd00452" property="serialNumber" jdbcType="VARCHAR"></result>
+        <result column="pd00448" property="yetPay" jdbcType="DECIMAL"></result>
+        <result column="pd00418" property="applyMoney" jdbcType="DECIMAL"></result>
+        <association property="type" column="pd00403"
+                     select="com.yuesheng.pm.mapper.ContractTypeMapper.getTypeById"></association>
+        <association property="staff" column="pd00421"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="partyA" column="pd00404"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="partyB" column="pd00405"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+    </resultMap>
+    <!--合同登记（全）-->
+    <resultMap id="contractFull" type="com.yuesheng.pm.entity.Contract">
+        <id column="pd00401" property="id" jdbcType="VARCHAR"></id>
+        <result column="pd00402" property="name" jdbcType="VARCHAR"></result>
+        <result jdbcType="DECIMAL" column="pd00409" property="price"></result>
+        <result column="pd00419" property="date" jdbcType="VARCHAR"></result>
+        <result column="pd00416" property="state" jdbcType="TINYINT"></result>
+        <result column="pd00424" property="lose" jdbcType="VARCHAR"></result>
+        <result column="pd00452" property="serialNumber" jdbcType="VARCHAR"></result>
+        <result column="pd00448" property="yetPay" jdbcType="DECIMAL"></result>
+        <result column="pd00418" property="applyMoney" jdbcType="DECIMAL"></result>
+        <association property="type" column="pd00403"
+                     select="com.yuesheng.pm.mapper.ContractTypeMapper.getTypeById"></association>
+        <association property="staff" column="pd00421"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="partyA" column="pd00404"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="partyB" column="pd00405"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="taxType" column="pd00471"
+                     select="com.yuesheng.pm.mapper.TaxTypeMapper.getTypeById"></association>
+        <collection property="projects" column="pd00401" select="getProjectsByContract"></collection>
+    </resultMap>
+    <!--合同拟定-->
+    <resultMap id="protocol" type="com.yuesheng.pm.entity.Contract">
+        <id column="pd03101" property="id" jdbcType="VARCHAR"></id>
+        <result column="pd03102" property="serialNumber" jdbcType="VARCHAR"></result>
+        <result column="pd03103" property="name" jdbcType="VARCHAR"></result>
+        <result jdbcType="DECIMAL" column="pd03109" property="price"></result>
+        <result column="pd03108" property="date" jdbcType="VARCHAR"></result>
+        <result column="pd03110" property="remark" jdbcType="VARCHAR"></result>
+        <!--<result column="pd00416" property="state" jdbcType="TINYINT"></result>-->
+        <!--<result column="pd00424" property="lose" jdbcType="VARCHAR"></result>-->
+        <result column="pd03133" property="yetPay" jdbcType="DECIMAL"></result>
+        <association property="type" column="pd03106"
+                     select="com.yuesheng.pm.mapper.ContractTypeMapper.getTypeById"></association>
+        <association property="staff" column="pd03123"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="partyA" column="pd03104"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="partyB" column="pd03105"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+    </resultMap>
+<!--合同登记（简）-->
+    <resultMap id="contractJian" type="com.yuesheng.pm.entity.Contract">
+        <id column="pd00401" property="id" jdbcType="VARCHAR"></id>
+        <result column="pd00402" property="name" jdbcType="VARCHAR"></result>
+        <result jdbcType="DECIMAL" column="pd00409" property="price"></result>
+        <result column="pd00419" property="date" jdbcType="VARCHAR"></result>
+        <result column="pd00416" property="state" jdbcType="TINYINT"></result>
+        <result column="pd00424" property="lose" jdbcType="VARCHAR"></result>
+        <result column="pd00452" property="serialNumber" jdbcType="VARCHAR"></result>
+        <result column="pd00448" property="yetPay" jdbcType="DECIMAL"></result>
+        <result column="pd00418" property="applyMoney" jdbcType="DECIMAL"></result>
+        <association property="partyA" column="pd00404"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="partyB" column="pd00405"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+    </resultMap>
+
+    <select id="getContractByCompanyV2" resultMap="contractJian">
+        SELECT pd00401,pd00402,pd00404,pd00409,pd00405,pd00452,pd00448,pd00418 FROM sdpd004
+        WHERE pd00403='20IBAN7E' and pd00416 &lt; 2
+        <if test="companyId">
+            and pd00405=#{companyId}
+        </if>
+        <if test="isPay != null">
+            AND ${isPay}
+        </if>
+        <if test="contractName != null">
+            AND pd00402+CAST(pd00409 AS VARCHAR) LIKE '%'+#{contractName}+'%'
+        </if>
+        ORDER BY pd00419 DESC
+    </select>
+    <select id="getContractByCompanyV2" resultMap="contractJian" databaseId="mysql">
+        SELECT pd00401,pd00402,pd00404,pd00409,pd00405,pd00452,pd00448,pd00418 FROM sdpd004
+        WHERE pd00403='20IBAN7E' and pd00416 &lt; 2
+        <if test="companyId">
+            and pd00405=#{companyId}
+        </if>
+        <if test="isPay != null">
+            AND ${isPay}
+        </if>
+        <if test="contractName != null">
+            AND concat(pd00402,pd00409) LIKE concat('%',#{contractName},'%')
+        </if>
+        ORDER BY pd00419 DESC
+    </select>
+
+    <select id="getMoneyByDate" resultType="Double">
+        select SUM(pd00409) from sdpd004
+        where pd00416=1 and pd00419 between #{startDate} and #{endDate}
+    </select>
+
+    <select id="getContractByCompany" parameterType="String" resultMap="contractFull">
+        SELECT pd00401,pd00402,pd00404,pd00409,pd00405,pd00452,pd00448,pd00418 FROM sdpd004
+        WHERE pd00403='20IBAN7E' and pd00416 &lt; 2
+        <if test="companyId">
+            and pd00405=#{companyId}
+        </if>
+        <if test="isPay != null">
+            AND ${isPay}
+        </if>
+        <if test="contractName != null">
+            AND pd00402+CAST(pd00409 AS VARCHAR) LIKE '%'+#{contractName}+'%'
+        </if>
+        ORDER BY pd00419 DESC
+    </select>
+    <select id="getContractByCompany" parameterType="String" resultMap="contractFull" databaseId="mysql">
+        SELECT pd00401,pd00402,pd00404,pd00409,pd00405,pd00452,pd00448,pd00418 FROM sdpd004
+        WHERE pd00403='20IBAN7E' and pd00416 &lt; 2
+        <if test="companyId">
+            and pd00405=#{companyId}
+        </if>
+        <if test="isPay != null">
+            AND ${isPay}
+        </if>
+        <if test="contractName != null">
+            AND concat(pd00402,pd00409) LIKE concat('%',#{contractName},'%')
+        </if>
+        ORDER BY pd00419 DESC
+    </select>
+    <select id="getContractMoneyByCompany" resultType="java.util.Map">
+        SELECT SUM(pd00409) as 'money',SUM(pd00448) AS 'yetMoney' FROM sdpd004
+        WHERE pd00405=#{companyId} AND pd00403='20IBAN7E'
+        <if test="isPay != null">
+            AND ${isPay}
+        </if>
+        <if test="start != null and end != null">
+            AND pd00419 BETWEEN #{start} AND #{end}
+        </if>
+    </select>
+    <select id="getContractYetMoneyByCompany" resultType="java.lang.Double">
+        SELECT SUM(pd00448) FROM sdpd004
+        WHERE pd00405=#{companyId} AND pd00403='20IBAN7E'
+        <if test="isPay != null">
+            AND ${isPay}
+        </if>
+        <if test="start != null and end != null">
+            AND pd00419 BETWEEN #{start} AND #{end}
+        </if>
+    </select>
+    <select id="getContracts" resultMap="contract">
+        SELECT * FROM sdpd004 WHERE pd00403='20IBAN7E' ORDER BY pd00419 DESC
+    </select>
+    <select id="seek" parameterType="String" resultMap="contract">
+        SELECT pd00401,pd00402,pd00409,pd00405 FROM sdpd004 WHERE pd00403='20IBAN7E' AND pd00402 LIKE '%'+#{str}+'%'
+    </select>
+    <select id="seek" parameterType="String" resultMap="contract" databaseId="mysql">
+        SELECT pd00401,pd00402,pd00409,pd00405 FROM sdpd004 WHERE pd00403='20IBAN7E' AND pd00402 LIKE concat('%',#{str},'%')
+    </select>
+    <select id="getContractById" resultMap="contractFull" parameterType="String">
+        SELECT pd00401,pd00402,pd00403,pd00404,pd00405,pd00409,pd00418,pd00421,pd00448,pd00452,pd00471 FROM sdpd004 WHERE
+        pd00401=#{id}
+    </select>
+    <select id="getContractByParam" resultMap="contract">
+        SELECT DISTINCT a.pd00401,a.pd00402,a.pd00403,a.pd00404,a.pd00405,a.pd00406
+        ,a.pd00407,a.pd00408,a.pd00409,a.pd00410,a.pd00412,a.pd00414,a.pd00415,a.pd00416
+        ,a.pd00417,a.pd00418,a.pd00419,a.pd00420,a.pd00421,a.pd00422,a.pd00423,a.pd00424,a.pd00425,a.pd00426,a.pd00427,a.pd00428,a.pd00429
+        ,a.pd00430,a.pd00431,a.pd00432,a.pd00448,a.pd00434,a.pd00435,a.pd00449,a.pd00452,a.pd00469
+        FROM sdpd004 AS a
+        INNER JOIN sdpd018 AS b ON a.pd00401=b.pd01801
+        LEFT JOIN sdpa001 AS b2 ON b2.pa00101=b.pd01802
+        LEFT JOIN sdpf003 AS c ON a.pd00404=c.pf00301 OR a.pd00405=c.pf00301
+        LEFT JOIN sdpd006 AS d ON a.pd00403=d.pd00601
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pd00421
+        <where>
+            <if test="str != null">
+                AND a.pd00402+CAST(a.pd00409 AS VARCHAR)+a.pd00411+CAST(a.pd00413 AS VARCHAR(MAX))+a.pd00419+a.pd00469
+                +b2.pa00102+c.pf00302+d.pd00602+e.pj00402 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="start != null and end != null">
+                AND a.pd00419 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="payState != null">
+                AND ${payStateSql}
+            </if>
+            <if test="partyA != null">
+                AND pd00404=#{partyA}
+            </if>
+        </where>
+        ${order}
+    </select>
+    <select id="getContractByParam" resultMap="contract" databaseId="mysql">
+        SELECT DISTINCT a.pd00401,a.pd00402,a.pd00403,a.pd00404,a.pd00405,a.pd00406
+        ,a.pd00407,a.pd00408,a.pd00409,a.pd00410,a.pd00412,a.pd00414,a.pd00415,a.pd00416
+        ,a.pd00417,a.pd00418,a.pd00419,a.pd00420,a.pd00421,a.pd00422,a.pd00423,a.pd00424,a.pd00425,a.pd00426,a.pd00427,a.pd00428,a.pd00429
+        ,a.pd00430,a.pd00431,a.pd00432,a.pd00448,a.pd00434,a.pd00435,a.pd00449,a.pd00452,a.pd00469
+        FROM sdpd004 AS a
+        INNER JOIN sdpd018 AS b ON a.pd00401=b.pd01801
+        LEFT JOIN sdpa001 AS b2 ON b2.pa00101=b.pd01802
+        LEFT JOIN sdpf003 AS c ON a.pd00404=c.pf00301 OR a.pd00405=c.pf00301
+        LEFT JOIN sdpd006 AS d ON a.pd00403=d.pd00601
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pd00421
+        <where>
+            <if test="str != null">
+                AND concat(a.pd00402,a.pd00409,a.pd00411,a.pd00413,a.pd00419,a.pd00469
+                ,b2.pa00102,c.pf00302,d.pd00602,e.pj00402) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="start != null and end != null">
+                AND a.pd00419 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="payState != null">
+                AND ${payStateSql}
+            </if>
+            <if test="partyA != null">
+                AND pd00404=#{partyA}
+            </if>
+        </where>
+        ${order}
+    </select>
+
+    <select id="getContractByParamV2" resultMap="contract">
+        SELECT DISTINCT a.pd00401,a.pd00402,a.pd00403,a.pd00404,a.pd00405,a.pd00406
+        ,a.pd00407,a.pd00408,a.pd00409,a.pd00410,a.pd00412,a.pd00414,a.pd00415,a.pd00416
+        ,a.pd00417,a.pd00418,a.pd00419,a.pd00420,a.pd00421,a.pd00422,a.pd00423,a.pd00424,a.pd00425,a.pd00426,a.pd00427,a.pd00428,a.pd00429
+        ,a.pd00430,a.pd00431,a.pd00432,a.pd00448,a.pd00434,a.pd00435,a.pd00449,a.pd00452,a.pd00469
+        FROM sdpd004 AS a
+        INNER JOIN sdpd018 AS b ON a.pd00401=b.pd01801
+        LEFT JOIN sdpa001 AS b2 ON b2.pa00101=b.pd01802
+        LEFT JOIN sdpf003 AS c ON a.pd00404=c.pf00301 OR a.pd00405=c.pf00301
+        LEFT JOIN sdpd006 AS d ON a.pd00403=d.pd00601
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pd00421
+        <where>
+            <if test="str != null">
+                AND a.pd00402+CAST(a.pd00409 AS VARCHAR)+a.pd00411+CAST(a.pd00413 AS VARCHAR(MAX))+a.pd00419+a.pd00469
+                +b2.pa00102+c.pf00302+d.pd00602+e.pj00402 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="start != null and end != null">
+                AND a.pd00419 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="payState != null">
+                AND ${payStateSql}
+            </if>
+            <if test="partyA != null">
+                AND pd00404=#{partyA}
+            </if>
+            <if test="partyB != null">
+                AND pd00405=#{partyB}
+            </if>
+            <if test="staffCoding != null">
+                AND pd00421=#{staffCoding}
+            </if>
+            <if test="state != null">
+                AND pd00416=#{state}
+            </if>
+            <if test="state == null">
+                and pd00416 &lt; 2
+            </if>
+            <if test="minPrice != null">
+                AND pd00409 &gt;= ${minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND pd00409 &lt;= ${maxPrice}
+            </if>
+        </where>
+    </select>
+    <select id="getContractByParamV2" resultMap="contract" databaseId="mysql">
+        SELECT DISTINCT a.pd00401,a.pd00402,a.pd00403,a.pd00404,a.pd00405,a.pd00406
+        ,a.pd00407,a.pd00408,a.pd00409,a.pd00410,a.pd00412,a.pd00414,a.pd00415,a.pd00416
+        ,a.pd00417,a.pd00418,a.pd00419,a.pd00420,a.pd00421,a.pd00422,a.pd00423,a.pd00424,a.pd00425,a.pd00426,a.pd00427,a.pd00428,a.pd00429
+        ,a.pd00430,a.pd00431,a.pd00432,a.pd00448,a.pd00434,a.pd00435,a.pd00449,a.pd00452,a.pd00469
+        FROM sdpd004 AS a
+        INNER JOIN sdpd018 AS b ON a.pd00401=b.pd01801
+        LEFT JOIN sdpa001 AS b2 ON b2.pa00101=b.pd01802
+        LEFT JOIN sdpf003 AS c ON a.pd00404=c.pf00301 OR a.pd00405=c.pf00301
+        LEFT JOIN sdpd006 AS d ON a.pd00403=d.pd00601
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pd00421
+        <where>
+            <if test="str != null">
+                AND concat(a.pd00402,a.pd00409,a.pd00411,a.pd00413,a.pd00419,a.pd00469
+                ,b2.pa00102,c.pf00302,d.pd00602,e.pj00402) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="start != null and end != null">
+                AND a.pd00419 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="payState != null">
+                AND ${payStateSql}
+            </if>
+            <if test="partyA != null">
+                AND pd00404=#{partyA}
+            </if>
+            <if test="partyB != null">
+                AND pd00405=#{partyB}
+            </if>
+            <if test="staffCoding != null">
+                AND pd00421=#{staffCoding}
+            </if>
+            <if test="state != null">
+                AND pd00416=#{state}
+            </if>
+            <if test="state == null">
+                and pd00416 &lt; 2
+            </if>
+            <if test="minPrice != null">
+                AND pd00409 &gt;= ${minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND pd00409 &lt;= ${maxPrice}
+            </if>
+        </where>
+    </select>
+
+    <select id="getContractCount" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT a.pd00401) FROM sdpd004 AS a
+        INNER JOIN sdpd018 AS b ON a.pd00401=b.pd01801
+        LEFT JOIN sdpa001 AS b2 ON b2.pa00101=b.pd01802
+        LEFT JOIN sdpf003 AS c ON a.pd00404=c.pf00301 OR a.pd00405=c.pf00301
+        LEFT JOIN sdpd006 AS d ON a.pd00403=d.pd00601
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pd00421
+        <where>
+            <if test="str != null">
+                AND a.pd00402+CAST(a.pd00409 AS VARCHAR)+a.pd00411+CAST(a.pd00413 AS VARCHAR(MAX))+a.pd00419+a.pd00469
+                +b2.pa00102+c.pf00302+d.pd00602+e.pj00402 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="start != null and end != null">
+                AND a.pd00419 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="payState != null">
+                AND ${payStateSql}
+            </if>
+            <if test="partyA != null">
+                AND pd00404=#{partyA}
+            </if>
+        </where>
+    </select>
+    <select id="getContractCount" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT COUNT(DISTINCT a.pd00401) FROM sdpd004 AS a
+        INNER JOIN sdpd018 AS b ON a.pd00401=b.pd01801
+        LEFT JOIN sdpa001 AS b2 ON b2.pa00101=b.pd01802
+        LEFT JOIN sdpf003 AS c ON a.pd00404=c.pf00301 OR a.pd00405=c.pf00301
+        LEFT JOIN sdpd006 AS d ON a.pd00403=d.pd00601
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pd00421
+        <where>
+            <if test="str != null">
+                AND concat(a.pd00402,a.pd00409,a.pd00411,a.pd00413,a.pd00419,a.pd00469
+                ,b2.pa00102,c.pf00302,d.pd00602,e.pj00402) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="start != null and end != null">
+                AND a.pd00419 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="payState != null">
+                AND ${payStateSql}
+            </if>
+            <if test="partyA != null">
+                AND pd00404=#{partyA}
+            </if>
+        </where>
+    </select>
+
+    <insert id="addContract" parameterType="com.yuesheng.pm.entity.Contract">
+        INSERT INTO sdpd004 (pd00401,pd00402,pd00403,pd00404,pd00405,pd00406,pd00407,pd00409,pd00410,pd00411,pd00412,pd00413,pd00414,
+        pd00415,pd00416,pd00417,pd00418,pd00419,pd00420,pd00421,pd00422,pd00423,pd00424,pd00425,pd00426,pd00427,pd00428,pd00429,pd00430,
+        pd00431,pd00432,pd00448,pd00434,pd00435,pd00452,pd00450,pd00469,pd00471,pd00478,pd00433)
+        values(#{id},#{name},#{type.id},#{partyA.id},#{partyB.id},'','',#{price},'',#{fk_remark},
+        '',#{remark},'','',#{state},'RMB',0,#{date},#{date},#{staff.coding},#{staff.coding},'',#{lose},'','','',0,'','','',0,0,'','',
+        #{serialNumber},#{staff.sectionCoding},#{city.id},#{taxType.id},#{date},0.0)
+    </insert>
+    <insert id="addProject">
+        INSERT INTO sdpd018 (pd01801,pd01802,pd01803,pd01804,pd01805,pd01806) VALUES(#{id},#{projectId},'',0,'',0)
+    </insert>
+    <select id="getProjectsByContract" resultMap="com.yuesheng.pm.mapper.ProjectMapper.project">
+        SELECT a.pa00101,a.pa00102 FROM sdpa001 AS a RIGHT JOIN sdpd018 AS b ON a.pa00101=b.pd01802 WHERE b.pd01801=#{conreactId};
+    </select>
+    <delete id="delete">
+        DELETE FROM sdpd004 WHERE pd00401=#{id}
+    </delete>
+    <delete id="deleteProject">
+        DELETE FROM sdpd018 WHERE pd01801=#{id}
+    </delete>
+    <select id="queryProtocol" resultMap="protocol">
+        SELECT * FROM sdpd031 WHERE pd03101=#{id};
+    </select>
+    <select id="queryProjectByProtocol" resultMap="com.yuesheng.pm.mapper.ProjectMapper.project">
+        SELECT a.* FROM sdpa001 AS a RIGHT JOIN sdpd033 AS b ON a.pa00101=b.pd03302 WHERE b.pd03301=#{id};
+    </select>
+    <update id="approve">
+        update sdpd004 set pd00416=#{state},pd00442=#{coding} where pd00401=#{id}
+    </update>
+    <update id="lose">
+        update sdpd004 set pd00416=2 where pd00401=#{id}
+    </update>
+    <update id="updateState">
+        update sdpd004
+        set pd00416=#{state},
+            pd00442=#{coding}
+        where pd00401 = #{id}
+    </update>
+    <update id="updateApplyMoney">
+        update sdpd004
+        set pd00418=#{applyMoney}
+        where pd00401 = #{id}
+    </update>
+    <update id="updateYetPayMoney">
+        update sdpd004
+        set pd00448=#{money}
+        where pd00401 = #{id}
+    </update>
+</mapper>

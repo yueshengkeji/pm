@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProZujinHouseMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProZujinHouse" id="ProZujinHouseMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="floor" column="floor" jdbcType="VARCHAR"/>
+        <result property="pwNumber" column="pw_number" jdbcType="VARCHAR"/>
+        <result property="yetaiId" column="yetai_id" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="acreage" column="acreage" jdbcType="VARCHAR"/>
+        <result property="flag" column="flag" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="brandName" column="brand_name" jdbcType="VARCHAR"/>
+        <result property="person" column="person" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="queryFloor" resultType="String">
+        select floor from pro_zujin_house group by floor
+    </select>
+
+    <select id="queryByParam" resultMap="ProZujinHouseMap">
+        select
+        id, floor, pw_number, yetai_id, type, acreage, flag,remark,brand_name,person
+        from pro_zujin_house
+        <where>
+            <if test="pwNumber != null">
+                and pw_number = #{pwNumber}
+            </if>
+            <if test="floor != null">
+                and floor = #{floor}
+            </if>
+            <if test="flag != null">
+                and flag = #{flag}
+            </if>
+
+            <if test="yetaiId != null">
+                and yetai_id = #{yetaiId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="type != null">
+                and flag = #{flag}
+            </if>
+            <if test="searchText != null">
+                and isNull(pw_number,'') + isNull(floor,'') + isNull(acreage,'') + isNull(remark,'') +
+                isNull(brand_name,'')+isNull(person,'') LIKE
+                '%'+#{searchText}+'%'
+            </if>
+        </where>
+        order by floor , pw_number asc
+    </select>
+    <select id="queryByParam" resultMap="ProZujinHouseMap" databaseId="mysql">
+        select
+        id, floor, pw_number, yetai_id, type, acreage, flag,remark,brand_name,person
+        from pro_zujin_house
+        <where>
+            <if test="pwNumber != null">
+                and pw_number = #{pwNumber}
+            </if>
+            <if test="floor != null">
+                and floor = #{floor}
+            </if>
+            <if test="flag != null">
+                and flag = #{flag}
+            </if>
+
+            <if test="yetaiId != null">
+                and yetai_id = #{yetaiId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="type != null">
+                and flag = #{flag}
+            </if>
+            <if test="searchText != null">
+                and concat(ifNull(pw_number,''),ifNull(floor,''),ifNull(acreage,'') , ifNull(remark,'') ,
+                ifNull(brand_name,''),ifNull(person,'')) LIKE
+                concat('%',#{searchText},'%')
+            </if>
+        </where>
+        order by floor , pw_number asc
+    </select>
+
+
+    <select id="queryCountByParam" resultType="Integer">
+        select
+        COUNT(id)
+        from pro_zujin_house
+        <where>
+            <if test="pwNumber != null">
+                and pw_number = #{pwNumber}
+            </if>
+            <if test="floor != null">
+                and floor = #{floor}
+            </if>
+
+            <if test="flag != null">
+                and flag = #{flag}
+            </if>
+            <if test="yetaiId != null">
+                and yetai_id = #{yetaiId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="flag != null">
+                and flag = #{flag}
+            </if>
+            <if test="searchText != null">
+                and isNull(pw_number,'') + isNull(floor,'') + isNull(acreage,'') + isNull(remark,'') +
+                isNull(brand_name,'')+isNull(person,'') LIKE
+                '%'+#{searchText}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="queryCountByParam" resultType="Integer" databaseId="mysql">
+        select
+        COUNT(id)
+        from pro_zujin_house
+        <where>
+            <if test="pwNumber != null">
+                and pw_number = #{pwNumber}
+            </if>
+            <if test="floor != null">
+                and floor = #{floor}
+            </if>
+
+            <if test="flag != null">
+                and flag = #{flag}
+            </if>
+            <if test="yetaiId != null">
+                and yetai_id = #{yetaiId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="flag != null">
+                and flag = #{flag}
+            </if>
+            <if test="searchText != null">
+                and concat(ifNull(pw_number,''),ifNull(floor,''),ifNull(acreage,'') , ifNull(remark,'') ,
+                ifNull(brand_name,''),ifNull(person,'')) LIKE
+                concat('%',#{searchText},'%')
+            </if>
+        </where>
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProZujinHouseMap">
+        select
+          id, floor, pw_number, yetai_id, type, acreage, flag,remark
+        from pro_zujin_house
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProZujinHouseMap">
+        select
+          id, floor, pw_number, yetai_id, type, acreage, flag,remark,brand_name,person
+        from pro_zujin_house
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProZujinHouseMap">
+        select
+        id, floor, pw_number, yetai_id, type, acreage, flag,remark,brand_name,person
+        from pro_zujin_house
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="floor != null and floor != ''">
+                and floor = #{floor}
+            </if>
+            <if test="pwNumber != null and pwNumber != ''">
+                and pw_number = #{pwNumber}
+            </if>
+            <if test="yetaiId != null">
+                and yetai_id = #{yetaiId}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="acreage != null and acreage != ''">
+                and acreage = #{acreage}
+            </if>
+            <if test="flag != null and flag != ''">
+                and flag = #{flag}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into pro_zujin_house(floor, pw_number, yetai_id, type, acreage, flag,remark)
+        values (#{floor}, #{pwNumber}, #{yt.id}, #{type}, #{acreage}, #{flag},#{remark})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_zujin_house
+        <set>
+            <if test="floor != null and floor != ''">
+                floor = #{floor},
+            </if>
+            <if test="pwNumber != null and pwNumber != ''">
+                pw_number = #{pwNumber},
+            </if>
+            <if test="yt != null">
+                yetai_id = #{yt.id},
+            </if>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="acreage != null and acreage != ''">
+                acreage = #{acreage},
+            </if>
+            <if test="flag != null and flag != ''">
+                flag = #{flag},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="brandName != null">
+                brand_name = #{brandName},
+            </if>
+            <if test="person != null">
+                person = #{person},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_zujin_house where id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CollectionMapper">
+
+    <resultMap id="Collection" type="com.yuesheng.pm.entity.Collection">
+        <result property="ID" column="id"></result>
+        <result property="collectID" column="collect_id"></result>
+        <result property="collectMoney" column="collect_money"></result>
+        <result property="remark" column="remark"></result>
+        <result property="percent" column="percent"></result>
+        <result property="agreementID" column="agreement_id"></result>
+        <result property="agreementName" column="agreement_name"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="registrant" column="registrant"></result>
+        <result property="registrantId" column="registrant_id"></result>
+        <result property="pDate" column="pDate"></result>
+        <result property="status" column="status"></result>
+        <result property="pMark" column="pMark"></result>
+        <result property="createTime2" column="create_time2"></result>
+        <result property="billMark" column="bill_mark"></result>
+        <result property="statusNumber" column="status_number"></result>
+        <result property="collectType" column="collect_type"></result>
+        <result property="tradeAcceptanceDate" column="trade_acceptance_date"></result>
+        <result property="tradeAcceptanceInterest" column="trade_acceptance_interest"></result>
+        <result property="factoringTime" column="factoring_time"></result>
+        <result property="factoringDate" column="factoring_date"></result>
+        <result property="fixedAssets" column="fixed_assets"></result>
+        <result property="fixedAssetsStatus" column="fixed_assets_status"></result>
+    </resultMap>
+
+    <select id="selectByDay" resultMap="Collection">
+        select * from contract_collection_registration
+        where create_time between #{startDate} and #{endDate}
+        and status = '已审核'
+    </select>
+
+    <select id="selectByDate" resultMap="Collection">
+        select * from contract_collection_registration
+        where create_time between #{startDate} and #{endDate}
+        and status = '已审核'
+    </select>
+
+    <select id="selectByCollectID" resultMap="Collection">
+        select * from contract_collection_registration
+        where collect_id = #{collectID}
+        order by pDate desc
+    </select>
+
+    <select id="selectByAgreementID" resultMap="Collection">
+        select * from contract_collection_registration
+        where agreement_id = #{agreementID}
+        order by create_time2 desc
+    </select>
+
+    <select id="selectByMark" resultMap="Collection">
+        select * from contract_collection_registration
+        where pMark = #{pMark}
+    </select>
+
+    <insert id="insertCollection" parameterType="com.yuesheng.pm.entity.Collection">
+        insert into contract_collection_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="collectMoney != null ">collect_money,
+            </if>
+            <if test="collectID != null ">collect_id,
+            </if>
+            <if test="remark != null ">remark,
+            </if>
+            <if test="percent != null ">[percent],
+            </if>
+            <if test="agreementID != null ">agreement_id,
+            </if>
+            <if test="agreementName != null">agreement_name,
+            </if>
+            <if test="createTime != null ">create_time,
+            </if>
+            <if test="registrant != null ">registrant,
+            </if>
+            <if test="registrantId != null">registrant_id,
+            </if>
+            <if test="pDate != null">pDate,
+            </if>
+            <if test="status != null">status,
+            </if>
+            <if test="pMark != null">pMark,
+            </if>
+            <if test="createTime2 != null">create_time2,
+            </if>
+            <if test="billMark != null">bill_mark,
+            </if>
+            <if test="statusNumber != null">status_number,
+            </if>
+            <if test="collectType != null">collect_type,
+            </if>
+            <if test="tradeAcceptanceDate != null">trade_acceptance_date,
+            </if>
+            <if test="tradeAcceptanceInterest != null">trade_acceptance_interest,
+            </if>
+            <if test="factoringTime != null">factoring_time,
+            </if>
+            <if test="factoringDate != null">factoring_date,
+            </if>
+            <if test="fixedAssets != null">fixed_assets,
+            </if>
+            <if test="fixedAssetsStatus != null">fixed_assets_status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="collectMoney != null ">#{collectMoney},
+            </if>
+            <if test="collectID != null ">#{collectID},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+            <if test="percent != null ">#{percent},
+            </if>
+            <if test="agreementID != null ">#{agreementID},
+            </if>
+            <if test="agreementName != null">#{agreementName},
+            </if>
+            <if test="createTime != null ">#{createTime},
+            </if>
+            <if test="registrant != null ">#{registrant},
+            </if>
+            <if test="registrantId != null">#{registrantId},
+            </if>
+            <if test="pDate != null">#{pDate},
+            </if>
+            <if test="status != null">#{status},
+            </if>
+            <if test="pMark != null">#{pMark},
+            </if>
+            <if test="createTime2 != null">#{createTime2},
+            </if>
+            <if test="billMark != null">#{billMark},
+            </if>
+            <if test="statusNumber != null">#{statusNumber},
+            </if>
+            <if test="collectType != null">#{collectType},
+            </if>
+            <if test="tradeAcceptanceDate != null">#{tradeAcceptanceDate},
+            </if>
+            <if test="tradeAcceptanceInterest != null">#{tradeAcceptanceInterest},
+            </if>
+            <if test="factoringTime != null">#{factoringTime},
+            </if>
+            <if test="factoringDate != null">#{factoringDate},
+            </if>
+            <if test="fixedAssets != null">#{fixedAssets},
+            </if>
+            <if test="fixedAssetsStatus != null">#{fixedAssetsStatus},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertCollection" parameterType="com.yuesheng.pm.entity.Collection" databaseId="mysql">
+        insert into contract_collection_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="collectMoney != null ">collect_money,
+            </if>
+            <if test="collectID != null ">collect_id,
+            </if>
+            <if test="remark != null ">remark,
+            </if>
+            <if test="percent != null ">percent,
+            </if>
+            <if test="agreementID != null ">agreement_id,
+            </if>
+            <if test="agreementName != null">agreement_name,
+            </if>
+            <if test="createTime != null ">create_time,
+            </if>
+            <if test="registrant != null ">registrant,
+            </if>
+            <if test="registrantId != null">registrant_id,
+            </if>
+            <if test="pDate != null">pDate,
+            </if>
+            <if test="status != null">status,
+            </if>
+            <if test="pMark != null">pMark,
+            </if>
+            <if test="createTime2 != null">create_time2,
+            </if>
+            <if test="billMark != null">bill_mark,
+            </if>
+            <if test="statusNumber != null">status_number,
+            </if>
+            <if test="collectType != null">collect_type,
+            </if>
+            <if test="tradeAcceptanceDate != null">trade_acceptance_date,
+            </if>
+            <if test="tradeAcceptanceInterest != null">trade_acceptance_interest,
+            </if>
+            <if test="factoringTime != null">factoring_time,
+            </if>
+            <if test="factoringDate != null">factoring_date,
+            </if>
+            <if test="fixedAssets != null">fixed_assets,
+            </if>
+            <if test="fixedAssetsStatus != null">fixed_assets_status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="collectMoney != null ">#{collectMoney},
+            </if>
+            <if test="collectID != null ">#{collectID},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+            <if test="percent != null ">#{percent},
+            </if>
+            <if test="agreementID != null ">#{agreementID},
+            </if>
+            <if test="agreementName != null">#{agreementName},
+            </if>
+            <if test="createTime != null ">#{createTime},
+            </if>
+            <if test="registrant != null ">#{registrant},
+            </if>
+            <if test="registrantId != null">#{registrantId},
+            </if>
+            <if test="pDate != null">#{pDate},
+            </if>
+            <if test="status != null">#{status},
+            </if>
+            <if test="pMark != null">#{pMark},
+            </if>
+            <if test="createTime2 != null">#{createTime2},
+            </if>
+            <if test="billMark != null">#{billMark},
+            </if>
+            <if test="statusNumber != null">#{statusNumber},
+            </if>
+            <if test="collectType != null">#{collectType},
+            </if>
+            <if test="tradeAcceptanceDate != null">#{tradeAcceptanceDate},
+            </if>
+            <if test="tradeAcceptanceInterest != null">#{tradeAcceptanceInterest},
+            </if>
+            <if test="factoringTime != null">#{factoringTime},
+            </if>
+            <if test="factoringDate != null">#{factoringDate},
+            </if>
+            <if test="fixedAssets != null">#{fixedAssets},
+            </if>
+            <if test="fixedAssetsStatus != null">#{fixedAssetsStatus},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteCollection" parameterType="Integer">
+        delete from contract_collection_registration where id = #{ID}
+    </delete>
+
+    <delete id="deleteCollectionByAgreementID" parameterType="String">
+        delete from contract_collection_registration where agreement_id = #{agreementID}
+    </delete>
+    <delete id="deleteCollectionByPMark" parameterType="String">
+        delete from contract_collection_registration where pMark = #{pMark}
+    </delete>
+
+    <update id="updateCollection" parameterType="com.yuesheng.pm.entity.Collection">
+        update contract_collection_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="collectMoney != null ">collect_money = #{collectMoney},
+            </if>
+            <if test="remark != null ">remark = #{remark},
+            </if>
+            <if test="percent != null">[percent] = #{percent},
+            </if>
+            <if test="agreementID != null ">agreement_id = #{agreementID},
+            </if>
+            <if test="agreementName != null">agreement_name = #{agreementName},
+            </if>
+            <if test="registrant != null ">registrant = #{registrant},
+            </if>
+            <if test="registrantId != null">registrant_id = #{registrantId},
+            </if>
+            <if test="pDate != null">pDate = #{pDate},
+            </if>
+            <if test="status != null">status = #{status},
+            </if>
+            <if test="pMark != null">pMark = #{pMark},
+            </if>
+            <if test="createTime2 != null">create_time2 = #{createTime2},
+            </if>
+            <if test="billMark != null">bill_mark = #{billMark},
+            </if>
+            <if test="statusNumber != null">status_number = #{statusNumber},
+            </if>
+            create_time = #{createTime},
+            collect_type = #{collectType},
+            trade_acceptance_date = #{tradeAcceptanceDate},
+            trade_acceptance_interest = #{tradeAcceptanceInterest},
+            factoring_time = #{factoringTime},
+            factoring_date = #{factoringDate},
+            fixed_assets = #{fixedAssets},
+            fixed_assets_status = #{fixedAssetsStatus},
+        </trim>
+        where id = #{ID}
+    </update>
+
+    <update id="updateCollection" parameterType="com.yuesheng.pm.entity.Collection" databaseId="mysql">
+        update contract_collection_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="collectMoney != null ">collect_money = #{collectMoney},
+            </if>
+            <if test="remark != null ">remark = #{remark},
+            </if>
+            <if test="percent != null">percent = #{percent},
+            </if>
+            <if test="agreementID != null ">agreement_id = #{agreementID},
+            </if>
+            <if test="agreementName != null">agreement_name = #{agreementName},
+            </if>
+            <if test="registrant != null ">registrant = #{registrant},
+            </if>
+            <if test="registrantId != null">registrant_id = #{registrantId},
+            </if>
+            <if test="pDate != null">pDate = #{pDate},
+            </if>
+            <if test="status != null">status = #{status},
+            </if>
+            <if test="pMark != null">pMark = #{pMark},
+            </if>
+            <if test="createTime2 != null">create_time2 = #{createTime2},
+            </if>
+            <if test="billMark != null">bill_mark = #{billMark},
+            </if>
+            <if test="statusNumber != null">status_number = #{statusNumber},
+            </if>
+            create_time = #{createTime},
+            collect_type = #{collectType},
+            trade_acceptance_date = #{tradeAcceptanceDate},
+            trade_acceptance_interest = #{tradeAcceptanceInterest},
+            factoring_time = #{factoringTime},
+            factoring_date = #{factoringDate},
+            fixed_assets = #{fixedAssets},
+            fixed_assets_status = #{fixedAssetsStatus},
+        </trim>
+        where id = #{ID}
+    </update >
+    <select id="selectById" resultMap="Collection">
+        select * from contract_collection_registration where id=#{id}
+    </select>
+    <update id="updateDate">
+        update contract_collection_registration
+        set pDate=#{pDate} where id=#{ID}
+    </update>
+    <select id="selectByDateStatus" resultMap="Collection">
+        select * from contract_collection_registration
+        where pDate &lt;= #{date} and status=#{status}
+    </select>
+    <select id="selectAll" resultMap="Collection">
+        select * from contract_collection_registration
+        order by create_time2 desc
+    </select>
+    <select id="selectBySearch" parameterType="string" resultMap="Collection">
+        select * from contract_collection_registration
+        where isnull(agreement_name,'') +
+        isnull(convert(varchar(100),pDate),'') +
+        isnull(convert(varchar(100),collect_money),'')
+        like '%' + #{str} + '%'
+        and registrant_id = #{staffId}
+        order by create_time2 desc
+    </select>
+    <select id="selectBySearch" parameterType="string" resultMap="Collection" databaseId="mysql">
+        select * from contract_collection_registration
+        where concat_ws(',',agreement_name,pDate,collect_money,)
+        like concat('%',#{str},'%')
+        and registrant_id = #{staffId}
+        order by create_time2 desc
+    </select>
+    <select id="selectByAgreementIDAndStatus" resultMap="Collection">
+        select * from contract_collection_registration
+        where agreement_id = #{agreementId}
+        and status = #{status}
+    </select>
+    <select id="selectByPDate" resultMap="Collection">
+        select collect_money from contract_collection_registration
+        where pDate between #{startTime} and #{endTime}
+        and status = '已审核'
+    </select>
+    <select id="selectByBillMark" parameterType="string" resultMap="Collection">
+        select id from contract_collection_registration
+        where bill_mark = #{billMark}
+    </select>
+    <select id="collectList" resultMap="Collection">
+        select * from contract_collection_registration
+        <where>
+            <if test="search != null">
+                AND isnull(agreement_name,'') + isnull(remark,'') LIKE '%'+#{search}+'%'
+            </if>
+            <if test="startDate != null and endDate != null">
+                AND ${dateType} BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="staff != null">
+                AND registrant_id = #{staff}
+            </if>
+            <if test="choice == '未审核'">
+                AND status_number = 0
+            </if>
+            <if test="choice == '已审核'">
+                AND status_number = 1
+            </if>
+            <if test="choice == '超期未审核'">
+                AND <![CDATA[ pDate < #{date} ]]> AND status_number = 0
+            </if>
+        </where>
+        order by create_time2 desc
+    </select>
+    <select id="collectList" resultMap="Collection" databaseId="mysql">
+        select * from contract_collection_registration
+        <where>
+            <if test="search != null">
+                AND concat_ws(',',agreement_name,remark) LIKE concat('%',#{search},'%')
+            </if>
+            <if test="startDate != null and endDate != null">
+                AND ${dateType} BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="staff != null">
+                AND registrant_id = #{staff}
+            </if>
+            <if test="choice == '未审核'">
+                AND status_number = 0
+            </if>
+            <if test="choice == '已审核'">
+                AND status_number = 1
+            </if>
+            <if test="choice == '超期未审核'">
+                AND <![CDATA[ pDate < #{date} ]]> AND status_number = 0
+            </if>
+        </where>
+        order by create_time2 desc
+    </select>
+</mapper>

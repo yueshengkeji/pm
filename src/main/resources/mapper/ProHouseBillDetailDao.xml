@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProHouseBillDetailMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.HouseBillDetail" id="ProHouseBillDetailMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="houseBillId" column="house_bill_id" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="money" column="money" jdbcType="NUMERIC"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="series" column="series" jdbcType="VARCHAR"/>
+        <result property="endDate" column="end_date" jdbcType="VARCHAR"/>
+        <result property="isApprove" column="is_approve" jdbcType="OTHER"/>
+        <result property="date" column="date" jdbcType="VARCHAR"/>
+        <result property="inDate" column="in_date" jdbcType="VARCHAR"/>
+        <result property="approveDate" column="approve_date" jdbcType="VARCHAR"/>
+        <association property="staff" column="staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="approveStaff" column="approve_staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProHouseBillDetailMap">
+        select
+          id, house_bill_id, type, money, remark, series, end_date, is_approve, staff_id, approve_staff_id, date, approve_date
+        from pro_house_bill_detail
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProHouseBillDetailMap">
+        select
+          id, house_bill_id, type, money, remark, series, end_date, is_approve, staff_id, approve_staff_id, date, approve_date,in_date
+        from pro_house_bill_detail
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProHouseBillDetailMap">
+        select
+        id, house_bill_id, type, money, remark, series, end_date, is_approve, staff_id, approve_staff_id, date,
+        approve_date,in_date
+        from pro_house_bill_detail
+        <where>
+            <if test="houseBillId != null and houseBillId != ''">
+                and house_bill_id = #{houseBillId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="series != null and series != ''">
+                and series = #{series}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and end_date = #{endDate}
+            </if>
+            <if test="isApprove != null">
+                and is_approve = #{isApprove}
+            </if>
+            <if test="date != null and date != ''">
+                and date = #{date}
+            </if>
+            <if test="approveDate != null and approveDate != ''">
+                and approve_date = #{approveDate}
+            </if>
+            <if test="in_date != null">
+                and in_date=#{inDate}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id">
+        insert into pro_house_bill_detail(id,house_bill_id, type, money, remark, series, end_date, is_approve, staff_id, approve_staff_id, date, approve_date,in_date)
+        values (#{id},#{houseBillId}, #{type}, #{money}, #{remark}, #{series}, #{endDate}, #{isApprove}, #{staff.id}, null, #{date},null,#{inDate})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_house_bill_detail
+        <set>
+            <if test="houseBillId != null and houseBillId != ''">
+                house_bill_id = #{houseBillId},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="money != null">
+                money = #{money},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="series != null and series != ''">
+                series = #{series},
+            </if>
+            <if test="endDate != null and endDate != ''">
+                end_date = #{endDate},
+            </if>
+            <if test="isApprove != null">
+                is_approve = #{isApprove},
+            </if>
+            <if test="date != null and date != ''">
+                date = #{date},
+            </if>
+            <if test="approveDate != null and approveDate != ''">
+                approve_date = #{approveDate},
+            </if>
+            <if test="approveStaff != null">
+                approve_staff_id = #{approveStaff.id},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_house_bill_detail where id = #{id}
+    </delete>
+    <select id="queryByMain" resultMap="ProHouseBillDetailMap">
+        select * from pro_house_bill_detail where house_bill_id=#{mainId}
+    </select>
+
+    <select id="queryMoneyByMainId" resultType="java.lang.Double">
+        select SUM(money) from pro_house_bill_detail where house_bill_id=#{mainId} and type = 0
+    </select>
+
+    <update id="destroy">
+        update pro_house_bill_detail set is_approve=3 where id=#{id}
+    </update>
+
+    <select id="getMoneyByYear" resultType="Double">
+        select SUM(money) from pro_house_bill_detail where is_approve=1 and in_date LIKE cast(#{date}+'%' as varchar(10))
+    </select>
+</mapper>

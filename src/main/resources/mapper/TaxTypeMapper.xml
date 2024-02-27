@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.TaxTypeMapper">
+    <resultMap id="taxType" type="com.yuesheng.pm.entity.TaxType">
+        <id column="pj02001" property="id" jdbcType="VARCHAR"></id>
+        <result column="pj02002" property="name" jdbcType="VARCHAR"></result>
+        <result column="pj02003" property="tax" jdbcType="DECIMAL"></result>
+        <result column="pj02004" property="remark" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getTaxTypes" resultMap="taxType">
+        SELECT * FROM sdpj020
+    </select>
+    <select id="getTypeById" resultMap="taxType">
+        SELECT * FROM sdpj020 WHERE pj02001=#{id}
+    </select>
+    <insert id="insert">
+        insert into sdpj020 values(#{id},#{name},#{tax},#{remark})
+    </insert>
+</mapper>

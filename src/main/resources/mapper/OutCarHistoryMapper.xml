@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.OutCarHistoryMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.OutCarHistory" id="OutCarHistoryMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="startLatitude" column="start_latitude" jdbcType="VARCHAR"/>
+        <result property="startLongitude" column="start_longitude" jdbcType="VARCHAR"/>
+        <result property="startTime" column="start_time" jdbcType="VARCHAR"/>
+        <result property="startAddrName" column="start_addr_name" jdbcType="VARCHAR"/>
+        <result property="startImg" column="start_img" jdbcType="VARCHAR"/>
+        <result property="endLatitude" column="end_latitude" jdbcType="VARCHAR"/>
+        <result property="endLongitude" column="end_longitude" jdbcType="VARCHAR"/>
+        <result property="endTime" column="end_time" jdbcType="VARCHAR"/>
+        <result property="endAddrName" column="end_addr_name" jdbcType="VARCHAR"/>
+        <result property="endImg" column="end_img" jdbcType="VARCHAR"/>
+        <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+        <result property="systemKm" column="system_km" jdbcType="DECIMAL"/>
+        <result property="inputKm" column="input_km" jdbcType="DECIMAL"/>
+        <result property="isParkingCost" column="is_parking_cost" jdbcType="INTEGER"/>
+        <result property="parkingCostImg" column="parking_cost_img" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="toll" column="toll" jdbcType="DECIMAL"/>
+        <result property="startSmartKm" column="start_smart_km" jdbcType="DECIMAL"/>
+        <result property="endSmartKm" column="end_smart_km" jdbcType="DECIMAL"/>
+        <result property="carType" column="car_type" jdbcType="INTEGER"/>
+
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <id column="staff_id" property="id" jdbcType="VARCHAR"></id>
+            <result column="staff_name" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="section" javaType="com.yuesheng.pm.entity.Section">
+            <id column="section_id" property="id" jdbcType="VARCHAR"></id>
+            <result column="section_name" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="project" javaType="com.yuesheng.pm.entity.Project">
+            <id column="project_id" property="id" jdbcType="VARCHAR"></id>
+            <result column="project_name" property="name" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+
+    <resultMap id="OutCarHistoryGroupMap" type="com.yuesheng.pm.model.OutCarHistoryGroup">
+        <result column="input_km" property="km" jdbcType="DECIMAL"></result>
+        <result column="system_km" property="systemKm" jdbcType="DECIMAL"></result>
+        <result column="toll" property="toll" jdbcType="DECIMAL"></result>
+        <association property="project" javaType="com.yuesheng.pm.entity.Project">
+            <id column="project_id" property="id" jdbcType="VARCHAR"></id>
+            <result column="project_name" property="name" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+
+    <select id="queryGroupProject" resultMap="OutCarHistoryGroupMap">
+        select project_id,project_name,sum(input_km) as input_km,sum(system_km) as system_km,
+        sum(toll) as toll
+        from out_car_history
+        <where>
+            <if test="startTime != null">
+                and start_time between #{startTime} and #{endTime}
+            </if>
+        </where>
+        group by project_id, project_name
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="OutCarHistoryMap">
+        select id,
+               staff_id,
+               staff_name,
+               section_id,
+               section_name,
+               start_latitude,
+               start_longitude,
+               start_time,
+               start_addr_name,
+               start_img,
+               end_latitude,
+               end_longitude,
+               end_time,
+               end_addr_name,
+               end_img,
+               datetime,
+               system_km,
+               input_km,
+               is_parking_cost,
+               parking_cost_img,
+               remark,
+               project_id,
+               project_name,
+               toll,
+               start_smart_km,
+               end_smart_km,
+               car_type
+        from out_car_history
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="OutCarHistoryMap">
+        select
+        id, staff_id, staff_name, section_id, section_name, start_latitude, start_longitude, start_time,
+        start_addr_name, start_img, end_latitude, end_longitude, end_time, end_addr_name, end_img,
+        datetime, system_km, input_km, is_parking_cost, parking_cost_img,remark,project_id,project_name,
+        toll,start_smart_km,end_smart_km,car_type
+        from out_car_history
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="staff != null">
+                and staff_id = #{staff.id}
+            </if>
+            <if test="section != null">
+                and section_id = #{section.id}
+            </if>
+            <if test="startLatitude != null and startLatitude != ''">
+                and start_latitude = #{startLatitude}
+            </if>
+            <if test="startLongitude != null and startLongitude != ''">
+                and start_longitude = #{startLongitude}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and start_time = #{startTime}
+            </if>
+            <if test="startAddrName != null">
+                and start_addr_name = #{startAddrName}
+            </if>
+            <if test="startImg != null and startImg != ''">
+                and start_img = #{startImg}
+            </if>
+            <if test="endLatitude != null and endLatitude != ''">
+                and end_latitude = #{endLatitude}
+            </if>
+            <if test="endLongitude != null and endLongitude != ''">
+                and end_longitude = #{endLongitude}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and end_time = #{endTime}
+            </if>
+            <if test="endAddrName != null and endAddrName != ''">
+                and end_addr_name = #{endAddrName}
+            </if>
+            <if test="endImg != null and endImg != ''">
+                and end_img = #{endImg}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="systemKm != null">
+                and system_km = #{systemKm}
+            </if>
+            <if test="inputKm != null">
+                and input_km = #{inputKm}
+            </if>
+            <if test="isParkingCost != null">
+                and is_parking_cost = #{isParkingCost}
+            </if>
+            <if test="parkingCostImg != null and parkingCostImg != ''">
+                and parking_cost_img = #{parkingCostImg}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="queryAll" resultMap="OutCarHistoryMap">
+        select
+        distinct a.*
+        from out_car_history as a
+        <if test="expenseFlag != null and expenseFlag == true">
+            left join out_car_expense_detail as b on b.out_history_id=a.id
+        </if>
+        <where>
+            <if test="id != null">
+                and a.id = #{staff.id}
+            </if>
+            <if test="expenseFlag != null and expenseFlag == true">
+                and b.out_history_id is null
+            </if>
+            <if test="staff != null">
+                and a.staff_id = #{staff.id}
+            </if>
+            <if test="section != null">
+                and a.section_id = #{section.id}
+            </if>
+
+            <if test="startTime != null">
+                and a.start_time between #{startTime} and #{endTime}
+            </if>
+            <if test="startAddrName != null">
+                and a.start_addr_name = #{startAddrName}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and a.datetime = #{datetime}
+            </if>
+            <if test="systemKm != null">
+                and a.system_km = #{systemKm}
+            </if>
+            <if test="inputKm != null">
+                and a.input_km = #{inputKm}
+            </if>
+            <if test="isParkingCost != null">
+                and a.is_parking_cost = #{isParkingCost}
+            </if>
+            <if test="parkingCostImg != null and parkingCostImg != ''">
+                and a.parking_cost_img = #{parkingCostImg}
+            </if>
+            <if test="project != null and project.id != ''">
+                and a.project_id = #{project.id}
+            </if>
+        </where>
+    </select>
+    <select id="queryByNoProject" resultMap="OutCarHistoryMap">
+        select
+        id, staff_id, staff_name, section_id, section_name, start_latitude, start_longitude, start_time,
+        start_addr_name, start_img, end_latitude, end_longitude, end_time, end_addr_name, end_img, datetime,
+        system_km, input_km, is_parking_cost, parking_cost_img,remark,project_id,project_name,
+        toll,start_smart_km,end_smart_km,car_type
+        from out_car_history
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="staff != null">
+                and staff_id = #{staff.id}
+            </if>
+            <if test="section != null">
+                and section_id = #{section.id}
+            </if>
+
+            <if test="startTime != null">
+                and start_time between #{startTime} and #{endTime} and project_id is null
+            </if>
+            <if test="startAddrName != null">
+                and start_addr_name = #{startAddrName}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="systemKm != null">
+                and system_km = #{systemKm}
+            </if>
+            <if test="inputKm != null">
+                and input_km = #{inputKm}
+            </if>
+            <if test="isParkingCost != null">
+                and is_parking_cost = #{isParkingCost}
+            </if>
+            <if test="parkingCostImg != null and parkingCostImg != ''">
+                and parking_cost_img = #{parkingCostImg}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from out_car_history
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="staffName != null and staffName != ''">
+                and staff_name = #{staffName}
+            </if>
+            <if test="sectionId != null and sectionId != ''">
+                and section_id = #{sectionId}
+            </if>
+            <if test="sectionName != null and sectionName != ''">
+                and section_name = #{sectionName}
+            </if>
+            <if test="startLatitude != null and startLatitude != ''">
+                and start_latitude = #{startLatitude}
+            </if>
+            <if test="startLongitude != null and startLongitude != ''">
+                and start_longitude = #{startLongitude}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and start_time = #{startTime}
+            </if>
+            <if test="startAddrName != null">
+                and start_addr_name = #{startAddrName}
+            </if>
+            <if test="startImg != null and startImg != ''">
+                and start_img = #{startImg}
+            </if>
+            <if test="endLatitude != null and endLatitude != ''">
+                and end_latitude = #{endLatitude}
+            </if>
+            <if test="endLongitude != null and endLongitude != ''">
+                and end_longitude = #{endLongitude}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and end_time = #{endTime}
+            </if>
+            <if test="endAddrName != null and endAddrName != ''">
+                and end_addr_name = #{endAddrName}
+            </if>
+            <if test="endImg != null and endImg != ''">
+                and end_img = #{endImg}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="systemKm != null">
+                and system_km = #{systemKm}
+            </if>
+            <if test="inputKm != null">
+                and input_km = #{inputKm}
+            </if>
+            <if test="isParkingCost != null">
+                and is_parking_cost = #{isParkingCost}
+            </if>
+            <if test="parkingCostImg != null and parkingCostImg != ''">
+                and parking_cost_img = #{parkingCostImg}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into out_car_history(id, staff_id, staff_name, section_id, section_name, start_latitude,
+                                    start_longitude, start_time, start_addr_name, start_img, end_latitude,
+                                    end_longitude, end_time, end_addr_name, end_img, datetime, system_km,
+                                    input_km, is_parking_cost, parking_cost_img, remark, project_id, project_name,
+                                    car_type)
+        values (#{id}, #{staff.id}, #{staff.name}, #{section.id}, #{section.name}, #{startLatitude},
+                #{startLongitude}, #{startTime}, #{startAddrName}, #{startImg}, #{endLatitude},
+                #{endLongitude}, #{endTime}, #{endAddrName}, #{endImg}, #{datetime}, #{systemKm},
+                #{inputKm}, #{isParkingCost}, #{parkingCostImg}, #{remark}, #{project.id}, #{project.name}, #{carType})
+    </insert>
+
+    <insert id="insertBatch">
+        insert into out_car_history(id,staff_id, staff_name, section_id, section_name, start_latitude,
+        start_longitude, start_time, start_addr_name, start_img, end_latitude,
+        end_longitude, end_time, end_addr_name, end_img, datetime, system_km,
+        input_km, is_parking_cost, parking_cost_img,project_id,project_name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id},#{entity.staff.id}, #{entity.staff.name}, #{entity.section.id}, #{entity.section.name},
+            #{entity.startLatitude}, #{entity.startLongitude}, #{entity.startTime}, #{entity.startAddrName},
+            #{entity.startImg}, #{entity.endLatitude}, #{entity.endLongitude}, #{entity.endTime},
+            #{entity.endAddrName}, #{entity.endImg}, #{entity.datetime}, #{entity.systemKm},
+            #{entity.inputKm}, #{entity.isParkingCost}, #{entity.parkingCostImg},#{project.id},#{project.name})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into out_car_history(staff_id, staff_name, section_id, section_name, start_latitude,
+        start_longitude, start_time, start_addr_name, start_img, end_latitude,
+        end_longitude, end_time, end_addr_name, end_img, datetime, system_km,
+        input_km, is_parking_cost, parking_cost_img,project_id,project_name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.staff.id}, #{entity.staff.name}, #{entity.section.id}, #{entity.section.name},
+            #{entity.startLatitude}, #{entity.startLongitude}, #{entity.startTime}, #{entity.startAddrName},
+            #{entity.startImg}, #{entity.endLatitude}, #{entity.endLongitude}, #{entity.endTime},
+            #{entity.endAddrName}, #{entity.endImg}, #{entity.datetime}, #{entity.systemKm},
+            #{entity.inputKm}, #{entity.isParkingCost}, #{entity.parkingCostImg},#{project.id},#{project.name})
+        </foreach>
+        on duplicate key update
+        staff_id = values(staff_id),
+        staff_name = values(staff_name),
+        section_id = values(section_id),
+        section_name = values(section_name),
+        start_latitude = values(start_latitude),
+        start_longitude = values(start_longitude),
+        start_time = values(start_time),
+        start_addr_name = values(start_addr_name),
+        start_img = values(start_img),
+        end_latitude = values(end_latitude),
+        end_longitude = values(end_longitude),
+        end_time = values(end_time),
+        end_addr_name = values(end_addr_name),
+        end_img = values(end_img),
+        datetime = values(datetime),
+        system_km = values(system_km),
+        input_km = values(input_km),
+        is_parking_cost = values(is_parking_cost),
+        parking_cost_img = values(parking_cost_img),
+        project_id = values(project_id),
+        project_name = values(project_name)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update out_car_history
+        <set>
+            <if test="staff != null">
+                staff_id = #{staff.id},
+            </if>
+            <if test="section != null">
+                section_id = #{section.id},
+            </if>
+            <if test="startLatitude != null and startLatitude != ''">
+                start_latitude = #{startLatitude},
+            </if>
+            <if test="startLongitude != null and startLongitude != ''">
+                start_longitude = #{startLongitude},
+            </if>
+            <if test="startTime != null and startTime != ''">
+                start_time = #{startTime},
+            </if>
+            <if test="startAddrName != null">
+                start_addr_name = #{startAddrName},
+            </if>
+            <if test="startImg != null and startImg != ''">
+                start_img = #{startImg},
+            </if>
+            <if test="endLatitude != null and endLatitude != ''">
+                end_latitude = #{endLatitude},
+            </if>
+            <if test="endLongitude != null and endLongitude != ''">
+                end_longitude = #{endLongitude},
+            </if>
+            <if test="endTime != null and endTime != ''">
+                end_time = #{endTime},
+            </if>
+            <if test="endAddrName != null and endAddrName != ''">
+                end_addr_name = #{endAddrName},
+            </if>
+            <if test="endImg != null and endImg != ''">
+                end_img = #{endImg},
+            </if>
+            <if test="datetime != null and datetime != ''">
+                datetime = #{datetime},
+            </if>
+            <if test="systemKm != null">
+                system_km = #{systemKm},
+            </if>
+            <if test="inputKm != null">
+                input_km = #{inputKm},
+            </if>
+            <if test="isParkingCost != null">
+                is_parking_cost = #{isParkingCost},
+            </if>
+            <if test="parkingCostImg != null and parkingCostImg != ''">
+                parking_cost_img = #{parkingCostImg},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="toll != null">
+                toll = #{toll},
+            </if>
+            <if test="startSmartKm != null">
+                start_smart_km = #{startSmartKm},
+            </if>
+            <if test="endSmartKm != null">
+                end_smart_km = #{endSmartKm},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from out_car_history
+        where id = #{id}
+    </delete>
+
+</mapper>
+

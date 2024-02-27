@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ConditionMapper">
+    <resultMap id="condition" type="com.yuesheng.pm.entity.Condition">
+        <id jdbcType="VARCHAR" column="po020_Condition01" property="id"></id>
+        <result jdbcType="VARCHAR" column="po020_Condition02" property="courseId"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition03" property="column"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition04" property="name"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition05" property="beforeBracket"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition06" property="operation"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition07" property="value"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition08" property="codition08"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition09" property="afterBracket"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition10" property="condition10"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition11" property="condition11"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition12" property="condition12"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition13" property="condition13"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition14" property="condition14"></result>
+        <result jdbcType="VARCHAR" column="po020_Condition15" property="condition15"></result>
+    </resultMap>
+    <select id="getByCourseId" resultMap="condition">
+        SELECT * FROM sdpo020_Condition WHERE po020_Condition02=#{courseId} order by po020_Condition15 ASC
+    </select>
+    <update id="update">
+        update sdpo020_Condition set
+        po020_Condition03=#{column},
+        po020_Condition04=#{name},
+        po020_Condition06=#{operation},
+        po020_Condition07=#{value},
+        po020_Condition08=#{value},
+        po020_Condition09=#{afterBracket},
+        po020_Condition05=#{beforeBracket}
+        where po020_Condition01=#{id}
+    </update>
+    <insert id="insert">
+        insert into sdpo020_Condition
+        (po020_Condition01,po020_Condition02,po020_Condition03,po020_Condition04,po020_Condition05,po020_Condition06,po020_Condition07,po020_Condition08,po020_Condition09,po020_Condition10,po020_Condition11,po020_Condition12,po020_Condition13,po020_Condition14,po020_Condition15)
+        values (#{id},#{courseId},#{column},#{name},#{beforeBracket},#{operation},#{value},#{value},#{afterBracket},#{po020_Condition10},#{po020_Condition11},#{po020_Condition12},#{po020_Condition13},#{po020_Condition14},#{po020_Condition15})
+    </insert>
+
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.FixedAssetsMapper">
+    <resultMap id="fixed" type="com.yuesheng.pm.entity.FixedAssets">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="series" property="series" jdbcType="VARCHAR"></result>
+        <result column="model" property="model" jdbcType="VARCHAR"></result>
+        <result column="pro_date" property="proDate" jdbcType="VARCHAR"></result>
+        <result column="section" property="section" jdbcType="VARCHAR"></result>
+        <result column="person" property="person" jdbcType="VARCHAR"></result>
+        <result column="have_sum" property="haveSum" jdbcType="DECIMAL"></result>
+        <result column="c_sum" property="checkSum" jdbcType="DECIMAL"></result>
+        <result column="rc_sum" property="reSum" jdbcType="DECIMAL"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <result column="date" property="date" jdbcType="VARCHAR"></result>
+        <result column="fixed_id" property="fixedId" jdbcType="VARCHAR"></result>
+        <result column="state" property="state" jdbcType="TINYINT"></result>
+        <association property="folderObj" column="type_id" select="queryFolderById"
+                     javaType="com.yuesheng.pm.entity.Folder"></association>
+    </resultMap>
+    <resultMap id="folder" type="com.yuesheng.pm.entity.Folder">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="root" property="rootId" jdbcType="VARCHAR"></result>
+        <result column="parent" property="parent" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="queryFolderById" resultMap="folder">
+        SELECT * FROM pro_fa_folder WHERE id=#{id}
+    </select>
+    <insert id="insertType">
+        INSERT INTO pro_fa_folder VALUES(#{id},#{name},#{rootId},#{parent})
+    </insert>
+    <select id="getType" resultMap="folder">
+        select * from pro_fa_folder WHERE name=#{name}
+    </select>
+    <select id="querySeriesCount" resultType="Integer">
+        SELECT COUNT(id) FROM pro_fa where series like #{fix}+'%'
+    </select>
+    <select id="querySeriesCount" resultType="Integer" databaseId="mysql">
+        SELECT COUNT(id) FROM pro_fa where series like concat(#{fix},'%')
+    </select>
+    <select id="queryByParam" resultMap="fixed">
+        SELECT a.* FROM pro_fa AS a LEFT JOIN pro_fa_folder AS b
+        ON a.type_id=b.id
+        <where>
+            <if test="str != null">
+                and a.name+series+model+pro_date+section+person+CAST(have_sum AS VARCHAR(100))+CAST(ISNULL(c_sum,0) AS
+                VARCHAR(100))+CAST(ISNULL(re_sum,0) AS VARCHAR(100))+remark+b.name
+                LIKE '%'+#{str}+'%'
+            </if>
+            <if test="fixedId != null">
+                and fixed_id=#{fixedId}
+            </if>
+            <if test="person != null">
+                and person=#{person}
+            </if>
+            <if test="section != null">
+                and section=#{person}
+            </if>
+            <if test="state != null">
+                and state=#{state}
+            </if>
+        </where>
+
+    </select>
+    <select id="queryByParam" resultMap="fixed" databaseId="mysql">
+        SELECT a.* FROM pro_fa AS a LEFT JOIN pro_fa_folder AS b
+        ON a.type_id=b.id
+        <where>
+            <if test="str != null">
+                and concat(a.name,series,model,pro_date,section,person,have_sum,IFNULL(c_sum,0),IFNULL(re_sum,0),remark,b.name)
+                LIKE concat('%',#{str},'%')
+            </if>
+            <if test="fixedId != null">
+                and fixed_id=#{fixedId}
+            </if>
+            <if test="person != null">
+                and person=#{person}
+            </if>
+            <if test="section != null">
+                and section=#{person}
+            </if>
+            <if test="state != null">
+                and state=#{state}
+            </if>
+        </where>
+
+    </select>
+
+    <select id="queryByParamCount" resultType="java.lang.Integer">
+        SELECT COUNT(a.id) FROM pro_fa AS a LEFT JOIN pro_fa_folder AS b
+        ON a.type_id=b.id
+        <if test="str != null">
+            WHERE a.name+series+model+pro_date+section+person+CAST(have_sum AS VARCHAR(100))+CAST(ISNULL(c_sum,0) AS
+            VARCHAR(100))+CAST(ISNULL(re_sum,0) AS VARCHAR(100))+remark+b.name
+            LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="queryByParamCount" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT COUNT(a.id) FROM pro_fa AS a LEFT JOIN pro_fa_folder AS b
+        ON a.type_id=b.id
+        <if test="str != null">
+            WHERE and concat(a.name,series,model,pro_date,section,person,have_sum,IFNULL(c_sum,0),IFNULL(re_sum,0),remark,b.name)
+            LIKE concat('%',#{str},'%')
+        </if>
+    </select>
+    <select id="queryById" resultMap="fixed">
+        SELECT * FROM pro_fa WHERE id=#{id}
+    </select>
+    <update id="update">
+        UPDATE pro_fa
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="series != null">
+                series=#{series},
+            </if>
+            <if test="model != null">
+                model=#{model},
+            </if>
+            <if test="proDate != null">
+                pro_date=#{proDate},
+            </if>
+            <if test="section != null">
+                section=#{section},
+            </if>
+            <if test="person != null">
+                person=#{person},
+            </if>
+            <if test="haveSum != null">
+                have_sum=#{haveSum},
+            </if>
+            <if test="checkSum != null">
+                c_sum=#{checkSum},
+            </if>
+            <if test="reSum != null">
+                re_sum=#{reSum},
+            </if>
+            <if test="remark != null">
+                remark=#{remark},
+            </if>
+            <if test="checkSum != null">
+                c_sum=#{checkSum},
+            </if>
+            <if test="folderObj != null">
+                type_id=#{folderObj.id},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="money != null">
+                money=#{money},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM pro_fa WHERE id=#{id}
+    </delete>
+    <delete id="deleteByFixed">
+        DELETE FROM pro_fa WHERE fixed_id=#{fixedId}
+    </delete>
+    <insert id="insert">
+        INSERT INTO pro_fa (id,name,series,model,pro_date,section,person,have_sum,c_sum,re_sum,remark,type_id,date,fixed_id,state,money)
+        VALUES (#{id},#{name},#{series},#{model},#{proDate},#{section},#{person},#{haveSum},#{checkSum},#{reSum},#{remark},#{folderObj.id},#{date},#{fixedId},#{state},#{money})
+    </insert>
+
+    <select id="getFixedAssetsByMultiId" resultMap="fixed">
+        SELECT * FROM pro_fa
+        <if test="array != null">
+            WHERE id in
+            <foreach collection="array" item="id" index="index" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+</mapper>

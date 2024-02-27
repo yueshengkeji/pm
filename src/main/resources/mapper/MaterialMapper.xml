@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.MaterialMapper">
+    <resultMap id="material" type="com.yuesheng.pm.entity.Material">
+        <id column="pm00201" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm00202" property="name" jdbcType="VARCHAR"></result>
+        <result column="pm00203" property="folder" jdbcType="VARCHAR"></result>
+        <result column="pm00205" property="model" jdbcType="VARCHAR"></result>
+        <result column="pm00206" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pm00207" property="planPrice" jdbcType="DECIMAL"></result>
+        <result column="pm00221" property="brand" jdbcType="VARCHAR"></result>
+        <result column="pm00222" property="producingArea" jdbcType="VARCHAR"></result>
+        <result column="pm00503" property="storageSum" jdbcType="DECIMAL"></result>
+        <result column="pm00220" property="property" jdbcType="DECIMAL"></result>
+        <result column="pm00504" property="costPrice" jdbcType="DECIMAL"></result>
+        <result column="pm00216" property="lastPutDate" jdbcType="VARCHAR"></result>
+        <result column="pm00217" property="date" jdbcType="VARCHAR"></result>
+        <result column="pm00223" property="lastPrice" jdbcType="DECIMAL"></result>
+        <result column="pm00505" property="putMoney" jdbcType="DECIMAL"></result>
+        <result column="pm00209" property="allStorageSum" jdbcType="DECIMAL"></result>
+    </resultMap>
+    <resultMap id="mater" type="com.yuesheng.pm.entity.Material">
+        <id column="pm00201" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm00202" property="name" jdbcType="VARCHAR"></result>
+        <result column="pm00205" property="model" jdbcType="VARCHAR"></result>
+        <result column="pm00207" property="planPrice" jdbcType="DECIMAL"></result>
+        <result column="pm00221" property="brand" jdbcType="VARCHAR"></result>
+        <result column="pm00222" property="producingArea" jdbcType="VARCHAR"></result>
+        <result column="pm00503" property="storageSum" jdbcType="DECIMAL"></result>
+        <result column="pm00504" property="costPrice" jdbcType="DECIMAL"></result>
+        <result column="pm00220" property="property" jdbcType="DECIMAL"></result>
+        <result column="pm00216" property="lastPutDate" jdbcType="VARCHAR"></result>
+        <result column="pm00217" property="date" jdbcType="VARCHAR"></result>
+        <result column="pm00223" property="lastPrice" jdbcType="DECIMAL"></result>
+        <result column="pm00505" property="putMoney" jdbcType="DECIMAL"></result>
+        <result column="pm00209" property="allStorageSum" jdbcType="DECIMAL"></result>
+        <association property="unit" column="pm00227"
+                     select="com.yuesheng.pm.mapper.UnitMapper.getUnit"></association>
+    </resultMap>
+    <!--材料目录-->
+    <resultMap id="folder" type="com.yuesheng.pm.entity.Folder">
+        <id column="pm00101" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm00102" property="name" jdbcType="VARCHAR"></result>
+        <result column="pm00103" property="parent" jdbcType="VARCHAR"></result>
+        <result column="pm00104" property="rootId" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <delete id="deleteFucai">
+        delete from pro_fucai where material_id=#{id}
+    </delete>
+    <insert id="insertFucai">
+        insert into pro_fucai (material_id,price) values(#{id},#{planPrice})
+    </insert>
+    <insert id="updateFucaiPrice">
+        update pro_fucai set price=#{planPrice} where material_id=#{id}
+    </insert>
+    <select id="getFuCaiPrice" resultType="Double">
+        select price from pro_fucai where material_id=#{id}
+    </select>
+    <select id="getMaterialByid" parameterType="String" resultMap="mater">
+        select pm1.pm00201,pm1.pm00202,pm1.pm00205,pm1.pm00207,pm1.pm00209,pm2.pm00302 AS pm00227,
+			pm1.pm00221,pm1.pm00222,pa1.pa01302 unitName
+        from sdpm002 as pm1
+        LEFT JOIN sdpm003 as pm2 ON pm1.pm00201=pm2.pm00301
+        LEFT JOIN sdpa013 as pa1 ON pa1.pa01301=pm2.pm00302
+        WHERE pm00201=#{id}
+    </select>
+    <update id="updateMaterSum" parameterType="com.yuesheng.pm.entity.Material">
+        UPDATE sdpm002 SET pm00209=#{storageSum} WHERE pm00201=#{id}
+    </update>
+    <update id="updateMaterSums" parameterType="java.util.List">
+       <foreach collection="maters" item="item" separator=";">
+           UPDATE sdpm002 SET pm00209+=#{item.storageSum} WHERE pm00201=#{item.id}
+       </foreach>
+    </update>
+    <update id="updateMaterSum_" parameterType="com.yuesheng.pm.entity.Material">
+        UPDATE sdpm002 SET pm00209-=#{storageSum} WHERE pm00201=#{id}
+    </update>
+
+    <select id="queryStorage" resultMap="mater">
+        select distinct pm1.pm00201,pm1.pm00202,pm1.pm00205,pm1.pm00207,pm2.pm00302 AS pm00227,
+                        pm1.pm00221,pm1.pm00222,pa1.pa01302,pm1.pm00217,pm1.pm00216,storage.pm00503,storage.pm00504
+        from sdpm002 as pm1
+                 LEFT JOIN sdpm003 as pm2 ON pm1.pm00201=pm2.pm00301
+                 LEFT JOIN sdpa013 as pa1 ON pa1.pa01301=pm2.pm00302
+                 LEFT JOIN sdpm005_order as ord on pm1.pm00201=ord.material_id
+                 LEFT JOIN sdpm005 AS storage ON storage.pm00502=pm1.pm00201
+        <where>
+            <if test="materialName != null">
+                and pm1.pm00202 = #{materialName}
+            </if>
+            <if test="materialModel != null">
+                and pm1.pm00205 = #{materialModel}
+            </if>
+            <if test="materialBrand != null">
+                and pm1.pm00221 = #{materialBrand}
+            </if>
+            <if test="storage != null">
+                and pm00501 = #{storage}
+            </if>
+            <if test="repertory == 1">
+                and pm00503 &gt; 0
+            </if>
+        </where>
+    </select>
+
+    <select id="getMaterialByType" resultMap="mater">
+        select distinct pm1.pm00201,pm1.pm00202,pm1.pm00205,pm1.pm00207,pm1.pm00209,pm2.pm00302 AS pm00227,
+        pm1.pm00221,pm1.pm00222,pa1.pa01302,pm1.pm00217,pm1.pm00216,storage.pm00503,storage.pm00504,storage.pm00505
+        from sdpm002 as pm1
+        LEFT JOIN sdpm003 as pm2 ON pm1.pm00201=pm2.pm00301
+        LEFT JOIN sdpa013 as pa1 ON pa1.pa01301=pm2.pm00302
+        LEFT JOIN sdpm005_order as ord on pm1.pm00201=ord.material_id
+        LEFT JOIN sdpm005 AS storage ON storage.pm00502=pm1.pm00201
+        <if test="isFuCai != null">
+            RIGHT JOIN pro_fucai as fc on pm1.pm00201=fc.material_id and fc.is_stop=0
+        </if>
+        <where>
+            <if test="str != null">
+                AND pm1.pm00201+pm1.pm00202+pm1.pm00205+pm1.pm00221+pm00222 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="type != null">
+                AND storage.pm00503 &gt; #{type}
+            </if>
+            <if test="folder != null">
+                AND pm1.pm00203 IN(${folder})
+            </if>
+            <if test="materialName != null">
+                and pm1.pm00202 LIKE '%'+#{materialName}+'%'
+            </if>
+            <if test="materialModel != null">
+                and pm1.pm00205 LIKE '%'+#{materialModel}+'%'
+            </if>
+            <if test="materialBrand != null">
+                and pm1.pm00221 LIKE '%'+#{materialBrand}+'%'
+            </if>
+            <if test="storage != null">
+                and pm00501 = #{storage}
+            </if>
+            <if test="repertory == true">
+                and pm00503 &gt; 0
+            </if>
+        </where>
+    </select>
+    <select id="getMaterialByType" resultMap="mater" databaseId="mysql">
+        select distinct pm1.pm00201,pm1.pm00202,pm1.pm00205,pm1.pm00207,pm1.pm00209,pm2.pm00302 AS pm00227,
+        pm1.pm00221,pm1.pm00222,pa1.pa01302,pm1.pm00217,pm1.pm00216,storage.pm00503,storage.pm00504,storage.pm00505
+        from sdpm002 as pm1
+        LEFT JOIN sdpm003 as pm2 ON pm1.pm00201=pm2.pm00301
+        LEFT JOIN sdpa013 as pa1 ON pa1.pa01301=pm2.pm00302
+        LEFT JOIN sdpm005_order as ord on pm1.pm00201=ord.material_id
+        LEFT JOIN sdpm005 AS storage ON storage.pm00502=pm1.pm00201
+        <if test="isFuCai != null">
+            RIGHT JOIN pro_fucai as fc on pm1.pm00201=fc.material_id and fc.is_stop=0
+        </if>
+        <where>
+            <if test="str != null">
+                AND concat(pm1.pm00201,pm1.pm00202,pm1.pm00205,pm1.pm00221,pm00222) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="type != null">
+                AND storage.pm00503 &gt; #{type}
+            </if>
+            <if test="folder != null">
+                AND pm1.pm00203 IN(${folder})
+            </if>
+            <if test="materialName != null">
+                and pm1.pm00202 LIKE concat('%',#{materialName},'%')
+            </if>
+            <if test="materialModel != null">
+                and pm1.pm00205 LIKE concat('%',#{materialModel},'%')
+            </if>
+            <if test="materialBrand != null">
+                and pm1.pm00221 LIKE concat('%',#{materialBrand},'%')
+            </if>
+            <if test="storage != null">
+                and pm00501 = #{storage}
+            </if>
+            <if test="repertory == true">
+                and pm00503 &gt; 0
+            </if>
+        </where>
+    </select>
+
+    <select id="getMaterialByTypeCount" resultType="java.lang.Integer">
+        select count(distinct pm1.pm00201)
+        from sdpm002 as pm1
+        LEFT JOIN sdpm003 as pm2 ON pm1.pm00201=pm2.pm00301
+        LEFT JOIN sdpa013 as pa1 ON pa1.pa01301=pm2.pm00302
+        LEFT JOIN sdpm005_order as ord on pm1.pm00201=ord.material_id
+        LEFT JOIN sdpm005 AS storage ON storage.pm00502=pm1.pm00201
+        <if test="isFuCai != null">
+            RIGHT JOIN pro_fucai as fc on pm1.pm00201=fc.material_id and fc.is_stop=0
+        </if>
+        <where>
+            <if test="str != null">
+                AND pm1.pm00201+pm1.pm00202+pm1.pm00205+pm1.pm00221+pm00222 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="type != null">
+                AND storage.pm00503 &gt; #{type}
+            </if>
+            <if test="folder != null">
+                AND pm1.pm00203 IN(${folder})
+            </if>
+            <if test="materialName != null">
+                and pm1.pm00202 LIKE '%'+#{materialName}+'%'
+            </if>
+            <if test="materialModel != null">
+                and pm1.pm00205 LIKE '%'+#{materialModel}+'%'
+            </if>
+            <if test="materialBrand != null">
+                and pm1.pm00221 LIKE '%'+#{materialBrand}+'%'
+            </if>
+            <if test="storage != null">
+                and pm00501 = #{storage}
+            </if>
+            <if test="repertory == true">
+                and pm00503 &gt; 0
+            </if>
+        </where>
+    </select>
+    <select id="getMaterialByTypeCount" resultType="java.lang.Integer" databaseId="mysql">
+        select count(distinct pm1.pm00201)
+        from sdpm002 as pm1
+        LEFT JOIN sdpm003 as pm2 ON pm1.pm00201=pm2.pm00301
+        LEFT JOIN sdpa013 as pa1 ON pa1.pa01301=pm2.pm00302
+        LEFT JOIN sdpm005_order as ord on pm1.pm00201=ord.material_id
+        LEFT JOIN sdpm005 AS storage ON storage.pm00502=pm1.pm00201
+        <if test="isFuCai != null">
+            RIGHT JOIN pro_fucai as fc on pm1.pm00201=fc.material_id and fc.is_stop=0
+        </if>
+        <where>
+            <if test="str != null">
+                AND concat(pm1.pm00201,pm1.pm00202,pm1.pm00205,pm1.pm00221,pm00222) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="type != null">
+                AND storage.pm00503 &gt; #{type}
+            </if>
+            <if test="folder != null">
+                AND pm1.pm00203 IN(${folder})
+            </if>
+            <if test="materialName != null">
+                and pm1.pm00202 LIKE concat('%',#{materialName},'%')
+            </if>
+            <if test="materialModel != null">
+                and pm1.pm00205 LIKE concat('%',#{materialModel},'%')
+            </if>
+            <if test="materialBrand != null">
+                and pm1.pm00221 LIKE concat('%',#{materialBrand},'%')
+            </if>
+            <if test="storage != null">
+                and pm00501 = #{storage}
+            </if>
+            <if test="repertory == true">
+                and pm00503 &gt; 0
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="materHistory" type="com.yuesheng.pm.model.MaterUseHistory">
+        <id column="detailId" property="detailId" jdbcType="VARCHAR"></id>
+        <result column="pm00201" property="id" jdbcType="VARCHAR"></result>
+        <result column="pm02602" property="putDate" jdbcType="VARCHAR"></result>
+        <result column="pm02603" property="putNumber" jdbcType="VARCHAR"></result>
+        <result column="pm02002" property="outDate" jdbcType="VARCHAR"></result>
+        <result column="pm02105" property="outPrice" jdbcType="VARCHAR"></result>
+        <result column="pm02106" property="outMoney" jdbcType="VARCHAR"></result>
+        <result column="pm02003" property="outNumber" jdbcType="VARCHAR"></result>
+        <result column="pm02706" property="putSum" jdbcType="DECIMAL"></result>
+        <result column="pm02104" property="outSum" jdbcType="DECIMAL"></result>
+        <result column="money" property="money" jdbcType="DECIMAL"></result>
+
+        <association property="material" javaType="com.yuesheng.pm.entity.Material">
+            <result column="pm00201" property="id" jdbcType="VARCHAR"></result>
+            <result column="pm00202" property="name" jdbcType="VARCHAR"></result>
+            <result column="pm00205" property="model" jdbcType="VARCHAR"></result>
+            <result column="pm00221" property="brand" jdbcType="VARCHAR"></result>
+            <result column="pm00222" property="producingArea" jdbcType="VARCHAR"></result>
+            <result column="pm00209" property="storageSum" jdbcType="DECIMAL"></result>
+            <association property="unit" column="pm00201" select="com.yuesheng.pm.mapper.UnitMapper.getUnitByMater"></association>
+        </association>
+        <association property="project" javaType="com.yuesheng.pm.entity.Project">
+            <result column="pa00102" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <result column="pj00402" property="name" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+
+    <select id="isExist" resultMap="mater">
+        SELECT a.*,b.pm00302 AS pm00227 FROM sdpm002 AS  a
+        LEFT JOIN sdpm003 AS b ON b.pm00301=a.pm00201
+         WHERE a.pm00202=#{name} AND a.pm00205=#{model} AND a.pm00221=#{brand}
+    </select>
+    <insert id="addMater">
+        INSERT INTO sdpm002 (pm00201,pm00202,pm00203,pm00204,pm00205,pm00206,pm00207,pm00208,pm00209,pm00210,pm00211,
+        pm00212,pm00213,pm00214,pm00215,pm00216,pm00217,pm00218,pm00219,pm00220,pm00221,pm00222,pm00223,pm00224)
+        VALUES(#{id},#{name},#{folder},0,#{model},#{remark},#{planPrice},0,0,0,0,0,0,0,1,#{date},#{date},#{staffCoding},#{staffCoding},#{property},
+        #{brand},#{producingArea},0,0)
+    </insert>
+    <select id="folderExist" resultMap="folder">
+        SELECT * FROM sdpm001 WHERE pm00101=#{id}
+    </select>
+    <insert id="addFolder">
+        INSERT INTO sdpm001 (pm00101,pm00102,pm00103,pm00104) VALUES(#{id},#{name},'',#{parent})
+    </insert>
+    <update id="updateMaterMoney">
+        UPDATE sdpm002 SET pm00207=#{price} WHERE pm00201=#{id}
+    </update>
+    <select id="seekMaterialFolder" resultMap="folder">
+        SELECT * FROM sdpm001 WHERE pm00102 LIKE '%'+#{str}+'%'
+    </select>
+    <select id="seekMaterialFolder" resultMap="folder" databaseId="mysql">
+        SELECT * FROM sdpm001 WHERE pm00102 LIKE concat('%',#{str},'%')
+    </select>
+    <select id="getFolderById" resultMap="folder">
+        SELECT * FROM sdpm001 WHERE pm00101=#{id}
+    </select>
+    <update id="updateFolder">
+        UPDATE sdpm001 SET pm00102=#{name} WHERE pm00101=#{id}
+    </update>
+    <update id="updateMaterial">
+        UPDATE sdpm002 SET pm00202=#{name},
+        pm00203=#{folderObj.id},
+        pm00205=#{model},
+        pm00206=#{remark},
+        pm00207=#{planPrice},
+        pm00221=#{brand},
+        pm00222=#{producingArea} WHERE pm00201=#{id};
+        UPDATE sdpm003 SET pm00302=#{unit.id} WHERE pm00301=#{id}
+    </update>
+    <delete id="deleteMaterial">
+        DELETE FROM sdpm002 WHERE pm00201=#{id}
+    </delete>
+    <select id="getFolderByParent" resultMap="folder">
+        SELECT * FROM sdpm001 WHERE pm00103=#{parent}
+    </select>
+    <select id="getFolderByMaterId" resultMap="folder">
+        SELECT a.* FROM sdpm001 AS a RIGHT JOIN sdpm002 AS b
+        ON b.pm00203=a.pm00101 WHERE b.pm00201=#{materId}
+    </select>
+    <update id="updateLastPutDate">
+        update sdpm002 set pm00216=#{lastPutDate} where pm00201=#{id}
+    </update>
+    <update id="updateLastPro">
+        update sdpm002
+        set pm00223=#{lastPrice}
+        where pm00201 = #{id}
+    </update>
+</mapper>

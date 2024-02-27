@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.RoleMapper">
+    <resultMap id="role" type="com.yuesheng.pm.entity.Role">
+        <id column="pj00501" jdbcType="VARCHAR" property="coding"></id>
+        <result column="pj00502" jdbcType="VARCHAR" property="name"></result>
+        <result column="id" jdbcType="VARCHAR" property="id"></result>
+    </resultMap>
+    <select id="getStaffListByRoleCoding" parameterType="String" resultType="com.yuesheng.pm.entity.Staff">
+        SELECT a.pj00602 AS id,b.pj00502 AS roleName,c.pj00402 AS name FROM
+        sdpj006 AS a LEFT JOIN sdpj005 AS b
+        ON b.pj00501=a.pj00601 LEFT JOIN sdpj004 AS c
+        ON c.pj00401=a.pj00602 WHERE pj00501=#{coding} and c.pj00426=0
+    </select>
+    <select id="getRoles" resultMap="role" databaseId="sqlserver">
+        SELECT * FROM sdpj005
+        <if test="str != null">
+            WHERE pj00502 LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="getRoles" resultMap="role" databaseId="mysql">
+        SELECT * FROM sdpj005
+        <if test="str != null">
+            WHERE pj00502 LIKE concat('%',#{str},'%')
+        </if>
+    </select>
+    <insert id="addRole">
+        INSERT INTO sdpj005 VALUES (#{coding},#{name},#{remark},'')
+    </insert>
+    <select id="getRoleByCoding" resultMap="role">
+        SELECT * FROM sdpj005 WHERE pj00501=#{coding}
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpj006 VALUES (#{coding},#{staff.id})
+    </insert>
+    <delete id="deletePerson">
+        DELETE FROM sdpj006 WHERE pj00602=#{staffId} AND pj00601=#{roleId}
+    </delete>
+    <select id="isBind" resultType="String">
+        select pj00601 from sdpj006 WHERE pj00602=#{staffId} AND pj00601=#{roleId}
+    </select>
+    <delete id="deletePersonAll">
+        DELETE FROM sdpj006 WHERE pj00602=#{staffId}
+    </delete>
+    <delete id="delete">
+        DELETE FROM sdpj005 WHERE pj00501=#{roleId}
+    </delete>
+    <select id="getRoleByMenu" resultMap="role">
+        SELECT a.*,b.id FROM sdpj005 AS a
+        RIGHT JOIN pro_role AS b ON a.pj00501=b.role_id
+        WHERE b.menu_id=#{menuId}
+    </select>
+
+    <select id="getRolesByStaff" resultMap="role">
+        SELECT b.* FROM sdpj006 AS a
+		RIGHT JOIN sdpj005 AS b ON a.pj00601=b.pj00501 WHERE a.pj00602=#{staffId}
+    </select>
+    <update id="update">
+        update sdpj005 set pj00502=#{name} where pj00501=#{coding}
+    </update>
+</mapper>

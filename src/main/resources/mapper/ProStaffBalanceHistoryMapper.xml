@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProStaffBalanceHistoryMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProStaffBalanceHistory" id="ProStaffBalanceHistoryMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="money" column="money" jdbcType="DECIMAL"/>
+        <result property="type" column="type" jdbcType="TINYINT"/>
+        <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+        <result property="afterBalance" column="after_balance" jdbcType="DECIMAL"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <result property="id" column="staff_id" jdbcType="VARCHAR"/>
+            <result property="name" column="staff_name" jdbcType="VARCHAR"/>
+        </association>
+        <association property="operate" javaType="com.yuesheng.pm.entity.Staff">
+            <result property="id" column="operate_id" jdbcType="VARCHAR"/>
+            <result property="name" column="operate_name" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="diningDayStatistics" type="com.yuesheng.pm.entity.DiningDayStatistics">
+        <result property="ymd" column="ymd"></result>
+        <result property="countDay" column="count_day"></result>
+        <result property="totalMoney" column="total_money"></result>
+    </resultMap>
+
+    <resultMap id="personalDiningStatistics" type="com.yuesheng.pm.entity.PersonalDiningStatistics">
+        <result property="staffName" column="staff_name"></result>
+        <result property="staffId" column="staff_id"></result>
+        <result property="personalCounts" column="personal_counts"></result>
+        <result property="totalMoney" column="total_money"></result>
+        <association property="staff" column="staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById">
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProStaffBalanceHistoryMap">
+        select
+          id, staff_id, staff_name, money, type, datetime, after_balance,remark,operate_name,operate_id
+        from pro_staff_balance_history
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProStaffBalanceHistoryMap">
+        select
+          id, staff_id, staff_name, money, type, datetime, after_balance,remark,operate_name,operate_id
+        from pro_staff_balance_history
+    </select>
+
+    <select id="queryByStaff" resultMap="ProStaffBalanceHistoryMap">
+        select top 1
+        id, staff_id, staff_name, money, type, datetime, after_balance,remark,operate_name,operate_id
+        from pro_staff_balance_history
+        where staff_id=#{staffId} and datetime between #{date}+' 00:00:00' and #{date}+' 23:59:59'
+        <if test="type != null">
+            and type = #{type}
+        </if>
+    </select>
+    <select id="queryByStaff" resultMap="ProStaffBalanceHistoryMap" databaseId="mysql">
+        select
+        id, staff_id, staff_name, money, type, datetime, after_balance,remark,operate_name,operate_id
+        from pro_staff_balance_history
+        where staff_id=#{staffId} and datetime between concat(#{date},' 00:00:00') and concat(#{date},' 23:59:59')
+        <if test="type != null">
+            and type = #{type}
+        </if>
+        limit 0,1
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProStaffBalanceHistoryMap">
+        select
+        id, staff_id, staff_name, money, type, datetime, after_balance,remark,operate_name,operate_id
+        from pro_staff_balance_history
+        <where>
+            <if test="q != null">
+                <if test="q.staff != null">
+                    and staff_id = #{q.staff.id}
+                </if>
+                <if test="q.money != null">
+                    and money = #{q.money}
+                </if>
+                <if test="q.type != null">
+                    and type = #{q.type}
+                </if>
+                <if test="q.datetime != null and q.datetime != ''">
+                    and datetime = #{q.datetime}
+                </if>
+                <if test="q.afterBalance != null">
+                    and after_balance = #{q.afterBalance}
+                </if>
+                <if test="q.remark != null and q.remark != ''">
+                    and staff_name+datetime+cast(money as varchar)+remark like '%'+#{q.remark}+'%'
+                </if>
+            </if>
+            <if test="startDate != null and endDate != null">
+                and datetime between #{startDate} and #{endDate}
+            </if>
+        </where>
+    </select>
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProStaffBalanceHistoryMap" databaseId="mysql">
+        select
+        id, staff_id, staff_name, money, type, datetime, after_balance,remark,operate_name,operate_id
+        from pro_staff_balance_history
+        <where>
+            <if test="q != null">
+                <if test="q.staff != null">
+                    and staff_id = #{q.staff.id}
+                </if>
+                <if test="q.money != null">
+                    and money = #{q.money}
+                </if>
+                <if test="q.type != null">
+                    and type = #{q.type}
+                </if>
+                <if test="q.datetime != null and q.datetime != ''">
+                    and datetime = #{q.datetime}
+                </if>
+                <if test="q.afterBalance != null">
+                    and after_balance = #{q.afterBalance}
+                </if>
+                <if test="q.remark != null and q.remark != ''">
+                    and concat(staff_name,datetime,money,remark) like concat('%',#{q.remark},'%')
+                </if>
+            </if>
+            <if test="startDate != null and endDate != null">
+                and datetime between #{startDate} and #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into pro_staff_balance_history(staff_id, staff_name, money, type, datetime, after_balance,remark,operate_id,operate_name)
+        values (#{staff.id}, #{staff.name}, #{money}, #{type}, #{datetime}, #{afterBalance},#{remark},#{operate.id},#{operate.name})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_staff_balance_history
+        <set>
+            <if test="staff != null">
+                staff_id = #{staff.id},
+            </if>
+            <if test="staff != null">
+                staff_name = #{staff.name},
+            </if>
+            <if test="money != null">
+                money = #{money},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="datetime != null and datetime != ''">
+                datetime = #{datetime},
+            </if>
+            <if test="afterBalance != null">
+                after_balance = #{afterBalance},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_staff_balance_history where id = #{id}
+    </delete>
+
+    <select id="selectDiningDayStatistics" resultMap="diningDayStatistics">
+        select convert (varchar(10),datetime,120) as ymd,count(id) as count_day,sum(money) as total_money
+        from pro_staff_balance_history
+        <where>
+            <if test="q != null">
+                <if test="q.staff != null">
+                    and staff_id = #{q.staff.id}
+                </if>
+                <if test="q.money != null">
+                    and money = #{q.money}
+                </if>
+                <if test="q.type != null">
+                    and type = #{q.type}
+                </if>
+                <if test="q.datetime != null and q.datetime != ''">
+                    and datetime = #{q.datetime}
+                </if>
+                <if test="q.afterBalance != null">
+                    and after_balance = #{q.afterBalance}
+                </if>
+                <if test="q.remark != null and q.remark != ''">
+                    and staff_name+datetime+cast(money as varchar)+remark like '%'+#{q.remark}+'%'
+                </if>
+            </if>
+            <if test="startDate != null and endDate != null">
+                and datetime between #{startDate} and #{endDate}
+            </if>
+        </where>
+        group by convert(varchar(10),datetime,120)
+    </select>
+    <select id="selectDiningDayStatistics" resultMap="diningDayStatistics" databaseId="mysql">
+        select convert (varchar(10),datetime,120) as ymd,count(id) as count_day,sum(money) as total_money
+        from pro_staff_balance_history
+        <where>
+            <if test="q != null">
+                <if test="q.staff != null">
+                    and staff_id = #{q.staff.id}
+                </if>
+                <if test="q.money != null">
+                    and money = #{q.money}
+                </if>
+                <if test="q.type != null">
+                    and type = #{q.type}
+                </if>
+                <if test="q.datetime != null and q.datetime != ''">
+                    and datetime = #{q.datetime}
+                </if>
+                <if test="q.afterBalance != null">
+                    and after_balance = #{q.afterBalance}
+                </if>
+                <if test="q.remark != null and q.remark != ''">
+                    and concat(staff_name,datetime,money,remark) like concat('%',#{q.remark},'%')
+                </if>
+            </if>
+            <if test="startDate != null and endDate != null">
+                and datetime between #{startDate} and #{endDate}
+            </if>
+        </where>
+        group by convert(varchar(10),datetime,120)
+    </select>
+
+    <select id="selectPersonalStatistics" resultMap="personalDiningStatistics">
+        select staff_id as staff_id,staff_name as staff_name,count(id) as personal_counts,sum(money) as total_money
+        from pro_staff_balance_history
+        <where>
+            <if test="q != null">
+                <if test="q.staff != null">
+                    and staff_id = #{q.staff.id}
+                </if>
+                <if test="q.money != null">
+                    and money = #{q.money}
+                </if>
+                <if test="q.type != null">
+                    and type = #{q.type}
+                </if>
+                <if test="q.datetime != null and q.datetime != ''">
+                    and datetime = #{q.datetime}
+                </if>
+                <if test="q.afterBalance != null">
+                    and after_balance = #{q.afterBalance}
+                </if>
+                <if test="q.remark != null and q.remark != ''">
+                    and staff_name+datetime+cast(money as varchar)+remark like '%'+#{q.remark}+'%'
+                </if>
+            </if>
+            <if test="startDate != null and endDate != null">
+                and datetime between #{startDate} and #{endDate}
+            </if>
+        </where>
+        group by staff_id ,staff_name
+    </select>
+
+    <select id="selectPersonalStatistics" resultMap="personalDiningStatistics" databaseId="mysql">
+        select staff_id as staff_id,staff_name as staff_name,count(id) as personal_counts,sum(money) as total_money
+        from pro_staff_balance_history
+        <where>
+            <if test="q != null">
+                <if test="q.staff != null">
+                    and staff_id = #{q.staff.id}
+                </if>
+                <if test="q.money != null">
+                    and money = #{q.money}
+                </if>
+                <if test="q.type != null">
+                    and type = #{q.type}
+                </if>
+                <if test="q.datetime != null and q.datetime != ''">
+                    and datetime = #{q.datetime}
+                </if>
+                <if test="q.afterBalance != null">
+                    and after_balance = #{q.afterBalance}
+                </if>
+                <if test="q.remark != null and q.remark != ''">
+                    and concat(staff_name,datetime,money,remark) like concat('%',#{q.remark},'%')
+                </if>
+            </if>
+            <if test="startDate != null and endDate != null">
+                and datetime between #{startDate} and #{endDate}
+            </if>
+        </where>
+        group by staff_id ,staff_name
+    </select>
+    <select id="selectStaffLastHistory" resultMap="ProStaffBalanceHistoryMap">
+        select a.staff_name as staff_name,b.after_balance as after_balance, b.money as money,a.staff_id as staff_id,b.type as type,b.id as id from
+            (select max(datetime) as datetime, staff_id ,staff_name from pro_staff_balance_history
+            where datetime between #{startDate} and #{endDate}
+            group by staff_id,staff_name) as a
+        left join pro_staff_balance_history as b
+        on a.datetime = b.datetime
+    </select>
+</mapper>

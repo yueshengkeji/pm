@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProMaterialHistoryMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProMaterialHistory" id="ProMaterialHistoryMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="projectId" column="project_id" jdbcType="VARCHAR"/>
+        <result property="materialId" column="material_id" jdbcType="VARCHAR"/>
+        <result property="planSum" column="plan_sum" jdbcType="NUMERIC"/>
+        <result property="planPrice" column="plan_price" jdbcType="NUMERIC"/>
+        <result property="applySum" column="apply_sum" jdbcType="NUMERIC"/>
+        <result property="applyPrice" column="apply_price" jdbcType="NUMERIC"/>
+        <result property="proSum" column="pro_sum" jdbcType="NUMERIC"/>
+        <result property="proPrice" column="pro_price" jdbcType="NUMERIC"/>
+        <result property="putSum" column="put_sum" jdbcType="NUMERIC"/>
+        <result property="putPrice" column="put_price" jdbcType="NUMERIC"/>
+        <result property="outSum" column="out_sum" jdbcType="NUMERIC"/>
+        <result property="outPrice" column="out_price" jdbcType="NUMERIC"/>
+        <result property="backSum" column="back_sum" jdbcType="NUMERIC"/>
+        <result property="backPrice" column="back_price" jdbcType="NUMERIC"/>
+        <association property="material" javaType="com.yuesheng.pm.entity.Material">
+            <result column="pm00201" property="id" jdbcType="VARCHAR"></result>
+            <result column="pm00202" property="name" jdbcType="VARCHAR"></result>
+            <result column="pm00205" property="model" jdbcType="VARCHAR"></result>
+            <result column="pm00221" property="brand" jdbcType="VARCHAR"></result>
+            <result column="pm00222" property="producingArea" jdbcType="VARCHAR"></result>
+            <association property="unit" column="pm00201"
+                         select="com.yuesheng.pm.mapper.UnitMapper.getUnitByMater"></association>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProMaterialHistoryMap">
+        select
+          id, project_id, material_id, plan_sum, plan_price, apply_sum, apply_price, pro_sum, pro_price, put_sum, put_price, out_sum, out_price, back_sum, back_price
+        from pro_material_history
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProMaterialHistoryMap">
+        select
+          id, project_id, material_id, plan_sum, plan_price, apply_sum, apply_price, pro_sum, pro_price, put_sum, put_price, out_sum, out_price, back_sum, back_price
+        from pro_material_history
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProMaterialHistoryMap">
+        select
+        pm00201,pm00202,pm00205,pm00221,pm00222,
+        id, project_id, material_id, plan_sum, plan_price, apply_sum, apply_price, pro_sum, pro_price, put_sum,
+        put_price, out_sum, out_price, back_sum, back_price
+        from pro_material_history
+        LEFT JOIN sdpm002 on pm00201=material_id
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="projectId != null and projectId != ''">
+                and project_id = #{projectId}
+            </if>
+            <if test="materialId != null and materialId != ''">
+                and material_id = #{materialId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into pro_material_history(project_id, material_id, plan_sum, plan_price, apply_sum, apply_price, pro_sum, pro_price, put_sum, put_price, out_sum, out_price, back_sum, back_price)
+        values (#{projectId}, #{materialId}, #{planSum}, #{planPrice}, #{applySum}, #{applyPrice}, #{proSum}, #{proPrice}, #{putSum}, #{putPrice}, #{outSum}, #{outPrice}, #{backSum}, #{backPrice})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_material_history
+        <set>
+            <if test="projectId != null and projectId != ''">
+                project_id = #{projectId},
+            </if>
+            <if test="materialId != null and materialId != ''">
+                material_id = #{materialId},
+            </if>
+            <if test="planSum != null">
+                plan_sum = #{planSum},
+            </if>
+            <if test="planPrice != null">
+                plan_price = #{planPrice},
+            </if>
+            <if test="applySum != null">
+                apply_sum = #{applySum},
+            </if>
+            <if test="applyPrice != null">
+                apply_price = #{applyPrice},
+            </if>
+            <if test="proSum != null">
+                pro_sum = #{proSum},
+            </if>
+            <if test="proPrice != null">
+                pro_price = #{proPrice},
+            </if>
+            <if test="putSum != null">
+                put_sum = #{putSum},
+            </if>
+            <if test="putPrice != null">
+                put_price = #{putPrice},
+            </if>
+            <if test="outSum != null">
+                out_sum = #{outSum},
+            </if>
+            <if test="outPrice != null">
+                out_price = #{outPrice},
+            </if>
+            <if test="backSum != null">
+                back_sum = #{backSum},
+            </if>
+            <if test="backPrice != null">
+                back_price = #{backPrice},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_material_history where id = #{id}
+    </delete>
+
+</mapper>

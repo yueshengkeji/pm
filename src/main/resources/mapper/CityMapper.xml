@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CityMapper">
+    <resultMap id="city" type="com.yuesheng.pm.entity.City">
+        <id column="pm01901" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm01902" property="name" jdbcType="VARCHAR"></result>
+        <result column="pm01903" property="coding" jdbcType="VARCHAR"></result>
+        <result column="pm01907" property="person" jdbcType="VARCHAR"></result>
+        <result column="pm01908" property="tel" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getCityById" resultMap="city" parameterType="String">
+        SELECT * FROM sdpm019 WHERE pm01901=#{id}
+    </select>
+    <select id="getCitys" resultMap="city">
+        SELECT * FROM sdpm019
+    </select>
+    <select id="seek" resultMap="city" parameterType="String">
+        SELECT * FROM sdpm019
+        <where>
+            <if test="str != null">
+                and pm01902 + pm01903 LIKE '%'+#{str}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="seek" resultMap="city" parameterType="String" databaseId="mysql">
+        SELECT * FROM sdpm019
+        <where>
+            <if test="str != null">
+                and concat(pm01902,pm01903) LIKE concat('%',#{str},'%')
+            </if>
+        </where>
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(pm01902) FROM sdpm019
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpm019 VALUES(#{id},#{name},#{coding},'','false','',#{person},#{tel},'','',null)
+    </insert>
+</mapper>

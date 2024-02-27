@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PurchaseCollectMapper">
+    <resultMap id="PurchaseCollect" type="com.yuesheng.pm.entity.PurchaseCollect">
+        <result property="collectID" column="collect_id"></result>
+        <result property="collectMoney" column="collect_money"></result>
+        <result property="percent" column="percent"></result>
+        <result property="remark" column="remark"></result>
+        <result property="collectDate" column="collect_date"></result>
+        <result property="registrant" column="registrant"></result>
+        <result property="mark" column="mark"></result>
+        <result property="pMark" column="pMark"></result>
+    </resultMap>
+
+    <select id="selectByDay" resultMap="PurchaseCollect">
+        select * from purchase_collect_registration
+        where collect_date between #{startDate} and #{endDate}
+    </select>
+
+    <select id="selectByDate" resultMap="PurchaseCollect">
+        select * from purchase_collect_registration
+        where collect_date between #{startDate} and #{endDate}
+    </select>
+
+    <select id="selectByPMark" parameterType="String" resultMap="PurchaseCollect">
+        select * from purchase_collect_registration
+        where pMark = #{pMark}
+    </select>
+
+    <select id="selectByID" parameterType="Integer" resultMap="PurchaseCollect">
+        select * from purchase_collect_registration
+        where mark = #{id}
+        order by collect_date desc
+    </select>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.PurchaseCollect">
+        insert into purchase_collect_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="collectID != null ">collect_id,
+            </if>
+            <if test="collectMoney != null ">collect_money,
+            </if>
+            <if test="percent != null ">[percent],
+            </if>
+            <if test="remark != null ">remark,
+            </if>
+            <if test="collectDate != null ">collect_date,
+            </if>
+            <if test="registrant != null ">registrant,
+            </if>
+            <if test="mark != null ">mark,
+            </if>
+            <if test="pMark != null ">pMark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="collectID != null ">#{collectID},
+            </if>
+            <if test="collectMoney != null ">#{collectMoney},
+            </if>
+            <if test="percent != null">#{percent},
+            </if>
+            <if test="remark != null ">#{remark},
+            </if>
+            <if test="collectDate != null ">#{collectDate},
+            </if>
+            <if test="registrant != null ">#{registrant},
+            </if>
+            <if test="mark != null ">#{mark},
+            </if>
+            <if test="pMark != null">#{pMark},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="Integer">
+        delete from purchase_collect_registration
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByID" parameterType="Integer">
+        delete from purchase_collect_registration
+        where mark = #{id}
+    </delete>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.PurchaseCollect">
+        update purchase_collect_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="collectID != null ">collect_id = #{collectID},
+            </if>
+            <if test="collectMoney != null ">collect_money = #{collectMoney},
+            </if>
+            <if test="percent != null">[percent] = #{percent},
+            </if>
+            <if test="remark != null ">remark = #{remark},
+            </if>
+            <if test="collectDate != null ">collect_date = #{collectDate},
+            </if>
+            <if test="registrant != null ">registrant = #{registrant},
+            </if>
+            <if test="mark != null ">mark = #{mark},
+            </if>
+            <if test="pMark != null">pMark = #{pMark},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+</mapper>

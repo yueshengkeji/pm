@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProDetailMoneyMapper">
+    <resultMap id="money" type="com.yuesheng.pm.entity.ProDetailMoney">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="series" property="series" jdbcType="VARCHAR"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <result column="date" property="date" jdbcType="VARCHAR"></result>
+        <result column="money" property="money" jdbcType="DECIMAL"></result>
+    </resultMap>
+    <insert id="addMoney">
+        INSERT INTO pro_detail_money (id,pro_detail_id,series,remark,money,date)
+        VALUES(#{id},#{mainId},#{series},#{remark},#{money},#{date});
+    </insert>
+    <update id="update">
+        UPDATE pro_detail_money SET series=#{series},remark=#{remark},money=#{money} WHERE id=#{id};
+    </update>
+    <select id="getMoneyByMainId" resultMap="money">
+        SELECT * FROM pro_detail_money WHERE pro_detail_id=#{mainId};
+    </select>
+    <select id="getMoneySumByMainId" resultType="java.lang.Double">
+        SELECT SUM(money) FROM pro_detail_money WHERE pro_detail_id=#{mainId};
+    </select>
+    <delete id="deleteByMain">
+        DELETE FROM pro_detail_money WHERE pro_detail_id=#{mainId};
+    </delete>
+</mapper>

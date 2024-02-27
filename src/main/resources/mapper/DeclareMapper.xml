@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.DeclareMapper">
+    <resultMap id="declare" type="com.yuesheng.pm.entity.Declare">
+        <id column="pa01501" property="id" jdbcType="VARCHAR"></id>
+        <result column="pa01504" property="planDate" jdbcType="VARCHAR"></result>
+        <result column="pa01506" property="money" jdbcType="VARCHAR"></result>
+        <result column="pa01507" property="status" jdbcType="TINYINT"></result>
+        <result column="pa01508" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pa01509" property="date" jdbcType="VARCHAR"></result>
+        <result column="pa01518" property="code" jdbcType="VARCHAR"></result>
+        <result column="pa01520" property="approveDate" jdbcType="VARCHAR"></result>
+
+        <association property="staff" column="pa01515"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="approveStaff" column="pa01519"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="project" column="pa01502"
+                     select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+        <collection property="details" column="pa01501"
+                    select="com.yuesheng.pm.mapper.DeclareDetailMapper.getDetailByDeclare"></collection>
+    </resultMap>
+    <resultMap id="declareSimple" type="com.yuesheng.pm.entity.Declare">
+        <id column="pa01501" property="id" jdbcType="VARCHAR"></id>
+        <result column="pa01504" property="planDate" jdbcType="VARCHAR"></result>
+        <result column="pa01506" property="money" jdbcType="VARCHAR"></result>
+        <result column="pa01507" property="status" jdbcType="TINYINT"></result>
+        <result column="pa01508" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pa01518" property="code" jdbcType="VARCHAR"></result>
+        <result column="pa01520" property="approveDate" jdbcType="VARCHAR"></result>
+        <association property="staff" column="pa01515"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="project" column="pa01502"
+                     select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+    </resultMap>
+    <select id="getById" resultMap="declareSimple">
+        SELECT TOP 1 * FROM sdpa015 WHERE pa01501=#{id} ORDER BY pa01509 DESC;
+    </select>
+    <select id="getDetailById" resultMap="declare">
+        SELECT TOP 1 * FROM sdpa015 WHERE pa01501=#{id} ORDER BY pa01509 DESC;
+    </select>
+    <select id="getByProId" resultMap="declareSimple">
+        SELECT * FROM sdpa015 WHERE pa01502=#{projectId} pa01509 ORDER BY DESC;
+    </select>
+    <select id="getByData" resultMap="declareSimple">
+        SELECT * FROM sdpa015 WHERE pa01509 BETWEEN #{startDate} AND #{endDate} ORDER BY pa01509 DESC;
+    </select>
+    <select id="queryByParams" resultMap="declareSimple">
+        SELECT DISTINCT a.* FROM sdpa015 AS a
+        LEFT JOIN sdpa015Detail AS b ON a.pa01501=b.pa015Detail02
+        LEFT JOIN sdpa001 AS c ON a.pa01502=c.pa00101
+        LEFT JOIN sdpj004 AS d ON d.pj00401=a.pa01515
+        WHERE pa01507 IN (${isApprove})
+        <if test="str != null">
+            AND a.pa01508+a.pa01510+a.pa01518+CAST(b.pa015Detail05 AS VARCHAR)+b.pa015Detail08+d.pj00402+c.pa00102 LIKE '%'+#{str}+'%'
+        </if>
+        <if test="staff != null">
+            AND pa01515=#{staff}
+        </if>
+        <if test="projectId != null">
+            AND pa01502=#{projectId}
+        </if>
+        <if test="start != null">
+            AND pa01504 BETWEEN #{start} AND #{end}
+        </if>
+        ${order};
+    </select>
+    <select id="queryByParamCount" resultType="java.lang.Integer">
+        SELECT count(DISTINCT a.pa01501) FROM sdpa015 AS a
+        LEFT JOIN sdpa015Detail AS b ON a.pa01501=b.pa015Detail02
+        LEFT JOIN sdpa001 AS c ON a.pa01502=c.pa00101
+        LEFT JOIN sdpj004 AS d ON d.pj00401=a.pa01505
+        WHERE pa01507 IN (${isApprove})
+        <if test="str != null">
+            AND a.pa01508+a.pa01510+a.pa01518+CAST(b.pa015Detail05 AS VARCHAR)+b.pa015Detail08+d.pj00402+c.pa00102 LIKE '%'+#{str}+'%'
+        </if>
+        <if test="staff != null">
+            AND pa01515=#{staff}
+        </if>
+        <if test="projectId != null">
+            AND pa01502=#{projectId}
+        </if>
+        <if test="start != null">
+            AND pa01504 BETWEEN #{start} AND #{end}
+        </if>
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpa015 VALUES (#{id},#{project.id},1,#{planDate},'',#{money},0,#{remark},#{date},#{date},#{staff.coding},#{staff.coding},'','',#{staff.id},0,'',
+        #{code},'','',0);
+    </insert>
+    <delete id="delete">
+        DELETE FROM sdpa015 WHERE pa01501=#{id};
+    </delete>
+    <select id="getMoneyByProject" resultType="java.util.Map">
+        SELECT SUM(a.pa01506) AS money,a.pa01502 AS projectId FROM sdpa015 AS a
+        <if test="year != null">
+            WHERE pa01504 LIKE #{year}+'%'
+        </if>
+        GROUP BY a.pa01502 ORDER BY SUM(a.pa01506) DESC;
+    </select>
+    <select id="getMoneyByDate" resultType="java.util.Map">
+        SELECT SUM(pa01506) AS money FROM sdpa015
+        <if test="year != null">
+            WHERE pa01504 LIKE #{year}+'%';
+        </if>
+    </select>
+</mapper>

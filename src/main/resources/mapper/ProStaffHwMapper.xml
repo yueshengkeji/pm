@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProStaffHwMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProStaffHw" id="ProStaffHwMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="head" column="head" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProStaffHwMap">
+        select
+          id, staff_id, head
+        from pro_staff_hw
+        where id = #{id}
+    </select>
+    <!--查询单个-->
+    <select id="queryByIdV2" resultMap="ProStaffHwMap">
+        select
+          id, staff_id, head
+        from pro_staff_hw
+        where cast(id as varchar) = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProStaffHwMap">
+        select
+          id, staff_id, head
+        from pro_staff_hw
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProStaffHwMap">
+        select
+        id, staff_id, head
+        from pro_staff_hw
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="head != null and head != ''">
+                and head = #{head}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into pro_staff_hw(id,staff_id, head)
+        values (#{id},#{staffId}, #{head})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_staff_hw
+        <set>
+            <if test="head != null and head != ''">
+                head = #{head},
+            </if>
+        </set>
+        where staff_id = #{staffId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_staff_hw where id = #{id}
+    </delete>
+    <select id="queryHeadByStaffId" resultType="java.lang.String">
+        select head from pro_staff_hw where staff_id=#{staffId}
+    </select>
+    <select id="queryByStaffId" resultMap="ProStaffHwMap">
+        select * from pro_staff_hw where staff_id=#{staffId}
+    </select>
+
+    <select id="queryListByStaffId" resultMap="ProStaffHwMap">
+        select * from pro_staff_hw where staff_id=#{staffId}
+    </select>
+</mapper>

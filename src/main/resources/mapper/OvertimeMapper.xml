@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.OvertimeMapper">
+    <resultMap id="overtime" type="com.yuesheng.pm.entity.Overtime">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="date" property="date" jdbcType="VARCHAR"></result>
+        <result column="overtime" property="overtime" jdbcType="VARCHAR"></result>
+        <result column="begin_time" property="begin" jdbcType="VARCHAR"></result>
+        <result column="end_time" property="end" jdbcType="VARCHAR"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <result column="hour" property="hour" jdbcType="DECIMAL"></result>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="state" property="approve" jdbcType="INTEGER"></result>
+        <result column="po00313" property="approveDate" jdbcType="VARCHAR"></result>
+        <association property="staff" column="staff"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+    <update id="approve">
+        update pro_overtime
+        set state=#{approve},
+            approve_date=#{approveDate}
+        where id = #{id}
+    </update>
+    <insert id="insert">
+        INSERT INTO pro_overtime (id,staff,date,overtime,begin_time,
+                                  end_time,remark,hour,name,state,approve_date)
+        VALUES (#{id},#{staff.id},#{date},#{overtime},#{begin},
+                                         #{end},#{remark},#{hour},#{name},0,'');
+    </insert>
+    <delete id="delete">
+        DELETE FROM pro_overtime WHERE id=#{id};
+    </delete>
+    <select id="queryById" resultMap="overtime">
+        SELECT * FROM pro_overtime WHERE id=#{id};
+    </select>
+    <select id="getByParam" resultMap="overtime">
+        SELECT a.* FROM pro_overtime AS a
+        LEFT JOIN sdpj004 AS b ON a.staff=b.pj00401
+        <where>
+            <if test="begin != null">
+                and overtime BETWEEN #{begin} AND #{end}
+            </if>
+            <if test="searchText != null">
+                AND a.begin_time+a.end_time+a.remark+cast(hour AS varchar)+b.pj00402 LIKE '%'+#{serachText}+'%'
+            </if>
+            <if test="staffId != null">
+                AND staff=#{staffId}
+            </if>
+            <if test="approve != null">
+                AND state=#{approve}
+            </if>
+            <if test="approveStartDate != null">
+                AND approve_date BETWEEN #{approveStartDate} AND #{approveEndDate}
+            </if>
+        </where>
+    </select>
+    <select id="getCountByParam" resultType="java.lang.Integer">
+        SELECT COUNT(a.id) FROM pro_overtime AS a
+        LEFT JOIN sdpj004 AS b ON a.staff=b.pj00401
+        WHERE overtime BETWEEN #{begin} AND #{end}
+        <if test="searchText != null">
+            AND a.begin_time+a.end_time+a.remark+cast(hour AS varchar)+b.pj00402 LIKE '%'+#{serachText}+'%'
+        </if>
+        <if test="staffId != null">
+            AND staff=#{staffId}
+        </if>
+        <if test="approve != null">
+            AND state=#{approve}
+        </if>
+    </select>
+</mapper>

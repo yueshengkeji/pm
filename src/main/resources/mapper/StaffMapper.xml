@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.StaffMapper">
+    <resultMap id="staff" type="com.yuesheng.pm.entity.Staff">
+        <id column="pj00401" jdbcType="VARCHAR" property="id"></id>
+        <result column="pj00402" property="name" jdbcType="VARCHAR"></result>
+        <result column="pj00403" property="sex" jdbcType="TINYINT"></result>
+        <result column="pj00404" property="mobileBrand" jdbcType="VARCHAR"></result>
+        <result column="pj00405" property="mobileModel" jdbcType="VARCHAR"></result>
+        <result column="pj00421" property="coding" jdbcType="VARCHAR"></result>
+        <result column="pj00417" property="sectionCoding" jdbcType="VARCHAR"></result>
+        <result column="pj00420" property="tel" jdbcType="VARCHAR"></result>
+        <result column="pj00441" property="email" jdbcType="VARCHAR"></result>
+        <result property="lastLogin" column="pj00411" jdbcType="VARCHAR"></result>
+        <result property="isLeader" column="pj00305" jdbcType="VARCHAR"></result>
+        <result column="ey00313" property="userName" jdbcType="VARCHAR"></result>
+        <result column="pj00426" property="isLogin" jdbcType="TINYINT"></result>
+        <result column="pj00423" property="number" jdbcType="VARCHAR"></result>
+        <result column="pj00422" property="bankNumber" jdbcType="VARCHAR"></result>
+        <result column="pj00413" property="offDate" jdbcType="VARCHAR"></result>
+        <result column="pj00414" property="offRemark" jdbcType="VARCHAR"></result>
+        <result column="pj00415" property="openBlank" jdbcType="VARCHAR"></result>
+        <result column="pj00406" property="inDate" jdbcType="VARCHAR"></result>
+        <result column="pj00450" property="contractPath" jdbcType="VARCHAR"></result>
+        <result column="pj00449" property="bxStr" jdbcType="VARCHAR"></result>
+        <result column="pj00436" property="bxDate" jdbcType="VARCHAR"></result>
+        <result column="pj00445" property="projectName" jdbcType="VARCHAR"></result>
+        <result column="pj00435" property="companyName" jdbcType="VARCHAR"></result>
+        <result column="pj00416" property="nationName" jdbcType="VARCHAR"></result>
+        <result column="pj00448" property="age" jdbcType="TINYINT"></result>
+        <result column="pj00408" property="address" jdbcType="VARCHAR"></result>
+        <result column="pj00424" property="endTime" jdbcType="VARCHAR"></result>
+        <result column="pj00451" property="eduPath" jdbcType="VARCHAR"></result>
+        <result column="pj00452" property="actionPath" jdbcType="VARCHAR"></result>
+        <result column="pj00453" property="actionDate" jdbcType="VARCHAR"></result>
+        <result column="pj00454" property="actionAgainDate" jdbcType="VARCHAR"></result>
+        <result column="pj00455" property="actionName" jdbcType="VARCHAR"></result>
+        <result column="pj00457" property="bxEndTime" jdbcType="VARCHAR"></result>
+        <result column="pj00456" property="bxCompany" jdbcType="VARCHAR"></result>
+        <result column="pj00410" property="wh" jdbcType="VARCHAR"></result>
+        <result column="pj00425" property="date" jdbcType="VARCHAR"></result>
+        <association property="section" column="pj00417"
+                     select="com.yuesheng.pm.mapper.SectionMapper.getSevtionByid"></association>
+        <collection property="roleName" column="pj00401" select="getRoleNames"></collection>
+    </resultMap>
+
+    <resultMap id="staffSimple" type="com.yuesheng.pm.entity.Staff">
+        <id column="pj00401" jdbcType="VARCHAR" property="id"></id>
+        <result column="pj00402" property="name" jdbcType="VARCHAR"></result>
+        <result column="pj00403" property="sex" jdbcType="TINYINT"></result>
+        <result column="pj00404" property="mobileBrand" jdbcType="VARCHAR"></result>
+        <result column="pj00405" property="mobileModel" jdbcType="VARCHAR"></result>
+        <result column="pj00421" property="coding" jdbcType="VARCHAR"></result>
+        <result column="pj00417" property="sectionCoding" jdbcType="VARCHAR"></result>
+        <result column="pj00420" property="tel" jdbcType="VARCHAR"></result>
+        <result property="lastLogin" column="pj00411" jdbcType="VARCHAR"></result>
+        <result column="pj00441" property="email" jdbcType="VARCHAR"></result>
+        <result property="isLeader" column="pj00305" jdbcType="VARCHAR"></result>
+        <result column="ey00313" property="userName" jdbcType="VARCHAR"></result>
+        <result column="pj00426" property="isLogin" jdbcType="TINYINT"></result>
+
+        <result column="pj00406" property="inDate" jdbcType="VARCHAR"></result>
+        <result column="pj00413" property="offDate" jdbcType="VARCHAR"></result>
+        <result column="pj00414" property="offRemark" jdbcType="VARCHAR"></result>
+        <result column="pj00415" property="openBlank" jdbcType="VARCHAR"></result>
+        <result column="pj00422" property="bankNumber" jdbcType="VARCHAR"></result>
+        <result column="pj00423" property="number" jdbcType="VARCHAR"></result>
+        <result column="pj00436" property="bxDate" jdbcType="VARCHAR"></result>
+        <result column="pj00449" property="bxStr" jdbcType="VARCHAR"></result>
+        <result column="pj00450" property="contractPath" jdbcType="VARCHAR"></result>
+        <result column="pj00445" property="projectName" jdbcType="VARCHAR"></result>
+        <result column="pj00435" property="companyName" jdbcType="VARCHAR"></result>
+        <result column="pj00416" property="nationName" jdbcType="VARCHAR"></result>
+        <result column="pj00448" property="age" jdbcType="TINYINT"></result>
+        <result column="pj00408" property="address" jdbcType="VARCHAR"></result>
+        <result column="pj00424" property="endTime" jdbcType="VARCHAR"></result>
+        <result column="pj00451" property="eduPath" jdbcType="VARCHAR"></result>
+        <result column="pj00452" property="actionPath" jdbcType="VARCHAR"></result>
+        <result column="pj00453" property="actionDate" jdbcType="VARCHAR"></result>
+        <result column="pj00454" property="actionAgainDate" jdbcType="VARCHAR"></result>
+        <result column="pj00455" property="actionName" jdbcType="VARCHAR"></result>
+        <result column="pj00457" property="bxEndTime" jdbcType="VARCHAR"></result>
+        <result column="pj00456" property="bxCompany" jdbcType="VARCHAR"></result>
+        <association property="section" column="pj00417"
+                     select="com.yuesheng.pm.mapper.SectionMapper.getSevtionByid"></association>
+    </resultMap>
+    <resultMap id="headMsg" type="com.yuesheng.pm.entity.HeadMsg">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="tag" property="tag" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <insert id="insert">
+        INSERT INTO sdpj004
+        (pj00401,pj00402,pj00403,pj00404,pj00405,pj00406,pj00407,pj00408,pj00409,pj00410,pj00411,pj00412,
+        pj00413,pj00414,pj00415,pj00416,pj00417,pj00418,pj00419,pj00420,pj00421,pj00422,pj00423,pj00424,pj00425,pj00426,pj00427,
+        pj00428,pj00429,pj00430,pj00431,pj00432,pj00433,pj00434,pj00435,pj00436,pj00437,pj00438,
+        pj00439,pj00440,pj00441,pj00442,pj00443,pj00444,pj00445,pj00446,pj00447,pj00448,
+        pj00449,pj00450
+        <if test="eduPath != '' and eduPath != null">
+            ,pj00451
+        </if>
+        <if test="actionName != '' and actionName != null">
+            ,pj00455
+        </if>
+        <if test="actionPath != '' and actionPath != null">
+            ,pj00452
+        </if>
+        <if test="actionDate != '' and actionDate != null">
+            ,pj00453
+        </if>
+        <if test="actionAgainDate != '' and actionAgainDate != null">
+            ,pj00454
+        </if>
+        <if test="bxEndTime != '' and bxEndTime != null">
+            ,pj00457
+        </if>
+        <if test="bxCompany != '' and bxCompany != null">
+            ,pj00456
+        </if>
+        )
+        values(#{id},#{name},#{sex},'','',#{inDate},'',#{address},'',#{wh},
+        #{lastDate},1,'','',#{openBlank},#{nationName},#{section.id},0,0,#{tel},
+        #{coding},#{bankNumber},#{number},#{endTime},#{date},0,'',0,0,#{date},
+        0,#{date},0,'',#{companyName},#{bxDate},'','','',0,
+        '','',0,0,#{projectName},0,0,#{age},#{bxStr},#{contractPath}
+        <if test="eduPath != '' and eduPath != null">
+            ,#{eduPath}
+        </if>
+        <if test="actionName != '' and actionName != null">
+            ,#{actionName}
+        </if>
+        <if test="actionPath != '' and actionPath != null">
+            ,#{actionPath}
+        </if>
+        <if test="actionDate != '' and actionDate != null">
+            ,#{actionDate}
+        </if>
+        <if test="actionAgainDate != '' and actionAgainDate != null">
+            ,#{actionAgainDate}
+        </if>
+        <if test="bxEndTime != '' and bxEndTime != null">
+            ,#{bxEndTime}
+        </if>
+        <if test="bxCompany != '' and bxCompany != null">
+            ,#{bxCompany}
+        </if>
+        )
+    </insert>
+    <update id="updateLoginTime">
+        update sdpj004 set pj00411=#{lastDate} where pj00401=#{id}
+    </update>
+    <select id="loginIn" resultMap="staff">
+        SELECT b.*,a.ey00314,a.ey00313 FROM sdey003 AS a
+        RIGHT JOIN sdpj004 AS b ON a.ey00301=b.pj00421
+        WHERE (a.ey00313=#{userName} OR ey00301=#{userName}) AND a.ey00305=#{passwd}
+    </select>
+    <select id="getStaffById" parameterType="String" resultMap="staffSimple">
+        SELECT a.*,b.ey00313 FROM sdpj004 AS a LEFT JOIN sdey003 AS b ON a.pj00421=b.ey00301 WHERE pj00401=#{id}
+    </select>
+    <select id="getStaffByCoding" parameterType="String" resultMap="staffSimple">
+        SELECT * FROM sdpj004 WHERE pj00421=#{coding}
+    </select>
+    <select id="getNameByCoding" parameterType="String" resultType="String">
+        SELECT pj00402 FROM sdpj004 WHERE pj00421=#{coding}
+    </select>
+    <select id="getNameById" parameterType="String" resultType="String">
+        SELECT pj00402 FROM sdpj004 WHERE pj00401=#{id}
+    </select>
+    <select id="getProStaff" resultMap="staffSimple">
+        SELECT * FROM sdpj004 WHERE pj00419 in(3,4) and pj00426=0
+    </select>
+    <select id="login" resultMap="staff">
+        SELECT a.*,c.pj00305,b.ey00313 FROM sdpj004 a RIGHT JOIN sdey003 b
+        ON b.ey00301=a.pj00421 LEFT JOIN sdpj003 AS c ON c.pj00305=a.pj00401 WHERE b.ey00313=#{name} AND
+        b.ey00305=#{passwd} and pj00426=0
+    </select>
+
+    <select id="seek" resultMap="staffSimple">
+        SELECT distinct a.* FROM sdpj004 as a
+        LEFT JOIN sdey003 on ey00301=a.pj00421
+        LEFT JOIN pro_plate on staff_id=a.pj00401
+        LEFT JOIN sdpj003 on pj00417=pj00301
+        WHERE a.pj00426=0
+        <if test="str != null and str != ''">
+            and a.pj00402+isnull(plate,'')+isnull(pj00302,'') LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="seek" resultMap="staffSimple" databaseId="mysql">
+        SELECT distinct a.* FROM sdpj004 as a
+        LEFT JOIN sdey003 on ey00301=a.pj00421
+        LEFT JOIN pro_plate on staff_id=a.pj00401
+        LEFT JOIN sdpj003 on pj00417=pj00301
+        WHERE a.pj00426=0
+        <if test="str != null and str != ''">
+            and concat(a.pj00402,ifnull(plate,''),ifnull(pj00302,'')) LIKE concat('%',#{str},'%')
+        </if>
+    </select>
+
+    <select id="queryUnLogin" resultMap="staffSimple">
+        SELECT * FROM sdpj004
+         LEFT JOIN sdey003 on ey00301=pj00421
+         WHERE pj00426=1 and pj00402 LIKE '%'+#{str}+'%' ORDER BY pj00402 DESC
+    </select>
+    <select id="queryUnLogin" resultMap="staffSimple" databaseId="mysql">
+        SELECT *
+        FROM sdpj004
+                 LEFT JOIN sdey003 on ey00301 = pj00421
+        WHERE pj00426 = 1
+          and pj00402 LIKE concat('%', #{str}, '%')
+        ORDER BY pj00402 DESC
+    </select>
+
+    <select id="getStaffByCount" resultMap="staffSimple">
+        SELECT * FROM sdpj004 WHERE pj00401 in
+        <foreach collection="list" item="co" open="(" close=");" separator=",">
+            #{co.id}
+        </foreach>
+        and pj00426=0
+    </select>
+    <select id="getStaffs" resultMap="staffSimple">
+        SELECT * FROM sdpj004 where pj00426 = 0
+    </select>
+    <select id="fastLogin" resultMap="staff">
+        SELECT a.pj00401,a.pj00402,a.pj00417,a.pj00421,a.pj00441,c.pj00305,b.ey00313 FROM sdpj004 a RIGHT JOIN
+        sdey003 b
+        ON b.ey00301=a.pj00421 LEFT JOIN sdpj003 AS c ON c.pj00305=a.pj00401 WHERE b.ey00313=#{name}
+    </select>
+
+    <select id="getRoleNames" resultType="java.lang.String">
+        SELECT pj00502 FROM sdpj006 AS a
+		RIGHT JOIN sdpj005 AS b ON a.pj00601=b.pj00501 WHERE a.pj00602=#{staffId}
+    </select>
+    <select id="getHeadMsg" resultMap="headMsg">
+        SELECT b.* FROM person_head_msg AS a
+          LEFT JOIN person_head AS b ON a.tag_id=b.id WHERE a.staff_id=#{id}
+    </select>
+
+    <update id="update">
+        UPDATE sdpj004
+        <set>
+            <if test="name != null and name != ''">
+                pj00402=#{name},
+            </if>
+            <if test="sex != null and sex != ''">
+                pj00403=#{sex},
+            </if>
+            <if test="mobileBrand != null and mobileBrand != ''">
+                pj00404=#{mobileBrand},
+            </if>
+            <if test="mobileModel != null and mobileModel != ''">
+                pj00405=#{mobileModel},
+            </if>
+            <if test="section != null and section.id != null">
+                pj00417=#{section.id},
+            </if>
+            <if test="tel != null and tel != ''">
+                pj00420=#{tel},
+            </if>
+            <if test="email != null and email != ''">
+                pj00441=#{email},
+            </if>
+            <if test="number != null and number != ''">
+                pj00423=#{number},
+            </if>
+            <if test="inDate != null and inDate != ''">
+                pj00406=#{inDate},
+            </if>
+            <if test="offDate != null and offDate != ''">
+                pj00413=#{offDate},
+            </if>
+            <if test="offRemark != null and offRemark != ''">
+                pj00414=#{offRemark},
+            </if>
+            <if test="openBlank != null and openBlank != ''">
+                pj00415=#{openBlank},
+            </if>
+            <if test="bankNumber != null and bankNumber != ''">
+                pj00422=#{bankNumber},
+            </if>
+            <if test="bxDate != null and bxDate != ''">
+                pj00436=#{bxDate},
+            </if>
+            <if test="bxStr != null and bxStr != ''">
+                pj00449=#{bxStr},
+            </if>
+            <if test="contractPath != null and contractPath != ''">
+                pj00450=#{contractPath},
+            </if>
+            <if test="isLogin != null">
+                pj00426=#{isLogin},
+            </if>
+            <if test="eduPath != '' and eduPath != null">
+                pj00451=#{eduPath},
+            </if>
+            <if test="actionName != '' and actionName != null">
+                pj00455=#{actionName},
+            </if>
+            <if test="actionPath != '' and actionPath != null">
+                pj00452=#{actionPath},
+            </if>
+            <if test="actionDate != '' and actionDate != null">
+                pj00453=#{actionDate},
+            </if>
+            <if test="actionAgainDate != '' and actionAgainDate != null">
+                pj00454=#{actionAgainDate},
+            </if>
+            <if test="bxEndTime != '' and bxEndTime != null">
+                pj00457=#{bxEndTime},
+            </if>
+            <if test="bxCompany != '' and bxCompany != null">
+                pj00456=#{bxCompany},
+            </if>
+            <if test="companyName != '' and companyName != null">
+                pj00435=#{companyName},
+            </if>
+            <if test="projectName != '' and projectName != null">
+                pj00445=#{projectName},
+            </if>
+            <if test="endTime != '' and endTime != null">
+                pj00424=#{endTime},
+            </if>
+            <if test="nationName != '' and nationName != null">
+                pj00416=#{nationName},
+            </if>
+            <if test="wh != '' and wh != null">
+                pj00410=#{wh},
+            </if>
+            <if test="address != '' and address != null">
+                pj00408=#{address}
+            </if>
+        </set>
+        WHERE pj00401=#{id}
+    </update>
+    <insert id="insertLoginInfo">
+        insert into sdey003 values(#{coding},'','',0,#{passwd},0,'2099-01-01',0,'',#{time},#{time}
+        ,#{ip},#{userName},0,'',1,0,'',0,'','')
+    </insert>
+
+    <select id="getStaffByUserName" resultMap="staff">
+        SELECT b.* FROM sdey003 AS a
+        LEFT JOIN sdpj004 AS b ON b.pj00421=a.ey00301 WHERE a.ey00313=#{userName}
+    </select>
+    <update id="updateUserPasswd">
+        UPDATE sdey003 SET ey00305=#{passwd} WHERE ey00301=#{coding}
+    </update>
+    <update id="updateLoginInfo">
+        UPDATE sdey003 SET ey00305=#{passwd},ey00313=#{userName} WHERE ey00301=#{coding}
+    </update>
+
+    <update id="updateIsLogin">
+        UPDATE sdpj004 SET pj00426=#{isLogin} WHERE pj00401=#{id}
+    </update>
+
+    <select id="getNoBindWxList" resultMap="staff">
+        SELECT * FROM sdpj004 left join staff_addition_info on staff_id=pj00401
+         where pj00426 = 0 and staff_id is null
+    </select>
+
+    <select id="getNoBindDingList" resultMap="staff">
+        SELECT * FROM sdpj004 left join ding_talk_staff_info on staff_id = pj00401
+        where pj00426 = 0 and staff_id is null
+    </select>
+
+    <resultMap id="loginInfo" type="com.yuesheng.pm.entity.Staff">
+        <id column="pj00401" property="id" jdbcType="VARCHAR"></id>
+        <result column="pj00421" property="coding" jdbcType="VARCHAR"></result>
+        <result column="ey00313" property="userName" jdbcType="VARCHAR"></result>
+        <result column="ey00305" property="passwd" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getUserLogin" resultMap="loginInfo">
+        select pj00401,pj00421,ey00305,ey00313 from sdey003 left join sdpj004 on pj00421=ey00301 where ey00301=#{coding}
+    </select>
+</mapper>

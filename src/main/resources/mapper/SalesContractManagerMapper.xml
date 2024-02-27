@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.SalesContractManagerMapper">
+    <resultMap id="SalesContractManager" type="com.yuesheng.pm.entity.SalesContractManager">
+        <result property="id" column="id"></result>
+        <result property="agreementID" column="agreement_id"></result>
+        <result property="managerName" column="manager_name"></result>
+        <result property="managerID" column="manager_id"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="appointManID" column="appoint_man_id"></result>
+        <result property="sectionName" column="section_name"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.SalesContractManager">
+        insert into sales_contract_manager
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="agreementID != null">agreement_id,</if>
+            <if test="managerName != null">manager_name,</if>
+            <if test="managerID != null">manager_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="appointManID != null">appoint_man_id,</if>
+            <if test="sectionName != null">section_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="agreementID != null">#{agreementID},</if>
+            <if test="managerName != null">#{managerName},</if>
+            <if test="managerID != null">#{managerID},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="appointManID != null">#{appointManID},</if>
+            <if test="sectionName != null">#{sectionName},</if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="string">
+        delete from sales_contract_manager
+        where id = #{id}
+    </delete>
+
+    <select id="selectByAgreementID" parameterType="string" resultMap="SalesContractManager">
+        select * from sales_contract_manager
+        where agreement_id = #{agreementID}
+    </select>
+
+    <select id="selectByManager" parameterType="string" resultMap="com.yuesheng.pm.mapper.SalesContractMapper.SalesContract">
+        select a.* from sales_contract_registration as a
+        left join sales_contract_manager as b
+        on a.contract_id = b.agreement_id
+        where b.manager_id = #{managerID}
+    </select>
+
+    <select id="selectByManagerCounts" parameterType="string" resultType="integer">
+        select count(a.id) from sales_contract_registration as a
+        left join sales_contract_manager as b
+        on a.contract_id = b.agreement_id
+        where b.manager_id = #{managerID}
+    </select>
+</mapper>

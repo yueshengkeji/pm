@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.MenuMapper">
+    <resultMap id="menu" type="com.yuesheng.pm.entity.Menu">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="url" property="url" jdbcType="VARCHAR"></result>
+        <result column="sort" property="sort" jdbcType="INTEGER"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <result column="ico" property="ico" jdbcType="VARCHAR"></result>
+        <result column="parent" property="parentId" jdbcType="VARCHAR"></result>
+        <result column="type" property="type" jdbcType="INTEGER"></result>
+        <result column="coding" property="coding" jdbcType="VARCHAR"></result>
+        <result column="is_outer" property="isOuter" jdbcType="TINYINT"></result>
+        <result column="outer_path" property="outerPath" jdbcType="VARCHAR"></result>
+        <result column="hide" property="hide" jdbcType="TINYINT"></result>
+        <result column="bean_name" property="beanName" jdbcType="VARCHAR"></result>
+        <result column="flow_sql" property="flowSql" jdbcType="VARCHAR"></result>
+        <!--<association property="parent" column="id" select="getMenuById"></association>-->
+    </resultMap>
+    <resultMap id="pm2Menu" type="com.yuesheng.pm.entity.Menu">
+        <id column="eb00301" property="id" jdbcType="VARCHAR"></id>
+        <result column="eb00303" property="parentId" jdbcType="VARCHAR"></result>
+        <result column="eb00304" property="name" jdbcType="VARCHAR"></result>
+        <result column="eb00305" property="type" jdbcType="INTEGER"></result>
+        <result column="eb00307" property="coding" jdbcType="VARCHAR"></result>
+        <result column="eb00310" property="beanName" jdbcType="TINYINT"></result>
+    </resultMap>
+    <select id="getMenuById" resultMap="menu">
+        SELECT * FROM pro_menu WHERE id=#{id}
+    </select>
+    <select id="getProMenuByCoding" resultMap="menu">
+        SELECT * FROM pro_menu WHERE coding=#{frameCoding}
+    </select>
+    <select id="getMenuByParent" resultMap="menu">
+        SELECT id,name,url,sort,remark,ico,parent,type,coding,is_outer,outer_path,hide,bean_name FROM pro_menu WHERE parent=#{parentId} ORDER by sort asc
+    </select>
+    <select id="getRoot" resultMap="menu">
+        SELECT id,name,url,sort,remark,ico,parent,type,coding,is_outer,outer_path,hide,bean_name FROM pro_menu WHERE (parent is null OR parent='')
+        <if test="type != null">
+            and type=#{type}
+        </if>
+        ORDER BY sort ASC
+    </select>
+    <select id="getRootByRole" resultMap="menu">
+        SELECT distinct a.id,a.name,a.url,a.sort,a.remark,a.ico,a.parent,a.type,a.coding,a.is_outer,a.outer_path,a.hide,a.bean_name FROM pro_menu AS a
+        RIGHT JOIN pro_role AS b ON a.id=b.menu_id
+        WHERE b.role_id=#{roleId} and a.type=#{type} and (parent is null OR parent='')
+    </select>
+    <select id="getMenuByParentAndRole" resultMap="menu">
+        SELECT distinct a.id,a.name,a.url,a.sort,a.remark,a.ico,a.parent,a.type,a.coding,a.is_outer,a.outer_path,a.hide,a.bean_name FROM pro_menu AS a
+        RIGHT JOIN pro_role AS b ON a.id=b.menu_id
+        WHERE b.role_id=#{roleId} and parent = #{parentId}
+    </select>
+    <select id="getMenus" resultMap="menu">
+        SELECT id,name,url,sort,remark,ico,parent,type,coding,is_outer,outer_path,hide,bean_name FROM pro_menu
+    </select>
+    <delete id="delete">
+        DELETE FROM pro_menu WHERE id=#{id}
+    </delete>
+    <update id="update">
+        UPDATE pro_menu SET name=#{name},
+        url=#{url},parent=#{parentId},sort=#{sort},remark=#{remark},
+        ico=#{ico},coding=#{coding},is_outer=#{isOuter},
+        outer_path=#{outerPath},hide=#{hide},bean_name=#{beanName},flow_sql=#{flowSql} WHERE id=#{id}
+    </update>
+    <insert id="insert">
+        INSERT INTO pro_menu
+        (id,name,url,parent,sort,remark,ico,type,coding,is_outer,outer_path,hide,bean_name,flow_sql)
+        VALUES(#{id},#{name},#{url},#{parentId},#{sort},#{remark},#{ico},
+        #{type},#{coding},#{isOuter},#{outerPath},#{hide},#{beanName},#{flowSql})
+    </insert>
+    <insert id="insertRoleToMenu">
+        INSERT INTO pro_role VALUES(#{role.id},#{menuId},#{role.coding})
+    </insert>
+    <delete id="deleteRoleToMenu">
+        DELETE FROM pro_role WHERE id=#{id}
+    </delete>
+
+    <select id="getMenuByRole" resultMap="menu">
+        SELECT a.id,a.name,a.url,a.sort,a.remark,a.ico,a.parent,a.type,a.coding,a.is_outer,a.outer_path,a.hide,a.bean_name FROM pro_menu AS a
+        RIGHT JOIN pro_role AS b ON a.id=b.menu_id
+        WHERE b.role_id=#{roleId}
+    </select>
+
+    <select id="getRelationRole" resultType="java.util.HashMap">
+        SELECT b.pj00501 AS 'coding',a.menu_id AS 'menu_id' FROM pro_role AS a
+        LEFT JOIN sdpj005 AS b ON b.pj00501=a.role_id
+        WHERE a.id=#{major}
+    </select>
+    <select id="getPm2MenuByParent" resultMap="pm2Menu">
+        SELECT * FROM sdeb003 WHERE eb00303=#{parent}
+    </select>
+    <select id="getPm2Menu" resultMap="pm2Menu">
+        SELECT * FROM sdeb003 WHERE eb00303=''
+    </select>
+    <select id="seekPmMenu" resultMap="pm2Menu" databaseId="sqlserver">
+        SELECT * FROM sdeb003 WHERE eb00304 LIKE '%'+#{str}+'%'
+    </select>
+    <select id="seekPmMenu" resultMap="pm2Menu" databaseId="mysql">
+        SELECT * FROM sdeb003 WHERE eb00304 LIKE concat('%',#{str},'%')
+    </select>
+    <update id="updatePm2Menu">
+        update sdeb003 set eb00310=#{beanName} , eb00304=#{name} where eb00307=#{coding}
+    </update>
+    <select id="getMenuByCoding" resultMap="pm2Menu">
+        SELECT * FROM sdeb003 WHERE eb00307=#{frameCoding}
+    </select>
+</mapper>

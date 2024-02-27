@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.SectionMapper">
+    <resultMap id="section" type="com.yuesheng.pm.entity.Section">
+        <id column="pj00301" property="id" jdbcType="VARCHAR"></id>
+        <result column="pj00302" property="name" jdbcType="VARCHAR"></result>
+        <result column="pj00303" property="parentid" jdbcType="VARCHAR"></result>
+        <result column="pj00305" property="managerid" jdbcType="VARCHAR"></result>
+        <result column="pj00306" property="tel" jdbcType="VARCHAR"></result>
+        <result column="pj00307" property="address" jdbcType="VARCHAR"></result>
+        <result column="pj00309" property="coding" jdbcType="VARCHAR"></result>
+        <result column="pj00304" property="rootId" jdbcType="VARCHAR"></result>
+        <result column="pj00311" property="assistManager" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <resultMap id="sectionName" type="com.yuesheng.pm.entity.Section">
+        <id column="pj00301" property="id" jdbcType="VARCHAR"></id>
+        <result column="pj00302" property="name" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getSevtionByid" resultMap="section" parameterType="String">
+        SELECT * FROM sdpj003 WHERE pj00301 = #{id}
+    </select>
+    <select id="getStaffList" parameterType="String" resultMap="com.yuesheng.pm.mapper.StaffMapper.staff">
+        SELECT pj4.* FROM sdpj003 AS pj3
+        LEFT JOIN sdpj004 AS pj4 ON pj3.pj00301=pj4.pj00417 WHERE pj3.pj00301=#{id} and pj4.pj00426=0
+    </select>
+    <select id="getStaffLeader" resultMap="com.yuesheng.pm.mapper.StaffMapper.staff">
+        SELECT pj4.* FROM sdpj003 AS pj3 LEFT JOIN sdpj004 AS pj4 ON pj3.pj00305=pj4.pj00401 or pj3.pj00311=pj4.pj00401
+        WHERE pj3.pj00301=#{id}
+    </select>
+    <select id="getStaffByParent" resultMap="com.yuesheng.pm.mapper.StaffMapper.staff">
+        SELECT pj4.* FROM sdpj004 AS pj4 RIGHT JOIN sdpj003 AS pj3 ON pj4.pj00401=pj3.pj00305
+        RIGHT JOIN sdpj003 AS temp ON pj3.pj00301=temp.pj00303 WHERE temp.pj00301=#{section}
+    </select>
+    <select id="getSectionList" resultMap="section" databaseId="sqlserver">
+        SELECT * FROM sdpj003
+        <if test="str != null">
+            WHERE pj00302 LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="getSectionList" resultMap="section" databaseId="mysql">
+        SELECT * FROM sdpj003
+        <if test="str != null">
+            WHERE pj00302 LIKE concat('%',#{str},'%')
+        </if>
+    </select>
+    <select id="getSectionByParent" resultMap="section">
+        SELECT * FROM sdpj003 WHERE pj00303=#{parentId}
+    </select>
+    <insert id="insert">
+        INSERT into sdpj003 values(#{id},#{name},#{parentid},#{rootId},#{managerid},#{tel},#{address},'',#{coding},0,#{assistManager})
+    </insert>
+    <update id="update">
+        UPDATE sdpj003 SET pj00302=#{name},pj00303=#{parentid},pj00304=#{rootId},pj00305=#{managerid},pj00306=#{tel},pj00307=#{address},pj00309=#{coding},pj00311=#{assistManager} WHERE pj00301=#{id}
+    </update>
+    <select id="getSectionByManagerId" resultMap="section">
+        select * from sdpj003 where pj00305=#{managerId} or pj00311=#{managerId}
+    </select>
+</mapper>

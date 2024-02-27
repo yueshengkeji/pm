@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.WordModuleMapper">
+    <resultMap id="module" type="com.yuesheng.pm.entity.WordModule">
+        <id column="po01201" property="id" jdbcType="VARCHAR"></id>
+        <result column="po01202" property="folderId" jdbcType="VARCHAR"></result>
+        <result column="po01203" property="name" jdbcType="VARCHAR"></result>
+        <result column="po01204" property="word" jdbcType="BLOB"></result>
+        <result column="po01207" property="wordToHtml" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <resultMap id="moduleSimple" type="com.yuesheng.pm.entity.WordModule">
+        <id column="po01201" property="id" jdbcType="VARCHAR"></id>
+        <result column="po01202" property="folderId" jdbcType="VARCHAR"></result>
+        <result column="po01203" property="name" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <resultMap id="folder" type="com.yuesheng.pm.entity.Folder">
+        <id column="po01301" property="id" jdbcType="VARCHAR"></id>
+        <result column="po01302" property="name" jdbcType="VARCHAR"></result>
+        <result column="po01303" property="parent" jdbcType="VARCHAR"></result>
+        <result column="po01304" property="rootId" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <update id="update">
+        update sdpo012 set po01207=#{wordToHtml} where po01201=#{id}
+    </update>
+    <select id="querySimples" resultMap="moduleSimple">
+        SELECT * FROM sdpo012;
+    </select>
+    <insert id="insertModule">
+        INSERT INTO sdpo012 (po01201,po01202,po01203,po01204,po01205,po01206,po01207) VALUES (#{id},#{folderId},#{name},#{word},0,0,#{wordToHtml});
+    </insert>
+    <select id="queryAll" resultMap="module">
+        SELECT * FROM sdpo012;
+    </select>
+    <select id="queryById" resultMap="module">
+        SELECT * FROM sdpo012 WHERE po01201=#{id};
+    </select>
+    <select id="queryByFolder" resultMap="module">
+        SELECT * FROM sdpo012 WHERE po01202=#{folder};
+    </select>
+    <select id="searchModule" resultMap="module">
+        SELECT * FROM sdpo012
+        <if test="str != null">
+            WHERE po01203 LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="queryFolder" resultMap="folder">
+        SELECT * FROM sdpo013 WHERE po01301=#{folderId}
+    </select>
+    <insert id="insertFolder">
+        INSERT INTO sdpo013 VALUES(#{id},#{name},#{parent},#{rootId});
+    </insert>
+    <select id="queryByAF" resultMap="module">
+        SELECT a.* FROM sdpo012 AS a
+         RIGHT JOIN sdpo011 AS b ON a.po01201=b.po01105
+         WHERE b.po01101=#{afId};
+    </select>
+    <delete id="deleteModule">
+        DELETE FROM sdpo012 WHERE po01201=#{id};
+    </delete>
+</mapper>

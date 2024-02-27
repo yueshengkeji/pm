@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.EquipmentToRepairFileMapper">
+    <resultMap id="EquipmentToRepairFile" type="com.yuesheng.pm.entity.EquipmentToRepairFile">
+        <result property="id" column="equipment_to_repairFJ01"></result>
+        <result property="equipmentToRepairId" column="equipment_to_repairFJ02"></result>
+        <result property="attachId" column="equipment_to_repairFJ03"></result>
+        <result property="name" column="equipment_to_repairFJ04"></result>
+        <result property="fileUrl" column="equipment_to_repairFJ05"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.EquipmentToRepairFile">
+        insert into equipment_to_repairFJ
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="id != null">equipment_to_repairFJ01,</if>
+            <if test="equipmentToRepairId != null">equipment_to_repairFJ02,</if>
+            <if test="attachId != null">equipment_to_repairFJ03,</if>
+            <if test="name != null">equipment_to_repairFJ04,</if>
+            <if test="fileUrl != null">equipment_to_repairFJ05,</if>
+        </trim>
+        <trim prefix="values (" suffixOverrides="," suffix=")">
+            <if test="id != null">#{id},</if>
+            <if test="equipmentToRepairId != null">#{equipmentToRepairId},</if>
+            <if test="attachId != null">#{attachId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="fileUrl != null">#{fileUrl},</if>
+        </trim>
+    </insert>
+
+    <delete id="delete">
+        delete from equipment_to_repairFJ
+        where equipment_to_repairFJ01 = #{id}
+    </delete>
+
+    <select id="getFiles" resultMap="EquipmentToRepairFile">
+        select * from equipment_to_repairFJ
+        where equipment_to_repairFJ02 = #{equipmentToRepairId}
+    </select>
+</mapper>

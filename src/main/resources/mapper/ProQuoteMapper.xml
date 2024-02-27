@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProQuoteMapper">
+    <resultMap id="quote" type="com.yuesheng.pm.entity.ProQuote">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="enquiry_id" property="enquiryId" jdbcType="VARCHAR"></result>
+        <result column="enquiry_mater_id" property="enquiryMaterId" jdbcType="VARCHAR"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <result column="tel" property="tel" jdbcType="VARCHAR"></result>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="company" property="company" jdbcType="VARCHAR"></result>
+        <result column="price" property="price" jdbcType="DECIMAL"></result>
+        <result column="money" property="money" jdbcType="DECIMAL"></result>
+        <result column="datetime" property="datetime" jdbcType="TIMESTAMP"></result>
+        <association property="material" javaType="com.yuesheng.pm.entity.Material">
+            <result column="pm00201" property="id" jdbcType="VARCHAR"></result>
+            <result column="pm00202" property="name" jdbcType="VARCHAR"></result>
+            <result column="pm00205" property="model" jdbcType="VARCHAR"></result>
+            <result column="pm00221" property="brand" jdbcType="VARCHAR"></result>
+            <result column="pm00222" property="producingArea" jdbcType="VARCHAR"></result>
+            <result column="pm00209" property="storageSum" jdbcType="DECIMAL"></result>
+            <association property="unit" column="pm00201"
+                         select="com.yuesheng.pm.mapper.UnitMapper.getUnitByMater"></association>
+        </association>
+    </resultMap>
+    <insert id="insert">
+        INSERT INTO pro_quote (id,enquiry_id,enquiry_mater_id,remark,tel,name,company,price,money,datetime,mater_id)
+        VALUES(#{id},#{enquiryId},#{enquiryMaterId},#{remark},#{tel},#{name},#{company},#{price},#{money},#{datetime},#{material.id});
+    </insert>
+    <select id="queryByEnquiry" resultMap="quote">
+        SELECT * FROM pro_quote where enquiry_id=#{enquiryId};
+    </select>
+    <select id="queryByMater" resultMap="quote">
+        SELECT * FROM pro_quote as a
+        LEFT JOIN sdpm002 as b on a.mater_id=b.pm00201
+        <choose>
+            <when test="str != null">
+                WHERE b.pm00201+b.pm00202+b.pm00205+b.pm00221+b.pm00222 LIKE '%'+#{str}+'%'
+            </when>
+            <when test="id != null">
+                WHERE b.pm00201=#{id}
+            </when>
+        </choose>
+        order by a.datetime desc
+    </select>
+    <select id="queryBySearch" resultMap="quote">
+        SELECT * FROM pro_quote as a
+        LEFT JOIN sdpm002 as b on a.mater_id=b.pm00201
+        <choose>
+            <when test="str != null">
+                WHERE
+                CONVERT(varchar,a.price)+a.remark+CONVERT(varchar,a.datetime,120)+a.tel+a.name+a.company+CONVERT(varchar,a.money)+b.pm00201+b.pm00202+b.pm00205+b.pm00221+b.pm00222
+                LIKE '%'+#{str}+'%'
+            </when>
+        </choose>
+        ${order}
+    </select>
+
+    <select id="queryCount" resultType="java.lang.Integer">
+        SELECT COUNT(a.id) FROM pro_quote as a
+        LEFT JOIN sdpm002 as b on a.mater_id=b.pm00201
+        <choose>
+            <when test="str != null">
+                WHERE
+                CONVERT(varchar,a.price)+a.remark+CONVERT(varchar,a.datetime,120)+a.tel+a.name+a.company+CONVERT(varchar,a.money)+b.pm00201+b.pm00202+b.pm00205+b.pm00221+b.pm00222
+                LIKE '%'+#{str}+'%'
+            </when>
+        </choose>
+    </select>
+    <select id="queryByMaterCount" resultType="java.lang.Integer">
+        SELECT * FROM pro_quote as a
+        LEFT JOIN sdpm002 as b on a.mater_id=b.pm00201
+        <choose>
+            <when test="str != null">
+                WHERE b.pm00201+b.pm00202+b.pm00205+b.pm00221+b.pm00222 LIKE '%'+#{str}+'%'
+            </when>
+            <when test="id != null">
+                WHERE b.pm00201=#{id}
+            </when>
+        </choose>
+    </select>
+    <select id="queryByGroup" resultMap="quote">
+        SELECT * from pro_quote WHERE enquiry_id=#{enquiryId} GROUP BY name,company;
+    </select>
+    <select id="queryQuoteCount" resultType="java.lang.Integer">
+        select COUNT(id) from pro_quote where enquiry_id=#{enquiryId} group by company ;
+    </select>
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PurchaseContractFilesMapper">
+    <resultMap id="PurchaseFiles" type="com.yuesheng.pm.entity.PurchaseFiles">
+        <result property="fileName" column="file_name"></result>
+        <result property="fileUrl" column="file_url"></result>
+        <result property="mark" column="mark"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.PurchaseFiles">
+        insert into purchase_contract_registration_files
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fileName != null ">file_name,
+            </if>
+            <if test="fileUrl != null ">file_url,
+            </if>
+            <if test="mark != null ">mark,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fileName != null ">#{fileName},
+            </if>
+            <if test="fileUrl != null ">#{fileUrl},
+            </if>
+            <if test="mark != null">#{mark},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="Integer">
+        delete from purchase_contract_registration_files where id = #{id}
+    </delete>
+
+    <delete id="deleteByMark" parameterType="Integer">
+        delete from purchase_contract_registration_files where mark = #{mark}
+    </delete>
+
+    <select id="select" parameterType="Integer" resultMap="PurchaseFiles">
+        select * from purchase_contract_registration_files
+        where mark = #{mark}
+    </select>
+</mapper>

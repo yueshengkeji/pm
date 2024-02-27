@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PutStorageMapper">
+    <resultMap id="putStorage" type="com.yuesheng.pm.entity.PutStorage">
+        <id column="pm02601" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm02602" property="putDate" jdbcType="VARCHAR"></result>
+        <result column="pm02603" property="putSerial" jdbcType="VARCHAR"></result>
+        <result column="pm02606" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pm02607" property="createDate" jdbcType="VARCHAR"></result>
+        <result column="pm02608" property="pm02608" jdbcType="VARCHAR"></result>
+        <result column="pm02609" property="putPerson" jdbcType="VARCHAR"></result>
+        <result column="pm02610" property="pm02610" jdbcType="VARCHAR"></result>
+        <result column="pm02611" property="pm02611" jdbcType="VARCHAR"></result>
+        <result column="pm02612" property="proId" jdbcType="VARCHAR"></result>
+        <result column="pm02613" property="tax" jdbcType="DECIMAL"></result>
+        <result column="pm02614" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="pm02615" property="pm02615" jdbcType="VARCHAR"></result>
+        <result column="pm02616" property="approveStaff" jdbcType="VARCHAR"></result>
+        <result column="pm02617" property="approveType" jdbcType="INTEGER"></result>
+        <result column="pm02618" property="payInvoice" jdbcType="VARCHAR"></result>
+        <result column="pm02619" property="mixMoney" jdbcType="DECIMAL"></result>
+        <result column="pm02620" property="pm02620" jdbcType="TINYINT"></result>
+        <result column="pm02621" property="pm02621" jdbcType="VARCHAR"></result>
+        <result column="pm02622" property="pm02622" jdbcType="VARCHAR"></result>
+        <result column="pm02623" property="putType" jdbcType="TINYINT"></result>
+        <result column="pm02624" property="pm02624" jdbcType="TINYINT"></result>
+        <result column="pm02625" property="pm02625" jdbcType="VARCHAR"></result>
+        <result column="pm02626" property="saleMoney" jdbcType="VARCHAR"></result>
+        <result column="pm02627" property="pm02627" jdbcType="VARCHAR"></result>
+        <result column="pm02628" property="pm02628" jdbcType="VARCHAR"></result>
+        <result column="pm02629" property="pm02629" jdbcType="VARCHAR"></result>
+
+        <association property="company" column="pm02604"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="storage" column="pm02605"
+                     select="com.yuesheng.pm.mapper.StorageMapper.getStorageById"></association>
+    </resultMap>
+    <resultMap id="putJanl" type="com.yuesheng.pm.entity.PutStorage">
+        <id column="pm02601" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm02602" property="putDate" jdbcType="VARCHAR"></result>
+        <result column="pm02603" property="putSerial" jdbcType="VARCHAR"></result>
+        <result column="pm02606" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pm02607" property="createDate" jdbcType="VARCHAR"></result>
+        <result column="pm02613" property="tax" jdbcType="DECIMAL"></result>
+        <result column="pm02614" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="pm02616" property="approveStaff" jdbcType="VARCHAR"></result>
+        <result column="pm02617" property="approveType" jdbcType="INTEGER"></result>
+        <result column="pm02618" property="payInvoice" jdbcType="VARCHAR"></result>
+        <result column="pm02619" property="mixMoney" jdbcType="DECIMAL"></result>
+        <result column="pm02623" property="putType" jdbcType="TINYINT"></result>
+        <result column="pm02620" property="pm02620" jdbcType="TINYINT"></result>
+        <result column="pm01303" property="proName" jdbcType="VARCHAR"></result>
+        <result column="pm02626" property="saleMoney" jdbcType="VARCHAR"></result>
+        <association property="company"
+                     column="pm02604"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="storage" column="pm02605"
+                     select="com.yuesheng.pm.mapper.StorageMapper.getStorageById"></association>
+        <association property="staff" column="pm02609"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="procurement" column="pm02612"
+                     select="com.yuesheng.pm.mapper.ProcurementMapper.getProJanlById"></association>
+        <association property="project" javaType="com.yuesheng.pm.entity.Project">
+            <id property="id" column="pa00101" jdbcType="VARCHAR"></id>
+            <result property="name" column="pa00102" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+    <select id="getPutStorageBySerial" resultMap="putJanl">
+        select * from sdpm026 where pm02603=#{putSerial}
+    </select>
+    <insert id="addStorage" parameterType="com.yuesheng.pm.entity.PutStorage">
+        INSERT INTO sdpm026
+        (pm02601,pm02602,pm02603,pm02604,pm02605,pm02606,pm02607,pm02608,pm02609,pm02610,pm02611,pm02612,pm02613,
+        pm02618,pm02619,pm02623,pm02626)
+        VALUES(#{id},#{putDate},#{putSerial},#{company.id},#{storage.id},#{remark},#{createDate},#{pm02608},#{putPerson},
+        #{pm02610},#{pm02611},#{proId},#{tax},#{payInvoice},#{mixMoney},#{putType},#{saleMoney})
+    </insert>
+
+    <select id="getCount" parameterType="java.util.Map" resultType="Integer">
+        SELECT COUNT(pm02602) FROM sdpm026 WHERE pm02602 BETWEEN #{start} AND #{end}
+        <if test="type != null">
+            AND pm02617 in(#{type})
+        </if>
+        <if test="staffCoding != null">
+            AND pm02616 in(#{staffCoding})
+        </if>
+    </select>
+    <select id="getPutStorages" parameterType="java.util.Map" resultMap="putJanl">
+        SELECT a.pm02601,a.pm02603,a.pm02604,d.pm01303,a.pm02613 FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON b.pm02701=a.pm02601
+        RIGHT JOIN sdFIFOI AS c1 ON c1.FIFOI_09Tranid=b.pm02702 AND c1.FIFOI_06OQty&lt;c1.FIFOI_04IQty
+        LEFT JOIN sdpm013 AS d ON d.pm01301=a.pm02612 WHERE
+        <if test="type != null">
+            pm02617=#{type} AND
+        </if>
+        pm02602 BETWEEN #{start} AND #{end} GROUP BY a.pm02601,a.pm02603,a.pm02604,d.pm01303,a.pm02613 ORDER BY
+        a.pm02603 DESC
+    </select>
+
+    <select id="getPutStorageList" parameterType="java.util.Map" resultMap="putJanl">
+        SELECT DISTINCT a.*,f.pa00101,f.pa00102 FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON a.pm02601=b.pm02701
+        LEFT JOIN sdpm002 AS c ON b.pm02703=c.pm00201
+        LEFT JOIN sdpf003 AS d ON a.pm02604=d.pf00301
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pm02609
+        LEFT JOIN sdpm013 AS j ON j.pm01301=a.pm02612
+        LEFT JOIN sdpa001 as f on f.pa00101=b.pm02723
+        <where>
+            <if test="type != null">
+                AND a.pm02617 in(${type})
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm02602 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="str != null and str != ''">
+                AND a.pm02602+a.pm02603+a.pm02606+cast(b.pm02706 AS VARCHAR(100))+cast(b.pm02707 AS
+                VARCHAR(100))+cast(b.pm02708 AS varchar(100))+c.pm00201
+                +c.pm00202+isNUll(c.pm00205,'')+c.pm00221+d.pf00302+e.pj00402+f.pa00102+j.pm01303 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="storage != null">
+                AND pm02605=#{storage}
+            </if>
+            <if test="searchCompany != null and searchCompany != ''">
+                AND d.pf00302 LIKE '%'+#{searchCompany}+'%'
+            </if>
+            <if test="searchSeries != null and searchSeries != ''">
+                AND a.pm02603 LIKE '%'+#{searchSeries}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="getPutStorageList" parameterType="java.util.Map" resultMap="putJanl" databaseId="mysql">
+        SELECT DISTINCT a.*,f.pa00101,f.pa00102 FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON a.pm02601=b.pm02701
+        LEFT JOIN sdpm002 AS c ON b.pm02703=c.pm00201
+        LEFT JOIN sdpf003 AS d ON a.pm02604=d.pf00301
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pm02609
+        LEFT JOIN sdpm013 AS j ON j.pm01301=a.pm02612
+        LEFT JOIN sdpa001 as f on f.pa00101=b.pm02723
+        <where>
+            <if test="type != null">
+                AND a.pm02617 in(${type})
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm02602 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="str != null and str != ''">
+                AND concat(a.pm02602,a.pm02603,a.pm02606,b.pm02706 ,b.pm02707,b.pm02708,c.pm00201
+                ,c.pm00202,IFNULL(c.pm00205,''),c.pm00221,d.pf00302,e.pj00402,f.pa00102,j.pm01303) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="storage != null">
+                AND pm02605=#{storage}
+            </if>
+            <if test="searchCompany != null and searchCompany != ''">
+                AND d.pf00302 LIKE concat('%',#{searchCompany},'%')
+            </if>
+            <if test="searchSeries != null and searchSeries != ''">
+                AND a.pm02603 LIKE concat('%',#{searchSeries},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getPutStorageListCount" resultType="Integer">
+        SELECT count(DISTINCT a.pm02601) FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON a.pm02601=b.pm02701
+        LEFT JOIN sdpm002 AS c ON b.pm02703=c.pm00201
+        LEFT JOIN sdpf003 AS d ON a.pm02604=d.pf00301
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pm02609
+        LEFT JOIN sdpm013 AS j ON j.pm01301=a.pm02612
+        LEFT JOIN sdpa001 as f on f.pa00101=b.pm02723
+        <where>
+            <if test="type != null">
+                AND a.pm02617 in(${type})
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm02602 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="str != null and str != ''">
+                AND a.pm02602+a.pm02603+a.pm02606+cast(b.pm02706 AS VARCHAR(100))+cast(b.pm02707 AS
+                VARCHAR(100))+cast(b.pm02708 AS varchar(100))+c.pm00201
+                +c.pm00202+isNUll(c.pm00205,'')+c.pm00221+d.pf00302+e.pj00402+f.pa00102+j.pm01303 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="storage != null">
+                AND pm02605=#{storage}
+            </if>
+            <if test="searchCompany != null and searchCompany != ''">
+                AND d.pf00302 LIKE '%'+#{searchCompany}+'%'
+            </if>
+            <if test="searchSeries != null and searchSeries != ''">
+                AND a.pm02603 LIKE '%'+#{searchSeries}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="getPutStorageListCount" resultType="Integer" databaseId="mysql">
+        SELECT count(DISTINCT a.pm02601) FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON a.pm02601=b.pm02701
+        LEFT JOIN sdpm002 AS c ON b.pm02703=c.pm00201
+        LEFT JOIN sdpf003 AS d ON a.pm02604=d.pf00301
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pm02609
+        LEFT JOIN sdpm013 AS j ON j.pm01301=a.pm02612
+        LEFT JOIN sdpa001 as f on f.pa00101=b.pm02723
+        <where>
+            <if test="type != null">
+                AND a.pm02617 in(${type})
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm02602 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="str != null and str != ''">
+                AND concat(a.pm02602,a.pm02603,a.pm02606,b.pm02706 ,b.pm02707,b.pm02708,c.pm00201
+                ,c.pm00202,IFNULL(c.pm00205,''),c.pm00221,d.pf00302,e.pj00402,f.pa00102,j.pm01303) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="storage != null">
+                AND pm02605=#{storage}
+            </if>
+            <if test="searchCompany != null and searchCompany != ''">
+                AND d.pf00302 LIKE concat('%',#{searchCompany},'%')
+            </if>
+            <if test="searchSeries != null and searchSeries != ''">
+                AND a.pm02603 LIKE concat('%',#{searchSeries},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getPutCount" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT a.pm02601) FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON a.pm02601=b.pm02701
+        LEFT JOIN sdpm002 AS c ON b.pm02703=c.pm00201
+        LEFT JOIN sdpf003 AS d ON a.pm02604=d.pf00301
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pm02609
+        LEFT JOIN sdpa001 AS f ON f.pa00101=b.pm02723
+        LEFT JOIN sdpm013 AS j ON j.pm01301=a.pm02612
+        <where>
+            <if test="type != null">
+                AND a.pm02617 in(${type})
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm02602 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="str != null and str != ''">
+                AND a.pm02602+a.pm02603+a.pm02606+cast(b.pm02706 AS VARCHAR(100))+cast(b.pm02707 AS
+                VARCHAR(100))+cast(b.pm02708 AS varchar(100))+c.pm00201
+                +c.pm00202+isNUll(c.pm00205,'')+c.pm00221+d.pf00302+e.pj00402+f.pa00102+j.pm01303 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="storage != null">
+                AND pm02605=#{storage}
+            </if>
+            <if test="searchCompany != null and searchCompany != ''">
+                AND d.pf00302 LIKE '%'+#{searchCompany}+'%'
+            </if>
+            <if test="searchSeries != null and searchSeries != ''">
+                AND a.pm02603 LIKE '%'+#{searchSeries}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="getPutCount" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT COUNT(DISTINCT a.pm02601) FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON a.pm02601=b.pm02701
+        LEFT JOIN sdpm002 AS c ON b.pm02703=c.pm00201
+        LEFT JOIN sdpf003 AS d ON a.pm02604=d.pf00301
+        LEFT JOIN sdpj004 AS e ON e.pj00421=a.pm02609
+        LEFT JOIN sdpa001 AS f ON f.pa00101=b.pm02723
+        LEFT JOIN sdpm013 AS j ON j.pm01301=a.pm02612
+        <where>
+            <if test="type != null">
+                AND a.pm02617 in(${type})
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm02602 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="str != null and str != ''">
+                AND concat(a.pm02602,a.pm02603,a.pm02606,b.pm02706,b.pm02707,b.pm02708,c.pm00201
+                ,c.pm00202,IFNUll(c.pm00205,''),c.pm00221,d.pf00302,e.pj00402,f.pa00102,j.pm01303) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="storage != null">
+                AND pm02605=#{storage}
+            </if>
+            <if test="searchCompany != null and searchCompany != ''">
+                AND d.pf00302 LIKE concat('%',#{searchCompany},'%')
+            </if>
+            <if test="searchSeries != null and searchSeries != ''">
+                AND a.pm02603 LIKE concat('%',#{searchSeries},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getPutStorageListFast" parameterType="java.util.Map" resultMap="putJanl">
+        SELECT DISTINCT a.*,f.pa00101,f.pa00102 FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON a.pm02601=b.pm02701
+        LEFT JOIN sdpm002 AS c ON b.pm02703=c.pm00201
+        LEFT JOIN sdpa001 AS f ON f.pa00101=b.pm02723
+        <where>
+            <if test="type != null">
+                and a.pm02617 in(${type})
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm02602 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="searchSeries != null and searchSeries != ''">
+                AND a.pm02602+a.pm02603+a.pm02606+cast(b.pm02706 AS VARCHAR(100))+cast(b.pm02707 AS
+                VARCHAR(100))+cast(b.pm02708 AS varchar(100))+c.pm00201
+                +c.pm00202+isnull(c.pm00205,'')+c.pm00221 LIKE '%'+#{searchSeries}+'%'
+            </if>
+            <if test="storage != null">
+                AND pm02605=#{storage}
+            </if>
+        </where>
+    </select>
+    <select id="getPutStorageListFast" parameterType="java.util.Map" resultMap="putJanl" databaseId="mysql">
+        SELECT DISTINCT a.*,f.pa00101,f.pa00102 FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON a.pm02601=b.pm02701
+        LEFT JOIN sdpm002 AS c ON b.pm02703=c.pm00201
+        LEFT JOIN sdpa001 AS f ON f.pa00101=b.pm02723
+        <where>
+            <if test="type != null">
+                and a.pm02617 in(${type})
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm02602 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="searchSeries != null and searchSeries != ''">
+                AND concat(a.pm02602,a.pm02603,a.pm02606,b.pm02706,b.pm02707,b.pm02708,c.pm00201
+                ,c.pm00202,ifnull(c.pm00205,''),c.pm00221) LIKE concat('%',#{searchSeries},'%')
+            </if>
+            <if test="storage != null">
+                AND pm02605=#{storage}
+            </if>
+        </where>
+    </select>
+    <select id="getPutStoragesListFastCount" parameterType="java.util.Map" resultType="Integer">
+        SELECT COUNT(DISTINCT a.pm02601) FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON a.pm02601=b.pm02701
+        LEFT JOIN sdpm002 AS c ON b.pm02703=c.pm00201
+        LEFT JOIN sdpa001 AS f ON f.pa00101=b.pm02723
+        <where>
+            <if test="type != null">
+                and a.pm02617 in(${type})
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm02602 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="searchSeries != null and searchSeries != ''">
+                AND a.pm02602+a.pm02603+a.pm02606+cast(b.pm02706 AS VARCHAR(100))+cast(b.pm02707 AS
+                VARCHAR(100))+cast(b.pm02708 AS varchar(100))+c.pm00201
+                +c.pm00202+c.pm00205+c.pm00221 LIKE '%'+#{searchSeries}+'%'
+            </if>
+            <if test="storage != null">
+                AND pm02605=#{storage}
+            </if>
+        </where>
+    </select>
+    <select id="getPutStoragesListFastCount" parameterType="java.util.Map" resultType="Integer" databaseId="mysql">
+        SELECT COUNT(DISTINCT a.pm02601) FROM sdpm026 AS a
+        LEFT JOIN sdpm027 AS b ON a.pm02601=b.pm02701
+        LEFT JOIN sdpm002 AS c ON b.pm02703=c.pm00201
+        LEFT JOIN sdpa001 AS f ON f.pa00101=b.pm02723
+        <where>
+            <if test="type != null">
+                and a.pm02617 in(${type})
+            </if>
+            <if test="start != null and end != null">
+                AND a.pm02602 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="searchSeries != null and searchSeries != ''">
+                AND concat(a.pm02602,a.pm02603,a.pm02606,b.pm02706,b.pm02707,b.pm02708,c.pm00201
+                ,c.pm00202,c.pm00205,c.pm00221) LIKE concat('%',#{searchSeries},'%')
+            </if>
+            <if test="storage != null">
+                AND pm02605=#{storage}
+            </if>
+        </where>
+    </select>
+
+    <select id="getProjectIdByMater" resultType="com.yuesheng.pm.entity.Project">
+        SELECT a.pm02723 AS id ,b.pa00102 AS name FROM sdpm027 AS a
+        LEFT JOIN sdpa001 AS b ON b.pa00101=a.pm02723 WHERE a.pm02701=#{putId} AND a.pm02723 != ''
+    </select>
+
+    <update id="updateApprove" parameterType="java.util.Map">
+        UPDATE sdpm026 SET pm02614=#{date},pm02616=#{person},pm02617=#{state} WHERE pm02601=#{id}
+    </update>
+
+    <update id="updatePutSerial" parameterType="com.yuesheng.pm.entity.PutStorage">
+        UPDATE sdpm026 SET pm02603=#{putSerial} WHERE pm02601=#{id}
+    </update>
+    <update id="updatePutDate" parameterType="com.yuesheng.pm.entity.PutStorage">
+        UPDATE sdpm026 SET pm02602=#{putDate} WHERE pm02601=#{id}
+    </update>
+    <update id="updatePutRemark" parameterType="com.yuesheng.pm.entity.PutStorage">
+        UPDATE sdpm026 SET pm02606=#{remark} WHERE pm02601=#{id}
+    </update>
+    <update id="updatePutTax" parameterType="com.yuesheng.pm.entity.PutStorage">
+        UPDATE sdpm026 SET pm02613=#{tax} WHERE pm02601=#{id}
+    </update>
+    <update id="updatePutMixMoney" parameterType="com.yuesheng.pm.entity.PutStorage">
+        UPDATE sdpm026 SET pm02619=#{mixMoney} WHERE pm02601=#{id}
+    </update>
+    <delete id="deletePut" parameterType="String">
+        DELETE FROM sdpm026 WHERE pm02601=#{id}
+    </delete>
+    <update id="updatePutMessage" parameterType="com.yuesheng.pm.entity.PutStorage">
+        UPDATE sdpm026 SET pm02619=#{mixMoney},pm02606=#{remark},pm02602=#{putDate},pm02603=#{putSerial} WHERE pm02601=#{id}
+    </update>
+
+    <select id="getPutAll" resultMap="putJanl">
+        SELECT * FROM sdpm026 ORDER BY pm02602 DESC
+    </select>
+    <select id="seekPutStorage" resultMap="putJanl">
+        SELECT * FROM sdpm026 WHERE pm02617=#{type} AND pm02603 LIKE '%'+#{str}+'%' ORDER BY pm02602 DESC
+    </select>
+    <select id="seekPutStorage" resultMap="putJanl" databaseId="mysql">
+        SELECT * FROM sdpm026 WHERE pm02617=#{type} AND pm02603 LIKE concat('%',#{str},'%') ORDER BY pm02602 DESC
+    </select>
+
+    <select id="isOut" resultType="String">
+        SELECT pm02015 FROM sdpm020 WHERE pm02015=#{id}
+    </select>
+    <select id="getNowPutSerial" resultType="String">
+        SELECT pm02603 FROM sdpm026 WHERE pm02614=#{date} ORDER BY pm02603 DESC
+    </select>
+    <select id="getStorageByProject" resultMap="putJanl">
+        SELECT a.pm02601,a.pm02603,a.pm02604,a.pm02613,d.pm01303 FROM sdpm026 AS a
+            LEFT JOIN sdpm027 AS b ON b.pm02701=a.pm02601
+            RIGHT JOIN sdFIFOI AS c1 ON c1.FIFOI_09Tranid=b.pm02702 AND c1.FIFOI_06OQty&lt;c1.FIFOI_04IQty
+            RIGHT JOIN sdpm002 AS d1 ON b.pm02703=d1.pm00201 AND d1.pm00209>0
+            LEFT JOIN sdpm013 AS d ON d.pm01301=a.pm02612 WHERE
+            pm02617=1 AND b.pm02723=#{proId}
+            GROUP BY a.pm02601,a.pm02603,a.pm02604,a.pm02613,d.pm01303 ORDER BY a.pm02603 DESC
+    </select>
+    <update id="updateSimpleInfo">
+        update sdpm026 set
+        <if test="putSerial != null and putSerial != ''">
+            pm02603=#{putSerial},
+        </if>
+        <if test="remark != null">
+            pm02606=#{remark},
+        </if>
+        <if test="tax != null">
+            pm02613=#{tax},
+        </if>
+        <if test="putDate != null">
+            pm02602=#{putDate},
+        </if>
+        pm02620=#{pm02620},pm02616=#{approveStaff},pm02617=#{approveType},pm02614=#{approveDate} where pm02601=#{id}
+    </update>
+    <select id="getStorageById" resultMap="putStorage">
+        SELECT * FROM sdpm026 WHERE pm02601=#{id}
+    </select>
+    <select id="getPutStorageByDetailId" resultMap="putJanl">
+        SELECT * FROM sdpm026 RIGHT JOIN sdpm027 on pm02601=pm02701 where pm02702=#{detailId}
+    </select>
+    <select id="getNoDetailList" resultMap="putStorage">
+        SELECT * FROM sdpm026
+        left join pro_detail_c on pm02612=pro_id
+        WHERE pm02602 between #{startDate} and #{endDate} and pro_id is null
+    </select>
+    <select id="getPutStorageByProId" resultMap="putJanl">
+        select * from sdpm026 where pm02612=#{proId}
+    </select>
+</mapper>

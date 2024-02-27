@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProWorkCheckMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProWorkCheck" id="ProWorkCheckMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="staffName" column="staff_name" jdbcType="VARCHAR"/>
+        <result property="date" column="date" jdbcType="VARCHAR"/>
+        <result property="time" column="time" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="OTHER"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="note" column="note" jdbcType="VARCHAR"/>
+        <result property="attache" column="attache" jdbcType="VARCHAR"/>
+        <result property="mac" column="mac" jdbcType="VARCHAR"/>
+        <result property="column10" column="column10" jdbcType="VARCHAR"/>
+        <result property="lat" column="lat" jdbcType="BIGINT"/>
+        <result property="lng" column="lng" jdbcType="BIGINT"/>
+        <result property="signBgAvatar" column="sign_bg_avatar" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap type="com.yuesheng.pm.entity.ProWorkCheck" id="ProWorkCheck">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="staffName" column="staff_name" jdbcType="VARCHAR"/>
+        <result property="date" column="date" jdbcType="VARCHAR"/>
+        <result property="time" column="time" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="OTHER"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="note" column="note" jdbcType="VARCHAR"/>
+        <result property="mac" column="mac" jdbcType="VARCHAR"/>
+        <result property="column10" column="column10" jdbcType="VARCHAR"/>
+        <result property="lat" column="lat" jdbcType="BIGINT"/>
+        <result property="lng" column="lng" jdbcType="BIGINT"/>
+        <result property="signBgAvatar" column="sign_bg_avatar" jdbcType="VARCHAR"/>
+        <result property="attache" column="attache" jdbcType="VARCHAR"/>
+        <association property="leave" javaType="com.yuesheng.pm.entity.Leave">
+            <id column="leave_id" property="id"></id>
+            <result column="leave_hour" property="leaveHouse"></result>
+        </association>
+        <association property="overtime" javaType="com.yuesheng.pm.entity.Overtime">
+            <id column="overtime_id" property="id"></id>
+            <result column="overtime_hour" property="hour"></result>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProWorkCheckMap">
+        select
+          id,staff_id,date,time,type,address,note,mac,column10,staff_name,lat,lng,sign_bg_avatar
+        from pro_work_check
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProWorkCheckMap">
+        select
+          id,staff_id,date,time,type,address,note,mac,column10,staff_name,lat,lng,sign_bg_avatar
+        from pro_work_check
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProWorkCheckMap">
+        select
+        id,staff_id,date,time,type,address,note,mac,column10,staff_name,lat,lng
+        from pro_work_check
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="date != null and date != ''">
+                and date = #{date}
+            </if>
+            <if test="time != null and time != ''">
+                and time = #{time}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address}
+            </if>
+            <if test="note != null and note != ''">
+                and note = #{note}
+            </if>
+            <if test="attache != null and attache != ''">
+                and attache = #{attache}
+            </if>
+            <if test="mac != null and mac != ''">
+                and mac = #{mac}
+            </if>
+            <if test="staffName != null and staffName != ''">
+                and staff_name = #{staffName}
+            </if>
+            <if test="leave != null ">
+                and leave_id = #{leave.id}
+            </if>
+            <if test="overtime != null ">
+                and overtime_id = #{overtime.id}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into pro_work_check(id,staff_id, date, time, type, address, note, attache,
+        mac,staff_name,column10,lat,lng,sign_bg_avatar
+        <if test="leave != null">
+            ,leave_id,leave_hour
+        </if>
+        <if test="overtime != null">
+            ,overtime_id,overtime_hour
+        </if>
+        )
+        values (#{id},#{staffId}, #{date}, #{time}, #{type}, #{address}, #{note}, #{attache},
+        #{mac},#{staffName},#{column10},#{lat},#{lng},#{signBgAvatar}
+        <if test="leave != null">
+            ,#{leave.id},#{leave.leaveHouse}
+        </if>
+
+        <if test="overtime != null">
+            ,#{overtime.id},#{overtime.hour}
+        </if>
+        )
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_work_check
+        <set>
+            <if test="staffId != null and staffId != ''">
+                staff_id = #{staffId},
+            </if>
+            <if test="date != null and date != ''">
+                date = #{date},
+            </if>
+            <if test="time != null and time != ''">
+                time = #{time},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="note != null and note != ''">
+                note = #{note},
+            </if>
+            <if test="attache != null and attache != ''">
+                attache = #{attache},
+            </if>
+            <if test="mac != null and mac != ''">
+                mac = #{mac},
+            </if>
+            <if test="staffName != null and staffName != ''">
+                staff_name = #{staffName},
+            </if>
+            <if test="lat != null">
+                lat = #{lat},
+            </if>
+            <if test="lng != null">
+                lng = #{lng},
+            </if>
+            <if test="signBgAvatar != null">
+                sign_bg_avatar = #{signBgAvatar}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateLeave">
+        update pro_work_check
+        <set>
+            <if test="leave != null">
+                leave_id = #{leave.id},leave_hour = #{leave.leaveHouse}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateOvertime">
+        update pro_work_check
+        <set>
+            <if test="overtime != null">
+                overtime_id = #{overtime.id},overtime_hour = #{overtime.hour}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_work_check where id = #{id}
+    </delete>
+    <select id="queryByParam" resultMap="ProWorkCheckMap">
+        select top 1 * from pro_work_check where date=#{date} and time=#{time} and staff_id=#{staffId}
+    </select>
+    <select id="queryByDatetime" resultMap="ProWorkCheckMap">
+        select top 1 * from pro_work_check where staff_id=#{staffId} and date=#{date} and time like #{time}+'%'
+    </select>
+    <select id="queryAllByDate" resultMap="ProWorkCheck">
+        select
+        wc.id,wc.staff_id,wc.date,wc.time,wc.type,wc.address,wc.note,wc.mac,wc.column10,wc.staff_name,wc.lat,wc.lng,
+        wc.sign_bg_avatar,wc.leave_id,wc.leave_hour,wc.overtime_id,wc.overtime_hour,wc.attache from pro_work_check as wc
+        RIGHT JOIN pro_work_check_show as wcs on wc.staff_id=wcs.staff_id
+        where wcs.is_show=${isShow} and date between #{startDate} and #{endDate}
+          and wc.type not in(255)
+        <if test="type != null">
+            and wc.type=#{type}
+        </if>
+        order by wc.staff_id , date , time asc
+    </select>
+    <select id="queryByStaff" resultMap="ProWorkCheck">
+        select
+        id,staff_id,date,time,type,address,note,mac,column10,staff_name,lat,lng,sign_bg_avatar,leave_id,leave_hour,overtime_id,overtime_hour,attache
+        from
+        pro_work_check
+        <where>
+            <if test="date != null">
+                and date = #{date}
+            </if>
+            <if test="staffId != null">
+                and staff_id=#{staffId}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and date between #{startDate} and #{endDate}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="staffName != null and staffName != ''">
+                and staff_name like '%'+#{staffName}+'%'
+            </if>
+        </where>
+        order by time asc
+    </select>
+    <select id="queryAllBySection" resultMap="ProWorkCheck">
+        select
+        wc.id,wc.staff_id,wc.date,wc.time,wc.type,wc.address,wc.note,wc.mac,wc.column10,wc.staff_name,wc.lat,wc.lng,
+        wc.sign_bg_avatar,wc.leave_id,wc.leave_hour,wc.overtime_id,wc.overtime_hour from pro_work_check as wc RIGHT JOIN
+        pro_work_check_show as wcs on wc.staff_id=wcs.staff_id
+        <where>
+            <if test="dataType != null">
+                AND wc.type in(${dataType})
+            </if>
+            <if test="dataType == null">
+                AND wc.type not in(255)
+            </if>
+            <if test="staffIds != null">
+                and wc.staff_id in(${staffIds})
+            </if>
+            <if test="sectionName != null">
+                and wc.staff_name LIKE '%'+#{sectionName}+''
+            </if>
+            <if test="isShow != null">
+                and wcs.is_show=${isShow}
+            </if>
+            <if test="startDate != null">
+                and date between #{startDate} and #{endDate}
+            </if>
+        </where>
+        order by wc.staff_id , date , time asc
+    </select>
+    <select id="queryAllByStaffIds" resultMap="ProWorkCheck">
+        select
+        wc.id,wc.staff_id,wc.date,wc.time,wc.type,wc.address,wc.note,wc.mac,wc.column10,wc.staff_name,wc.lat,wc.lng,
+        wc.sign_bg_avatar,wc.leave_id,wc.leave_hour,wc.overtime_id,wc.overtime_hour from pro_work_check as wc RIGHT JOIN
+        pro_work_check_show as wcs on wc.staff_id=wcs.staff_id
+        <where>
+            <if test="dataType != null">
+                AND wc.type in(${dataType})
+            </if>
+            <if test="dataType == null">
+                AND wc.type not in(255)
+            </if>
+            <if test="staffIds != null">
+                and wc.staff_id in(${staffIds})
+            </if>
+            <if test="sectionName != null">
+                and wc.staff_name LIKE '%'+#{sectionName}+''
+            </if>
+            <if test="isShow != null">
+                and wcs.is_show=${isShow}
+            </if>
+            <if test="startDate != null">
+                and date between #{startDate} and #{endDate}
+            </if>
+        </where>
+        order by wc.staff_id , date , time asc
+    </select>
+    <select id="queryCount" resultType="Integer">
+        select COUNT(distinct staff_id) from pro_work_check where date=#{date}
+        <choose>
+            <when test="type == 2">
+                and (lat &lt;= 31952000 and lat &gt; 31944180 and lng &lt;= 120933052 and lng &gt; 120917250)
+            </when>
+            <when test="type != null and type != 2">
+                and type = #{type}
+            </when>
+        </choose>
+
+    </select>
+
+    <update id="updateType">
+        update pro_work_check set type=#{type} where id=#{id}
+    </update>
+</mapper>

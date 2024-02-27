@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ApplyMaterialMapper">
+    <resultMap id="applyMaterial" type="com.yuesheng.pm.entity.ApplyMaterial">
+        <id column="pm03512" property="major" jdbcType="VARCHAR"></id>
+        <result column="pm03501" property="applyid" jdbcType="VARCHAR"></result>
+        <result column="pm03502" property="serialNumber" jdbcType="INTEGER"></result>
+        <result column="pm03503" property="id" jdbcType="VARCHAR"></result>
+        <result column="pm03504" property="applyDate" jdbcType="VARCHAR"></result>
+        <result column="pm03505" property="sum" jdbcType="DECIMAL"></result>
+        <result column="pm03506" property="planPrice" jdbcType="DECIMAL"></result>
+        <result column="pm03509" property="remark" jdbcType="DECIMAL"></result>
+        <result column="pm03513" property="cnfParam" jdbcType="DECIMAL"></result>
+        <result column="pm03518" property="notSum" jdbcType="DECIMAL"></result>
+        <result column="pm03508" property="ySum" jdbcType="DECIMAL"></result>
+        <result column="pm03520" property="planRowId" jdbcType="VARCHAR"></result>
+        <result column="pm03507" property="taskId" jdbcType="VARCHAR"></result>
+        <association property="unit" column="pm03514"
+                     select="com.yuesheng.pm.mapper.UnitMapper.getUnit"></association>
+    </resultMap>
+    <resultMap id="applyMaterJian" type="com.yuesheng.pm.entity.ApplyMaterial">
+        <result column="pm03414" property="applyDate" jdbcType="VARCHAR"></result>
+        <result column="pm03505" property="sum" jdbcType="DECIMAL"></result>
+        <result property="staffName" column="pj00402" jdbcType="VARCHAR"></result>
+        <result column="pm03501" property="applyid" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getApplyMaterials" resultMap="applyMaterial" parameterType="String">
+        SELECT DISTINCT p35.pm03501,p35.pm03502,p35.pm03503,p35.pm03504,p35.pm03505,p35.pm03506,p35.pm03507,p35.pm03509,p35.pm03512,
+			p35.pm03513,p35.pm03514,p35.pm03518,p35.pm03508,test.pm00202 name,test.pm00205 model,pm00207 planPrice,
+			test.pm00221 brand,test.pm00222 producingArea
+          FROM sdpm035 as p35 LEFT JOIN sdpm002 AS test ON test.pm00201=p35.pm03503
+          WHERE  p35.pm03501=#{applyid} AND p35.pm03505 &gt; p35.pm03508 ORDER BY p35.pm03502 ASC
+    </select>
+
+    <update id="updateMaterial" parameterType="java.util.Map">
+        UPDATE sdpm035 SET pm03508=(pm03508 + #{sum}) WHERE pm03512=#{major};
+    </update>
+    <update id="updateProSum">
+        UPDATE sdpm035 SET pm03508=#{ySum} WHERE pm03512=#{major};
+    </update>
+    <select id="getMaterSums" resultType="java.util.Map" parameterType="String">
+        SELECT SUM(pm03505) AS applySum ,SUM(pm03508) AS ySum FROM sdpm035 WHERE pm03501=#{applyId};
+    </select>
+    <update id="updatePutSum">
+        UPDATE sdpm014 SET pm01411=#{sum},pm01412=#{date} WHERE pm01401=#{proId} AND pm01402=#{materId};
+    </update>
+    <select id="getMaterAllByApply" resultMap="applyMaterial" parameterType="String">
+            SELECT DISTINCT p35.pm03501,p35.pm03502,p35.pm03503,p35.pm03504,p35.pm03505,p35.pm03506,p35.pm03507,p35.pm03509,p35.pm03512,
+                p35.pm03513,p35.pm03514,p35.pm03518,p35.pm03508,p35.pm03520,test.pm00202 name,test.pm00205 model,pm00207 planPrice,
+                test.pm00221 brand,test.pm00222 producingArea
+            FROM sdpm035 as p35 LEFT JOIN sdpm002 AS test ON test.pm00201=p35.pm03503
+            WHERE  p35.pm03501=#{applyId} ORDER BY p35.pm03502 ASC;
+    </select>
+    <select id="getByApplyId" resultMap="applyMaterial">
+        select * from sdpm035 where pm03501=#{applyId}
+    </select>
+    <select id="getMaterByProid" resultMap="applyMaterJian">
+        SELECT apply.pm03414, mater.pm03505, staff.pj00402, mater.pm03501
+        FROM sdpm035 AS mater
+                 RIGHT JOIN sdpm034 AS apply ON mater.pm03501 = apply.pm03401
+                 RIGHT JOIN sdpj004 AS staff ON staff.pj00421 = apply.pm03407
+        WHERE mater.pm03503 = #{materId}
+          AND apply.pm03402 = #{projectId}
+        ORDER BY apply.pm03414 ASC
+    </select>
+    <update id="updateRemark">
+        UPDATE sdpm035 SET pm03509=#{remark} WHERE pm03512=#{id};
+    </update>
+    <select id="getMaterById" resultMap="applyMaterial">
+        SELECT * FROM sdpm035 WHERE pm03512=#{id}
+    </select>
+    <insert id="addMater">
+        insert into sdpm035 values(#{applyid},#{serialNumber},#{id},#{applyDate},#{sum},#{planPrice},#{taskId},0,#{remark},
+        0,'',#{major},#{cnfParam},#{unit.id},1,0,0,0,'',#{planRowId},0,'')
+    </insert>
+    <update id="updateMater">
+        UPDATE sdpm035 SET pm03503=#{id} WHERE pm03512=#{major};
+    </update>
+    <select id="getMaterialByMaterId" resultMap="com.yuesheng.pm.mapper.MaterialMapper.material">
+        SELECT TOP 1 a.* FROM sdpm002 AS a
+        RIGHT JOIN sdpm035 AS b ON a.pm00201=b.pm03503
+        WHERE b.pm03503=#{id};
+    </select>
+    <select id="listByPlanRowId" resultMap="applyMaterial">
+        SELECT * FROM sdpm035 WHERE pm03520=#{planRowId}
+    </select>
+    <delete id="deleteByApply">
+        delete from sdpm035 where pm03501=#{applyId}
+    </delete>
+
+    <select id="getProjectMaterial" resultMap="com.yuesheng.pm.mapper.ProjectMapper.projectMater">
+        SELECT a.pm03503 AS 'pm00201', sum(a.pm03505) AS 'pm03505', '2' AS 'type'
+        FROM sdpm035 AS a
+                 RIGHT JOIN sdpm034 AS b ON a.pm03501 = b.pm03401
+        WHERE b.pm03402 = #{projectId}
+        GROUP BY a.pm03503;
+    </select>
+</mapper>

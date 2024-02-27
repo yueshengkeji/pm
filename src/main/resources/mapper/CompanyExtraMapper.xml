@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CompanyExtraMapper">
+    <resultMap id="CompanyExtra" type="com.yuesheng.pm.entity.CompanyExtra">
+        <result property="id" column="id"></result>
+        <result property="phone" column="phone"></result>
+        <result property="street" column="street"></result>
+        <result property="jurisdiction" column="jurisdiction"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.CompanyExtra">
+        insert into company_to_sdpf003 values (#{id},#{jurisdiction},#{street},#{phone});
+    </insert>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.CompanyExtra">
+        update company_to_sdpf003
+        set jurisdiction = #{jurisdiction},
+        phone = #{phone},
+        street = #{street}
+        where id = #{id}
+    </update>
+</mapper>

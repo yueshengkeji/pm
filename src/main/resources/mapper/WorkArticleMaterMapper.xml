@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.WorkArticleMaterMapper">
+    <resultMap id="articleDetail" type="com.yuesheng.pm.entity.MaterOutChild">
+        <id column="po20501" property="id" jdbcType="VARCHAR"></id>
+        <result column="po20507" property="sum" jdbcType="DECIMAL"></result>
+        <result column="po20508" property="taxPrice" jdbcType="DECIMAL"></result>
+        <result column="po20509" property="taxMoney" jdbcType="DECIMAL"></result>
+        <result column="po20510" property="remark" jdbcType="VARCHAR"></result>
+        <association property="material" column="po20505" select="getMaterById"></association>
+    </resultMap>
+    <resultMap id="materFolder" type="com.yuesheng.pm.entity.Folder">
+        <id column="po20001" property="id" jdbcType="VARCHAR"></id>
+        <result column="po20002" property="name" jdbcType="VARCHAR"></result>
+        <result column="po20004" property="parent" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <!--    办公用品领用材料model-->
+    <resultMap id="workOutMaterModel" type="com.yuesheng.pm.model.WorkOutMaterModel">
+        <association property="materOut" javaType="com.yuesheng.pm.entity.MaterOutChild">
+            <id column="po20501" property="id" jdbcType="VARCHAR"></id>
+            <id column="po20502" property="materOutId" jdbcType="VARCHAR"></id>
+            <result column="po20507" property="sum" jdbcType="DECIMAL"></result>
+            <result column="po20508" property="taxPrice" jdbcType="DECIMAL"></result>
+            <result column="po20509" property="taxMoney" jdbcType="DECIMAL"></result>
+            <result column="po20510" property="remark" jdbcType="VARCHAR"></result>
+            <result column="po20408" property="outDate" jdbcType="VARCHAR"></result>
+            <association property="material" column="po20505" select="getMaterById"></association>
+        </association>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <result column="po20405" property="id"></result>
+            <result column="pj00402" property="name"></result>
+        </association>
+    </resultMap>
+    <!--办公用品材料对象-->
+    <resultMap id="articleMaterial" type="com.yuesheng.pm.entity.Material">
+        <id column="po20101" property="id" jdbcType="VARCHAR"></id>
+        <result column="po20102" property="name" jdbcType="VARCHAR"></result>
+        <result column="po20103" property="model" jdbcType="VARCHAR"></result>
+        <result column="po20104" property="brand" jdbcType="VARCHAR"></result>
+        <result column="po20108" property="folder" jdbcType="VARCHAR"></result>
+        <result column="po20112" property="planPrice" jdbcType="DECIMAL"></result>
+        <result column="po20110" property="putSum" jdbcType="DECIMAL"></result>
+        <result column="po20111" property="outSum" jdbcType="DECIMAL"></result>
+        <result column="pm20112" property="storageSum" jdbcType="DECIMAL"></result>
+        <association property="unit" javaType="com.yuesheng.pm.entity.Unit">
+            <result column="po20105" property="name" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+    <select id="getMaterById" resultMap="articleMaterial">
+        SELECT * FROM sdpo201 WHERE po20101=#{id}
+    </select>
+    <select id="getArticleMaterByArticleId" resultMap="articleDetail">
+        SELECT * FROM sdpo205 WHERE po20502=#{articleId}
+    </select>
+
+    <select id="queryMater" resultMap="articleMaterial">
+        SELECT * FROM sdpo201
+        <choose>
+            <when test="type != null and searchText != null">
+                WHERE po20110 > po20111 AND po20101+po20102+po20103+po20104+po20105+CAST(po20112 AS varchar(100)) LIKE
+                '%'+#{searchText}+'%'
+            </when>
+            <when test="searchText != null">
+                WHERE po20101+po20102+po20103+po20104+po20105+CAST(po20112 AS varchar(100)) LIKE '%'+#{searchText}+'%'
+            </when>
+            <when test="type != null">
+                WHERE po20110 > po20111
+            </when>
+        </choose>
+        ${order}
+    </select>
+    <select id="queryMater" resultMap="articleMaterial" databaseId="mysql">
+        SELECT * FROM sdpo201
+        <choose>
+            <when test="type != null and searchText != null">
+                WHERE po20110 > po20111 AND concat(po20101,po20102,po20103,po20104,po20105,po20112 ) LIKE
+                concat('%',#{searchText},'%')
+            </when>
+            <when test="searchText != null">
+                WHERE concat(po20101,po20102,po20103,po20104,po20105,po20112) LIKE concat('%',#{searchText},'%')
+            </when>
+            <when test="type != null">
+                WHERE po20110 > po20111
+            </when>
+        </choose>
+        ${order}
+    </select>
+    <select id="queryMaterV2" resultMap="articleMaterial">
+        SELECT * FROM sdpo201
+        <where>
+            <if test="searchText != null">
+                and po20101+po20102+po20103+po20104+po20105+CAST(po20112 AS varchar(100)) LIKE
+                '%'+#{searchText}+'%'
+            </if>
+            <if test="type != null">
+                and po20110 > po20111
+            </if>
+            <if test="maxNumber != null">
+                and (po20110 - po20111) &lt; #{maxNumber} and (po20110 - po20111) &gt;= #{minNumber}
+            </if>
+        </where>
+    </select>
+    <select id="queryMaterV2" resultMap="articleMaterial" databaseId="mysql">
+        SELECT * FROM sdpo201
+        <where>
+            <if test="searchText != null">
+                and concat(po20101,po20102,po20103,po20104,po20105,po20112) LIKE
+                concat('%',#{searchText},'%')
+            </if>
+            <if test="type != null">
+                and po20110 > po20111
+            </if>
+            <if test="maxNumber != null">
+                and (po20110 - po20111) &lt; #{maxNumber} and (po20110 - po20111) &gt;= #{minNumber}
+            </if>
+        </where>
+    </select>
+    <select id="queryMaterCount" resultType="java.lang.Integer">
+        SELECT count(po20101) FROM sdpo201
+        <choose>
+            <when test="type != null and searchText != null">
+                WHERE po20110 > 0 AND po20101+po20102+po20103+po20104+po20105+CAST(po20112 AS varchar(100)) LIKE
+                '%'+#{searchText}+'%'
+            </when>
+            <when test="searchText != null">
+                WHERE po20101+po20102+po20103+po20104+po20105+CAST(po20112 AS varchar(100)) LIKE '%'+#{searchText}+'%'
+            </when>
+            <when test="type != null">
+                WHERE po20110 > 0
+            </when>
+        </choose>
+    </select>
+    <select id="queryMaterCount" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT count(po20101) FROM sdpo201
+        <choose>
+            <when test="type != null and searchText != null">
+                WHERE po20110 > po20111 AND concat(po20101,po20102,po20103,po20104,po20105,po20112 ) LIKE
+                concat('%',#{searchText},'%')
+            </when>
+            <when test="searchText != null">
+                WHERE concat(po20101,po20102,po20103,po20104,po20105,po20112) LIKE concat('%',#{searchText},'%')
+            </when>
+            <when test="type != null">
+                WHERE po20110 > 0
+            </when>
+        </choose>
+    </select>
+    <select id="queryFolder" resultMap="materFolder">
+        SELECT * FROM sdpo200 WHERE po20001=#{id}
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpo201 (po20101,po20102,po20103,po20104,po20105,po20106,po20107,po20108,po20109,po20110,po20111,po20112)
+        VALUES(#{id},#{name},#{model},#{brand},#{unit.name},'','',#{folder},'',#{putSum},#{outSum},#{costPrice})
+    </insert>
+    <select id="getMaterByParam" resultMap="articleMaterial">
+        SELECT * FROM sdpo201 WHERE
+         po20102=#{name} AND
+         po20103=#{model} AND
+         po20104=#{brand}
+    </select>
+    <select id="isUse" resultMap="articleDetail">
+        SELECT * FROM sdpo205 WHERE po20505=#{materId}
+    </select>
+    <delete id="deleteMater">
+        DELETE FROM sdpo201 WHERE po20101=#{id}
+    </delete>
+    <update id="updateAM">
+        UPDATE sdpo201 SET po20102=#{name},po20103=#{model},po20104=#{brand},
+        po20108=#{folder},po20105=#{unit.name},po20112=#{planPrice},po20110=#{storageSum} WHERE po20101=#{id}
+    </update>
+
+    <insert id="insertArticle">
+        INSERT INTO sdpo205 (po20501,po20502,po20503,po20504,po20505,po20506,po20507,po20508,po20509,po20510)
+        VALUES (#{id},#{materOutId},#{storageId},1,#{material.id},#{material.unitName},#{sum},#{taxPrice},#{taxMoney},#{remark})
+    </insert>
+    <update id="updateArticle">
+        UPDATE sdpo205 SET po20507=#{sum},po20508=#{taxPrice},po20509=#{taxMoney},po20510=#{remark} WHERE po20501=#{id}
+    </update>
+    <delete id="deleteArticle">
+        DELETE FROM sdpo205 WHERE po20501=#{id}
+    </delete>
+    <delete id="deleteArticleByMain">
+        DELETE FROM sdpo205 WHERE po20502=#{mainId}
+    </delete>
+    <select id="querys" resultMap="articleDetail">
+        SELECT a.* FROM sdpo205 AS a
+        LEFT JOIN sdpo204 AS b ON a.po20502=b.po20401
+        LEFT JOIN sdpo201 AS c ON c.po20101=a.po20505
+        <if test="str != null">
+            WHERE CAST(a.po20507 AS VARCHAR(20))+
+            CAST(a.po20508 AS VARCHAR(20))+CAST(a.po20509 AS VARCHAR(20))+a.po20510
+            +b.po20402+b.po20403+b.po20405+c.po20102+c.po20103+c.po20104 LIKE '%'+#{str}+'%'
+        </if>
+        ${order};
+    </select>
+    <select id="querys" resultMap="articleDetail" databaseId="mysql">
+        SELECT a.* FROM sdpo205 AS a
+        LEFT JOIN sdpo204 AS b ON a.po20502=b.po20401
+        LEFT JOIN sdpo201 AS c ON c.po20101=a.po20505
+        <if test="str != null">
+            WHERE concat(a.po20507,a.po20508,a.po20509,a.po20510,b.po20402,b.po20403,
+            b.po20405,c.po20102,c.po20103,c.po20104)
+            LIKE concat('%',#{str},'%')
+        </if>
+        ${order}
+    </select>
+
+    <select id="queryAll" resultMap="workOutMaterModel">
+        SELECT distinct a.*,b.*,d.pj00402 FROM sdpo205 AS a
+        LEFT JOIN sdpo204 AS b ON a.po20502=b.po20401
+        LEFT JOIN sdpo201 AS c ON c.po20101=a.po20505
+        left join sdpj004 as d on d.pj00401=po20405
+        <where>
+            <if test="remark != null and remark != ''">
+                AND CAST(a.po20507 AS VARCHAR(20))+
+                CAST(a.po20508 AS VARCHAR(20))+CAST(a.po20509 AS VARCHAR(20))+a.po20510
+                +b.po20402+b.po20403+b.po20405+c.po20102+c.po20103+c.po20104 LIKE '%'+#{remark}+'%'
+            </if>
+            <if test="pm02110 != null and pm02110 != ''">
+                and po20405=#{pm02110}
+            </if>
+            <if test="pm02109 != null and pm02109 != ''">
+                and po20405 in (${pm02109})
+            </if>
+            <if test="outDate != null">
+                and po20408 between #{pm02112} and #{outDate}
+            </if>
+        </where>
+
+
+    </select>
+    <select id="queryAll" resultMap="workOutMaterModel" databaseId="mysql">
+        SELECT distinct a.*,b.*,d.pj00402 FROM sdpo205 AS a
+        LEFT JOIN sdpo204 AS b ON a.po20502=b.po20401
+        LEFT JOIN sdpo201 AS c ON c.po20101=a.po20505
+        left join sdpj004 as d on d.pj00401=po20405
+        <where>
+            <if test="remark != null and remark != ''">
+                AND concat(a.po20507,a.po20508,a.po20509,a.po20510
+                ,b.po20402,b.po20403,b.po20405,c.po20102,c.po20103,c.po20104) LIKE concat('%',#{remark},'%')
+            </if>
+            <if test="pm02110 != null and pm02110 != ''">
+                and po20405=#{pm02110}
+            </if>
+            <if test="pm02109 != null and pm02109 != ''">
+                and po20405 in (${pm02109})
+            </if>
+            <if test="outDate != null">
+                and po20408 between #{pm02112} and #{outDate}
+            </if>
+        </where>
+
+
+    </select>
+
+    <select id="querysCount" resultType="java.lang.Integer">
+        SELECT a.* FROM sdpo205 AS a
+        LEFT JOIN sdpo204 AS b ON a.po20502=b.po20401
+        LEFT JOIN sdpo201 AS c ON c.po20101=a.po20505
+        <if test="str != null">
+            WHERE CAST(a.po20507 AS VARCHAR(20))+
+            CAST(a.po20508 AS VARCHAR(20))+CAST(a.po20509 AS VARCHAR(20))+a.po20510
+            +b.po20402+b.po20403+b.po20405+c.po20102+c.po20103+c.po20104 LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="querysCount" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT a.* FROM sdpo205 AS a
+        LEFT JOIN sdpo204 AS b ON a.po20502=b.po20401
+        LEFT JOIN sdpo201 AS c ON c.po20101=a.po20505
+        <if test="str != null">
+            WHERE concat(a.po20507,a.po20508,a.po20509,a.po20510
+            ,b.po20402,b.po20403,b.po20405,c.po20102,c.po20103,c.po20104) LIKE concat('%',#{str},'%')
+        </if>
+    </select>
+
+    <select id="queryMaterStorage" resultType="java.lang.Double">
+        SELECT po20111 FROM sdpo201 WHERE po20101=#{id}
+    </select>
+
+    <select id="queryNewPlace" resultType="java.lang.Double">
+        SELECT sum(po20308) / count(po20305) FROM sdpo203 WHERE po20305=#{id}
+    </select>
+
+    <update id="updateOutSum">
+        update sdpo201 set po20111=#{outSum} where po20101=#{id}
+    </update>
+    <update id="updatePutSum">
+        update sdpo201 set po20110=#{putSum},po20112=#{lastPrice} where po20101=#{id}
+    </update>
+</mapper>

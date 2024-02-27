@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.DeclareDetailMapper">
+    <resultMap id="declareDetailSimple" type="com.yuesheng.pm.entity.DeclareDetail">
+        <id column="pa015Detail01" property="id" jdbcType="VARCHAR"></id>
+        <result column="pa015Detail05" property="money" jdbcType="DECIMAL"></result>
+        <result column="pa015Detail08" property="remark" jdbcType="VARCHAR"></result>
+
+        <association property="subject" javaType="com.yuesheng.pm.entity.Course">
+            <id column="pb00601" property="id" jdbcType="VARCHAR"></id>
+            <result column="pb00602" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="staff" column="pa015Detail07"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="declare" javaType="com.yuesheng.pm.entity.Declare">
+            <id column="pa01501" property="id" jdbcType="VARCHAR"></id>
+            <result column="pa01518" property="code" jdbcType="VARCHAR"></result>
+            <result column="pa01520" property="approveDate" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+    <select id="getMoneyByCourse" resultType="java.util.Map">
+        SELECT SUM(b.pa015Detail05) AS money,b.pa015Detail04 AS courseId FROM sdpa015 AS a RIGHT JOIN sdpa015Detail AS b
+        ON a.pa01501=b.pa015Detail02
+        WHERE a.pa01504 BETWEEN #{start} AND #{end}
+        <if test="courseId != null">
+            AND b.pa015Detail04=#{courseId}
+        </if>
+        GROUP BY b.pa015Detail04 ORDER BY SUM(b.pa015Detail05) DESC;
+    </select>
+
+    <select id="getDetailByDeclare" resultMap="declareDetailSimple">
+        SELECT a.*,b.pb00601,b.pb00602 FROM sdpa015Detail AS a LEFT JOIN sdpb006 AS b ON b.pb00601=a.pa015Detail04 WHERE pa015Detail02=#{declareId};
+    </select>
+
+    <select id="getByCourse" resultMap="declareDetailSimple">
+        SELECT a.*,b.pa01501,b.pa01518,b.pa01520 FROM sdpa015Detail AS a
+         LEFT JOIN sdpa015 AS b ON a.pa015Detail02=b.pa01501
+         WHERE a.pa015Detail04=#{courseId}
+          AND b.pa01520 BETWEEN #{begin} AND #{end} ORDER BY b.pa01520 DESC;
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpa015Detail VALUES(#{id},#{declareId},1,#{subject.id},#{money},1,#{staff.id},#{remark},#{staff.section.id});;
+    </insert>
+    <delete id="delete">
+        DELETE FROM sdpa015Detail WHERE pa015Detail02=#{mainId};
+    </delete>
+</mapper>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProApplyDineMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProApplyDine" id="ProApplyDineMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="note" column="note" jdbcType="VARCHAR"/>
+        <result property="date" column="date" jdbcType="VARCHAR"/>
+        <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="personNum" column="person_num" jdbcType="INTEGER"/>
+        <result property="standard" column="standard" jdbcType="VARCHAR"/>
+        <association property="section" column="section_id"
+                     select="com.yuesheng.pm.mapper.SectionMapper.getSevtionByid"></association>
+        <association property="staff" column="staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="project" column="project_id"
+                     select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProApplyDineMap">
+        select
+          id, staff_id, note, date, datetime, state, person_num, standard, section_id,project_id
+        from pro_apply_dine
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProApplyDineMap">
+        select
+          id, staff_id, note, date, datetime, state, person_num, standard, section_id,project_id
+        from pro_apply_dine
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProApplyDineMap">
+        select
+        id, staff_id, note, date, datetime, state, person_num, standard, section_id,project_id
+        from pro_apply_dine
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="staff != null">
+                and staff_id = #{staff.id}
+            </if>
+            <if test="note != null and note != ''">
+                and note = #{note}
+            </if>
+            <if test="date != null and date != ''">
+                and date = #{date}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="personNum != null">
+                and person_num = #{personNum}
+            </if>
+            <if test="standard != null and standard != ''">
+                and standard = #{standard}
+            </if>
+            <if test="section != null">
+                and section_id = #{section.id}
+            </if>
+            <if test="project != null">
+                and project_id = #{project.id}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into pro_apply_dine(id,staff_id, note, date, datetime, state, person_num, standard, section_id,project_id)
+        values (#{id},#{staff.id}, #{note}, #{date}, #{datetime}, #{state}, #{personNum}, #{standard}, #{section.id},#{project.id})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_apply_dine
+        <set>
+            <if test="staff != null">
+                staff_id = #{staff.id},
+            </if>
+            <if test="note != null and note != ''">
+                note = #{note},
+            </if>
+            <if test="date != null and date != ''">
+                date = #{date},
+            </if>
+            <if test="datetime != null and datetime != ''">
+                datetime = #{datetime},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="personNum != null">
+                person_num = #{personNum},
+            </if>
+            <if test="standard != null and standard != ''">
+                standard = #{standard},
+            </if>
+            <if test="section.id != null">
+                section_id = #{section.id},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_apply_dine where id = #{id}
+    </delete>
+
+</mapper>

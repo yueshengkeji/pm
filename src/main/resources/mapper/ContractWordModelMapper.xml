@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ContractWordModelMapper">
+    <resultMap id="ContractWordModel" type="com.yuesheng.pm.entity.ContractWordModel">
+        <result property="name" column="name"></result>
+        <result property="richText" column="rich_text"></result>
+        <result property="type" column="type"></result>
+        <result property="paramsArr" column="params_arr"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.ContractWordModel">
+        insert into contract_word_model
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="name != null">name,</if>
+            <if test="richText != null">rich_text,</if>
+            <if test="type != null">type,</if>
+            <if test="paramsArr != null">params_arr,</if>
+        </trim>
+        <trim prefix="values(" suffixOverrides="," suffix=")">
+            <if test="name != null">#{name},</if>
+            <if test="richText != null">#{richText},</if>
+            <if test="type != null">#{type},</if>
+            <if test="paramsArr != null">#{paramsArr}</if>
+        </trim>
+    </insert>
+
+    <select id="list" resultMap="ContractWordModel">
+        select * from contract_word_model
+    </select>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.ContractWordModel">
+        update contract_word_model
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="richText != null">rich_text = #{richText},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="paramsArr != null">params_arr = #{paramsArr}</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from contract_word_model
+        where id = #{id}
+    </delete>
+
+    <select id="selectByType" resultMap="ContractWordModel">
+        select TOP 1 * from contract_word_model
+        where type = #{type}
+    </select>
+</mapper>

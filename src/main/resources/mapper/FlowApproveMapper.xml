@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.FlowApproveMapper">
+    <resultMap id="approve" type="com.yuesheng.pm.entity.FlowApprove">
+        <id column="po00401" property="id" jdbcType="VARCHAR"></id>
+        <result column="po00402" property="flowMessageId" jdbcType="VARCHAR"></result>
+        <result column="po00403" property="courseId" jdbcType="VARCHAR"></result>
+        <result column="po00404" property="staffId" jdbcType="VARCHAR"></result>
+        <result column="po00405" property="acceptStaffId" jdbcType="VARCHAR"></result>
+        <result column="po00406" property="accrptDate" jdbcType="VARCHAR"></result>
+        <result column="po00407" property="readDate" jdbcType="VARCHAR"></result>
+        <result column="po00408" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="po00409" property="po00409" jdbcType="INTEGER"></result>
+        <result column="po00410" property="content" jdbcType="VARCHAR"></result>
+        <result column="po00411" property="approveState" jdbcType="INTEGER"></result>
+        <result column="po00412" property="lastCourse" jdbcType="INTEGER"></result>
+        <result column="po00413" property="date" jdbcType="VARCHAR"></result>
+        <result column="po00414" property="po00414" jdbcType="TINYINT"></result>
+        <result column="po00415" property="po00415" jdbcType="VARCHAR"></result>
+        <result column="po00416" property="po00416" jdbcType="TINYINT"></result>
+        <result column="po00417" property="acceptDate" jdbcType="VARCHAR"></result>
+        <result column="po00418" property="po00418Id" jdbcType="VARCHAR"></result>
+        <result column="po00419" property="po00419" jdbcType="TINYINT"></result>
+        <result column="po00420" property="po00420" jdbcType="TINYINT"></result>
+        <result column="po00421" property="po00421" jdbcType="VARCHAR"></result>
+        <result column="courseName" property="courseName" jdbcType="VARCHAR"></result>
+        <result column="po00421" property="po00421" jdbcType="VARCHAR"></result>
+        <association property="sendUser" column="po00404"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="acceptUser" column="po00405"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="message" javaType="com.yuesheng.pm.entity.FlowMessage">
+            <id column="po00301" property="id" jdbcType="VARCHAR"></id>
+            <result column="po00302" property="startDate" jdbcType="VARCHAR"></result>
+            <result column="po00303" property="staffId" jdbcType="VARCHAR"></result>
+            <result column="po00304" property="title" jdbcType="VARCHAR"></result>
+            <result column="po00305" property="content" jdbcType="VARCHAR"></result>
+            <result column="po00306" property="frameCoding" jdbcType="VARCHAR"></result>
+            <result column="po00307" property="frameId" jdbcType="VARCHAR"></result>
+            <result column="po00308" property="state" jdbcType="INTEGER"></result>
+            <result column="po00309" property="po00309" jdbcType="INTEGER"></result>
+            <result column="po00310" property="po00310" jdbcType="INTEGER"></result>
+            <result column="po00311" property="histroryId" jdbcType="VARCHAR"></result>
+            <result column="po00312" property="po00312" jdbcType="INTEGER"></result>
+            <result column="po00313" property="date" jdbcType="VARCHAR"></result>
+            <result column="po00314" property="po00314" jdbcType="VARCHAR"></result>
+            <result column="po00316" property="frameColumn" jdbcType="VARCHAR"></result>
+            <result column="po00317" property="po00317" jdbcType="VARCHAR"></result>
+            <result column="eb00203" property="frameName" jdbcType="VARCHAR"></result>
+            <association property="staff" column="po00303"
+                         select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+            <association property="flow" javaType="com.yuesheng.pm.entity.FlowHistory">
+                <id column="po00101" jdbcType="VARCHAR" property="id"></id>
+                <result column="po00102" jdbcType="VARCHAR" property="name"></result>
+            </association>
+        </association>
+    </resultMap>
+    <resultMap id="approveJanl" type="com.yuesheng.pm.entity.FlowApprove">
+        <id column="po00401" property="id" jdbcType="VARCHAR"></id>
+        <result column="po00402" property="flowMessageId" jdbcType="VARCHAR"></result>
+        <result column="po00403" property="courseId" jdbcType="VARCHAR"></result>
+        <result column="po00404" property="staffId" jdbcType="VARCHAR"></result>
+        <result column="po00408" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="po00411" property="approveState" jdbcType="INTEGER"></result>
+        <result column="po00410" property="content" jdbcType="VARCHAR"></result>
+        <result column="po00413" property="date" jdbcType="VARCHAR"></result>
+        <result column="po00421" property="po00421" jdbcType="VARCHAR"></result>
+        <result column="po00405" property="acceptStaffId" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <select id="getFlowApproveByStaff" resultMap="approveJanl">
+        select * from sdpo004 where po00402=#{flowMessageId} and po00403=#{courseId} and po00405=#{staffId} and po00411 in(0,1,2,3,4,7)
+    </select>
+
+    <update id="updateLastCourse">
+        update sdpo004 set po00412=#{lastCourseState} where po00401=#{id}
+    </update>
+
+    <select id="queryRecordById" resultMap="approveJanl">
+        select * from sdpo004_AllRecord where po00401=#{id}
+    </select>
+    <insert id="addApprove">
+        INSERT INTO sdpo004
+        (po00401,po00402,po00403,po00404,po00405,po00409,po00411,po00412,
+        po00413,po00414,po00415,po00416,po00417,po00421,po00406,po00407,po00408,po00418,po00410)
+        VALUES(#{id},#{flowMessageId},#{courseId},#{staffId},#{acceptStaffId},#{po00409},
+        #{approveState},#{lastCourse},#{date},#{po00414},#{po00415},#{po00416},#{acceptDate},#{po00421},#{accrptDate},#{readDate},#{approveDate},#{po00418Id},#{content});
+    </insert>
+    <insert id="addApproveRecord">
+        INSERT INTO sdpo004_AllRecord
+        (po00401,po00402,po00403,po00404,po00405,po00409,po00411,po00412,
+         po00413,po00414,po00415,po00416,po00417,po00421,po00406,po00407,po00408,po00418,po00410)
+        VALUES(#{id},#{flowMessageId},#{courseId},#{staffId},#{acceptStaffId},#{po00409},
+               #{approveState},#{lastCourse},#{date},#{po00414},#{po00415},#{po00416},#{acceptDate},#{po00421},#{accrptDate},#{readDate},#{approveDate},#{po00418Id},#{content});
+    </insert>
+
+    <update id="updateReadState">
+        UPDATE sdpo004 SET po00411=#{approveState}
+        <if test="approveState == 1">
+            ,po00407=#{readDate}
+        </if>
+        WHERE po00401=#{id}
+    </update>
+    <update id="updateReadStateRecord">
+        UPDATE sdpo004_AllRecord SET po00411=#{approveState}
+        <if test="approveState == 1">
+            ,po00407=#{readDate}
+        </if>
+        WHERE po00401=#{id}
+    </update>
+
+    <update id="updateStates" parameterType="java.util.Map">
+
+        <foreach collection="approves" item="item" open="" close="" separator=";">
+            UPDATE sdpo004 SET po00411=#{item.approveState},po00407=getdate() WHERE po00401=#{item.id};
+            UPDATE sdpo004_AllRecord SET po00411=#{item.approveState},po00407=getdate() WHERE po00401=#{item.id}
+        </foreach>
+    </update>
+
+    <select id="getFlowApproveByMessageId" resultMap="approve">
+        SELECT a.* FROM sdpo004 AS a
+        WHERE po00402 = #{messageId}
+    </select>
+    <select id="getFlowApproveRecordByMessageId" resultMap="approve">
+        SELECT a.* FROM sdpo004_AllRecord AS a
+         WHERE po00402=#{messageId}
+    </select>
+
+    <select id="getCourseName" resultType="String">
+        SELECT po02004 FROM sdpo020 WHERE po02001=#{id}
+    </select>
+    <select id="getFlowApproveByAttached" parameterType="String" resultMap="approve">
+        SELECT * FROM sdpo004 WHERE po00418=#{attachId}
+    </select>
+    <select id="getFlowApproveById" resultMap="approve">
+        SELECT distinct a.*,c.po02004 AS courseName FROM sdpo004 as a
+        RIGHT JOIN sdpo003 AS b ON a.po00402=b.po00301
+        INNER JOIN sdpo020 AS c ON c.po02001=a.po00403
+        WHERE a.po00401=#{id}
+    </select>
+    <select id="getByCourseId" resultMap="approve">
+        SELECT * FROM sdpo004 WHERE po00402=#{messageId} and po00403=#{courseId}
+    </select>
+    <update id="updateOtherStatus" parameterType="com.yuesheng.pm.entity.FlowApprove">
+         UPDATE sdpo004 SET po00410=#{content},po00411=#{approveState},po00413=#{approveDate}
+         WHERE po00401 in(${id})
+    </update>
+    <update id="updateOtherStatusRecord" parameterType="com.yuesheng.pm.entity.FlowApprove">
+        UPDATE sdpo004_AllRecord SET po00410=#{content},po00411=#{approveState},po00413=#{approveDate}
+        WHERE po00401 in(${id})
+    </update>
+    <select id="getApproveByMsgAndHistory" resultMap="approveJanl">
+        SELECT * FROM sdpo004 WHERE po00403=#{courseId} AND po00402=#{flowMessageId} AND po00411 in(#{status})
+    </select>
+    <select id="isApprove" resultMap="approveJanl">
+        SELECT po00401 FROM sdpo004 WHERE po00401=#{id} AND po00411=3
+    </select>
+    <select id="getApproveList" resultMap="approve">
+        SELECT *
+        FROM sdpo004
+        WHERE po00403 = #{courseId}
+          AND po00402 = #{msgId}
+    </select>
+
+    <update id="updateApproveDate">
+        UPDATE sdpo004 SET po00408=#{date} WHERE po00401=#{id}
+    </update>
+    <update id="updateApproveDateRecord">
+        UPDATE sdpo004_AllRecord SET po00408=#{date} WHERE po00401=#{id}
+    </update>
+    <update id="updateApproveState">
+        Update sdpo004 Set po00410=#{content},po00411=#{approveState},
+        po00408=#{approveDate}, po00413=#{approveDate}
+        <if test="readDate == '' or readDate == null">
+            ,po00407=#{approveDate}
+        </if>
+        Where po00401=#{id}
+    </update>
+    <update id="updateApproveStateRecord">
+        Update sdpo004_AllRecord
+        Set po00410=#{content},
+        po00411=#{approveState},
+        po00408=#{approveDate},
+        po00413=#{approveDate}
+        <if test="readDate == '' or readDate == null">
+            ,po00407=#{readDate}
+        </if>
+        Where po00401=#{id}
+    </update>
+
+    <select id="getMessageHistory" resultMap="approve">
+        SELECT a.*,a2.* FROM
+        sdpo004_AllRecord AS a
+            LEFT JOIN sdpo003 AS a2 ON a2.po00301=a.po00402
+        RIGHT JOIN sdpj004 AS d ON d.pj00401=a2.po00303
+        <where>
+            <if test='type == "1"'>
+                and a.po00405=#{userId}
+            </if>
+            <if test='type != "1"'>
+                and a.po00404=#{userId}
+            </if>
+            <if test="startDate != null and endDate != null">
+                AND a.po00406 BETWEEN #{startDate} and #{endDate}
+            </if>
+            <if test="states != null">
+                AND a.po00411 in(${states})
+            </if>
+            <if test="fqFlag != null and fqFlag != ''">
+                <if test='fqFlag != "0"'>
+                    AND a2.po00317=#{fqFlag}
+                </if>
+                <if test='fqFlag == "0"'>
+                    AND a2.po00317 not in ('1')
+                </if>
+            </if>
+            <if test="msgState != null">
+                and a2.po00308 in(${msgState})
+            </if>
+            <if test="str != null">
+                AND a2.po00302+a2.po00304+a2.po00305+d.pj00402 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="flowFilter != null">
+                AND e.po00101=#{flowFilter}
+            </if>
+        </where>
+    </select>
+    <select id="getMessageHistory" resultMap="approve" databaseId="mysql">
+        SELECT a.*,a2.* FROM
+        sdpo004_AllRecord AS a
+            LEFT JOIN sdpo003 AS a2 ON a2.po00301=a.po00402
+        RIGHT JOIN sdpj004 AS d ON d.pj00401=a2.po00303
+        <where>
+            <if test='type == "1"'>
+                and a.po00405=#{userId}
+            </if>
+            <if test='type != "1"'>
+                and a.po00404=#{userId}
+            </if>
+            <if test="startDate != null and endDate != null">
+                AND a.po00406 BETWEEN #{startDate} and #{endDate}
+            </if>
+            <if test="states != null">
+                AND a.po00411 in(${states})
+            </if>
+            <if test="fqFlag != null and fqFlag != ''">
+                <if test='fqFlag != "0"'>
+                    AND a2.po00317=#{fqFlag}
+                </if>
+                <if test='fqFlag == "0"'>
+                    AND a2.po00317 not in ('1')
+                </if>
+            </if>
+            <if test="msgState != null">
+                and a2.po00308 in(${msgState})
+            </if>
+            <if test="str != null">
+                AND concat(a2.po00302,a2.po00304,a2.po00305,d.pj00402) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="flowFilter != null">
+                AND e.po00101=#{flowFilter}
+            </if>
+        </where>
+    </select>
+    <select id="getMessageHistoryNow" resultMap="approve">
+        SELECT a.*,a2.* FROM
+        sdpo004 AS a
+            LEFT JOIN sdpo003 AS a2 ON a2.po00301=a.po00402
+        RIGHT JOIN sdpj004 AS d ON d.pj00401=a2.po00303
+        <where>
+            <if test='type == "1"'>
+                and a.po00405=#{userId}
+            </if>
+            <if test='type != "1"'>
+                and a.po00404=#{userId}
+            </if>
+            <if test="startDate != null and endDate != null">
+                AND a.po00406 BETWEEN #{startDate} and #{endDate}
+            </if>
+            <if test="states != null">
+                AND a.po00411 in(${states})
+            </if>
+            <if test="fqFlag != null and fqFlag != ''">
+                <if test='fqFlag != "0"'>
+                    AND a2.po00317=#{fqFlag}
+                </if>
+                <if test='fqFlag == "0"'>
+                    AND a2.po00317 not in ('1')
+                </if>
+            </if>
+            <if test="msgState != null">
+                and a2.po00308 in(${msgState})
+            </if>
+            <if test="str != null">
+                AND a2.po00302+a2.po00304+a2.po00305+d.pj00402 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="flowFilter != null">
+                AND e.po00101=#{flowFilter}
+            </if>
+        </where>
+
+    </select>
+    <select id="getMessageHistoryNow" resultMap="approve" databaseId="mysql">
+        SELECT a.*,a2.* FROM
+        sdpo004 AS a
+            LEFT JOIN sdpo003 AS a2 ON a2.po00301=a.po00402
+        RIGHT JOIN sdpj004 AS d ON d.pj00401=a2.po00303
+        <where>
+            <if test='type == "1"'>
+                and a.po00405=#{userId}
+            </if>
+            <if test='type != "1"'>
+                and a.po00404=#{userId}
+            </if>
+            <if test="startDate != null and endDate != null">
+                AND a.po00406 BETWEEN #{startDate} and #{endDate}
+            </if>
+            <if test="states != null">
+                AND a.po00411 in(${states})
+            </if>
+            <if test="fqFlag != null and fqFlag != ''">
+                <if test='fqFlag != "0"'>
+                    AND a2.po00317=#{fqFlag}
+                </if>
+                <if test='fqFlag == "0"'>
+                    AND a2.po00317 not in ('1')
+                </if>
+            </if>
+            <if test="msgState != null">
+                and a2.po00308 in(${msgState})
+            </if>
+            <if test="str != null">
+                AND concat(a2.po00302,a2.po00304,a2.po00305,d.pj00402) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="flowFilter != null">
+                AND e.po00101=#{flowFilter}
+            </if>
+        </where>
+
+    </select>
+    <select id="getMessagesV2" resultMap="approve">
+        SELECT a.*,a2.* FROM
+        sdpo004 AS a LEFT JOIN sdpo003 AS a2 ON a2.po00301=a.po00402
+        RIGHT JOIN sdpj004 AS d ON d.pj00401=a2.po00303
+        WHERE
+        <if test='type == "1"'>
+            a.po00405=#{userId}
+        </if>
+        <if test='type != "1"'>
+            a.po00404=#{userId}
+        </if>
+        <if test="startDate != null and endDate != null">
+            AND a.po00406 BETWEEN #{startDate} and #{endDate}
+        </if>
+        <if test="states != null">
+            <foreach collection="states" item="item" index="index" open="AND a.po00411 in(" close=")" separator=",">
+                ${item}
+            </foreach>
+        </if>
+        <if test="fqFlag != null and fqFlag != ''">
+            <if test='fqFlag != "0"'>
+                AND a2.po00317=#{fqFlag}
+            </if>
+            <if test='fqFlag == "0"'>
+                AND a2.po00317 not in ('1')
+            </if>
+        </if>
+        <if test="msgState != null">
+            <foreach collection="msgState" item="item" index="index" open="AND a2.po00308 in(" close=")" separator=",">
+                ${item}
+            </foreach>
+        </if>
+        <if test="str != null">
+            AND a2.po00302+a2.po00304+a2.po00305+d.pj00402 LIKE '%'+#{str}+'%'
+        </if>
+        <if test="flowFilter != null">
+            AND e.po00101=#{flowFilter}
+        </if>
+    </select>
+    <select id="getMessagesV2" resultMap="approve" databaseId="mysql">
+        SELECT a.*,a2.* FROM
+        sdpo004 AS a LEFT JOIN sdpo003 AS a2 ON a2.po00301=a.po00402
+        RIGHT JOIN sdpj004 AS d ON d.pj00401=a2.po00303
+        WHERE
+        <if test='type == "1"'>
+            a.po00405=#{userId}
+        </if>
+        <if test='type != "1"'>
+            a.po00404=#{userId}
+        </if>
+        <if test="startDate != null and endDate != null">
+            AND a.po00406 BETWEEN #{startDate} and #{endDate}
+        </if>
+        <if test="states != null">
+            <foreach collection="states" item="item" index="index" open="AND a.po00411 in(" close=")" separator=",">
+                ${item}
+            </foreach>
+        </if>
+        <if test="fqFlag != null and fqFlag != ''">
+            <if test='fqFlag != "0"'>
+                AND a2.po00317=#{fqFlag}
+            </if>
+            <if test='fqFlag == "0"'>
+                AND a2.po00317 not in ('1')
+            </if>
+        </if>
+        <if test="msgState != null">
+            <foreach collection="msgState" item="item" index="index" open="AND a2.po00308 in(" close=")" separator=",">
+                ${item}
+            </foreach>
+        </if>
+        <if test="str != null">
+            AND concat(a2.po00302,a2.po00304,a2.po00305,d.pj00402) LIKE concat('%',#{str},'%')
+        </if>
+        <if test="flowFilter != null">
+            AND e.po00101=#{flowFilter}
+        </if>
+    </select>
+    <update id="updateFlag">
+        UPDATE sdpo004 SET po00421=#{fqFlag} where po00401=#{id};
+    </update>
+    <update id="updateFlagRecord">
+        UPDATE sdpo004_Allrecord SET po00421=#{fqFlag} where po00401=#{id}
+    </update>
+    <select id="getApproveByFlag" resultMap="approveJanl">
+        SELECT * FROM sdpo004 WHERE po00402=#{messageId} AND po00421=#{flag};
+    </select>
+    <select id="getPastApprove" resultMap="approve">
+        select distinct a.*, c.*
+        from sdpo004 as a
+                 RIGHT JOIN sdpo020 on a.po00403 = po02001
+                 RIGHT JOIN sdpo003 as c on c.po00301 = a.po00402 and c.po00308 = 1
+        where a.po00411 in (0, 1)
+          and po02013 > 0
+          and po02013 != 999 and po02006!=0
+    </select>
+    <select id="getMessagesAll2" resultMap="approve">
+        SELECT a.*,c.*,e.po00101,e.po00102 FROM
+        sdpo004 AS a
+        LEFT JOIN sdpo003 AS c ON c.po00301=a.po00402
+        LEFT JOIN sdpo001_History AS e ON c.po00311=e.po00101
+        RIGHT JOIN sdpj004 AS d ON d.pj00401=c.po00303
+        <where>
+            <if test="startDate != null and state == 3">
+                and a.po00406 BETWEEN #{startDate} and #{endDate}
+            </if>
+            <if test="startDate != null and state != 3">
+                and a.po00408 BETWEEN #{startDate} and #{endDate}
+            </if>
+            <if test="states != null">
+                AND a.po00411 in
+                <foreach collection="states" item="item" index="index" open="(" close=")" separator=",">${item}
+                </foreach>
+            </if>
+            <if test="userId != null">
+                AND a.po00405=#{userId}
+            </if>
+            <if test="msgState != null">
+                and c.po00308 in
+                <foreach collection="msgState" item="item" index="index" open="(" close=")" separator=",">${item}
+                </foreach>
+            </if>
+            <if test="str != null">
+                AND c.po00302+c.po00304+c.po00305+d.pj00402+e.po00102 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="flowFilter != null">
+                AND e.po00101=#{flowFilter}
+            </if>
+        </where>
+    </select>
+    <select id="getMessagesAll2" resultMap="approve" databaseId="mysql">
+        SELECT a.*,c.*,e.po00101,e.po00102 FROM
+        sdpo004 AS a
+        LEFT JOIN sdpo003 AS c ON c.po00301=a.po00402
+        LEFT JOIN sdpo001_History AS e ON c.po00311=e.po00101
+        RIGHT JOIN sdpj004 AS d ON d.pj00401=c.po00303
+        <where>
+            <if test="startDate != null and state == 3">
+                and a.po00406 BETWEEN #{startDate} and #{endDate}
+            </if>
+            <if test="startDate != null and state != 3">
+                and a.po00408 BETWEEN #{startDate} and #{endDate}
+            </if>
+            <if test="states != null">
+                AND a.po00411 in
+                <foreach collection="states" item="item" index="index" open="(" close=")" separator=",">${item}
+                </foreach>
+            </if>
+            <if test="userId != null">
+                AND a.po00405=#{userId}
+            </if>
+            <if test="msgState != null">
+                and c.po00308 in
+                <foreach collection="msgState" item="item" index="index" open="(" close=")" separator=",">${item}
+                </foreach>
+            </if>
+            <if test="str != null">
+                AND concat(c.po00302,c.po00304,c.po00305,d.pj00402,e.po00102) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="flowFilter != null">
+                AND e.po00101=#{flowFilter}
+            </if>
+        </where>
+    </select>
+    <select id="getMessageByTimeout" resultMap="approve">
+        SELECT a.* FROM sdpo004 AS a
+        LEFT JOIN pro_approve_notify AS b ON a.po00401=b.approve_id
+        RIGHT JOIN sdpo003 AS c ON a.po00402=c.po00301
+        WHERE a.po00411 in(0,1,5) AND
+        (DATEDIFF ([second], a.po00406, #{datetime}) >= #{hour}) AND
+        c.po00308=1 AND b.approve_id IS NULL order BY po00406 desc
+    </select>
+    <select id="getMessageByTimeout" resultMap="approve" databaseId="mysql">
+        SELECT a.* FROM sdpo004 AS a
+        LEFT JOIN pro_approve_notify AS b ON a.po00401=b.approve_id
+        RIGHT JOIN sdpo003 AS c ON a.po00402=c.po00301
+        WHERE a.po00411 in(0,1,5) AND
+        TIMESTAMPDIFF(SECOND, a.po00406, #{datetime}) >= #{hour} AND
+        c.po00308=1 AND b.approve_id IS NULL order BY po00406 desc
+    </select>
+    <insert id="insertEmailHistory">
+        INSERT INTO pro_approve_notify VALUES (#{id},#{state})
+    </insert>
+    <delete id="deleteNotifyHistory">
+        delete from pro_approve_notify where approve_id=#{id}
+    </delete>
+    <select id="getEmailHistory" resultType="java.lang.String">
+        select is_send from pro_approve_notify where approve_id=#{id}
+    </select>
+    <select id="getApproveState" resultType="java.lang.String">
+        SELECT po00411 FROM sdpo004 WHERE po00401=#{id}
+    </select>
+    <select id="getLastApprove" resultMap="approveJanl">
+        select * from sdpo004 where po00402=#{flowMessageId} AND po00411=3 ORDER BY po00408 desc
+    </select>
+    <select id="queryErrorFlow" resultMap="approveJanl">
+
+        select * from sdpo003
+        LEFT JOIN sdpo004 on po00301=po00402
+        where po00308=2 and po00411=0
+        and po00406 between #{startDatetime} and #{endDatetime}
+
+    </select>
+
+    <select id="queryExpireData" resultMap="approve">
+        select * from sdpo004
+                          left join sdpo003 on po00402=po00301
+        where po00406 between #{startDate} and #{endDate}
+          and po00308 in(2,3,4)
+          and po00411 in (3,4,5,6,7,8,9) order by po00406 desc
+    </select>
+    <delete id="deleteById">
+        delete from sdpo004 where po00401=#{id}
+    </delete>
+    <delete id="deleteRecordById">
+        delete from sdpo004_Allrecord where po00401=#{id}
+    </delete>
+    <delete id="deleteInId">
+        delete from sdpo004 where po00401 in (${id})
+    </delete>
+    <select id="queryNoRecord" resultMap="approve">
+        select a.*
+        from sdpo004 as a
+         left join sdpo004_AllRecord as b
+                   on a.po00401 = b.po00401
+         left join sdpo003 on po00301 = a.po00402
+        where b.po00401 is null
+          and a.po00406 between #{startTime}
+            and #{endTime}
+    </select>
+    <select id="queryFqFlagList" resultMap="approve">
+        select * from sdpo004 where po00421='1' and po00406 between #{startTime} and #{endTime}
+    </select>
+
+    <select id="notifyMyCount" resultType="Integer">
+        SELECT count(a.po00401) FROM
+        sdpo004 AS a LEFT JOIN sdpo003 AS a2 ON a2.po00301=a.po00402
+        RIGHT JOIN sdpj004 AS d ON d.pj00401=a2.po00303
+        WHERE a.po00405=#{staffId}
+        <if test="status != null">
+            AND a.po00411 in(${status})
+        </if>
+        <if test="msgState != null">
+            AND a2.po00308 in(${msgState})
+        </if>
+    </select>
+    <update id="updateStateAll">
+        update sdpo004 set po00411 = 6 where po00411=5 and po00405=#{staffId}
+    </update>
+    <update id="updateStateAllRecord">
+        update sdpo004_AllRecord set po00411 = 6 where po00411=5 and po00405=#{staffId}
+    </update>
+    <select id="getFlowApproveByCourse" resultMap="approveJanl">
+
+        select * from sdpo004 where po00402=#{flowMessageId}
+                                and po00403=#{courseId}
+
+    </select>
+
+    <select id="queryErrorRecord" resultMap="approve">
+        select b.*
+        from sdpo004 as a
+                 right join sdpo004_AllRecord as b
+                 left join sdpo003 on po00301=b.po00402
+                           on a.po00401 = b.po00401
+        where b.po00406 between #{startDatetime} and #{endDatetime} and a.po00401 is null
+    </select>
+    <delete id="deleteNotifyHistorys">
+        delete from pro_approve_notify where approve_id in(${approveIds})
+    </delete>
+    <delete id="deleteByMsgId">
+        delete from sdpo004 where po00402=#{msgId}
+    </delete>
+    <delete id="deleteRecordByMsgId">
+        delete from sdpo004_Allrecord where po00402=#{msgId}
+    </delete>
+</mapper>

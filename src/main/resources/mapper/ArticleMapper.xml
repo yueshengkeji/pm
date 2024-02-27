@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ArticleMapper">
+    <resultMap id="article" type="com.yuesheng.pm.entity.Article">
+        <id column="po00901" property="id" jdbcType="VARCHAR"></id>
+        <result column="po00903" property="code" jdbcType="VARCHAR"></result>
+        <result column="po00904" property="name" jdbcType="VARCHAR"></result>
+        <result column="po00906" property="title" jdbcType="VARCHAR"></result>
+        <result column="po00909" property="data" jdbcType="BLOB"></result>
+        <result column="po00910" property="date" jdbcType="VARCHAR"></result>
+        <association property="staff" column="po00908" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="project" column="po00916" select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+        <association property="folder" javaType="com.yuesheng.pm.entity.ArticleFolder">
+            <result column="po01101" property="id" jdbcType="VARCHAR"></result>
+            <result column="po01102" property="name" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+
+    <resultMap id="articleSimple" type="com.yuesheng.pm.entity.Article">
+        <id column="po00901" property="id" jdbcType="VARCHAR"></id>
+        <result column="po00904" property="name" jdbcType="VARCHAR"></result>
+        <result column="po00906" property="title" jdbcType="VARCHAR"></result>
+        <result column="po00910" property="date" jdbcType="VARCHAR"></result>
+        <result column="po00908" property="staffId" jdbcType="VARCHAR"></result>
+        <association property="folder" javaType="com.yuesheng.pm.entity.ArticleFolder">
+            <id column="po01101" property="id" jdbcType="VARCHAR"></id>
+            <result column="po01102" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <id column="pj00401" property="id" jdbcType="VARCHAR"></id>
+            <result column="pj00402" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="project" javaType="com.yuesheng.pm.entity.Project">
+            <id column="pa00101" property="id" jdbcType="VARCHAR"></id>
+            <result column="pa00102" property="name" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+    <resultMap id="articleData" type="com.yuesheng.pm.entity.Article">
+        <result column="po00909" property="data" jdbcType="BLOB"></result>
+    </resultMap>
+
+    <resultMap id="articleFolder" type="com.yuesheng.pm.entity.ArticleFolder">
+        <id column="po01101" property="id" jdbcType="VARCHAR"></id>
+        <result column="po01102" property="name" jdbcType="VARCHAR"></result>
+        <result column="po01103" property="parentId" jdbcType="VARCHAR"></result>
+        <result column="po01104" property="rootId" jdbcType="VARCHAR"></result>
+        <result column="po01105" property="moduleId" jdbcType="VARCHAR"></result>
+        <result column="po01109" property="type" jdbcType="TINYINT"></result>
+    </resultMap>
+    <select id="getSimpleById" resultMap="articleSimple">
+      SELECT TOP 1 a.po00901,a.po00904,a.po00906,a.po00910,b.po01101,b.po01102,c.pj00401,c.pj00402,d.pa00101,d.pa00102 FROM sdpo009 AS a
+		LEFT JOIN sdpo011 AS b ON a.po00902=b.po01101
+		LEFT JOIN sdpj004 AS c ON a.po00908=c.pj00401
+		LEFT JOIN sdpa001 AS d ON a.po00916=d.pa00101
+		WHERE a.po00901=#{id};
+    </select>
+    <select id="getArticleById" resultMap="article">
+        SELECT top 1 a.*,b.po01101,b.po01102 FROM sdpo009 AS a
+        LEFT JOIN sdpo011 AS b ON b.po01101=a.po00902 WHERE po00901=#{id};
+    </select>
+    <select id="getDataById" resultMap="articleData">
+        SELECT po00909 FROM sdpo009 WHERE po00901=#{id};
+    </select>
+    <select id="getArticleByFolder" resultMap="article">
+        SELECT * FROM sdpo009 WHERE po00902=#{folder};
+    </select>
+    <select id="getArticleByParam" resultMap="articleSimple">
+        SELECT a.*,b.pj00401,b.pj00402,c.pa00101,c.pa00102 FROM sdpo009 AS a
+        LEFT JOIN sdpj004 AS b ON a.po00908=b.pj00401
+        LEFT JOIN sdpa001 AS c ON a.po00916=c.pa00101
+        WHERE po00902=#{folder}
+        <if test="begin != null and end != null">
+            AND po00910 BETWEEN #{begin} AND #{end}
+        </if>
+        <if test="searchText != null">
+            AND
+            ISNULL(po00903,'')+isNULL(po00904,'')+isNULL(po00906,'')+ISNULL(po00910,'')+isNULL(pj00402,'')+isNULL(pa00102,'')
+            LIKE '%'+#{searchText}+'%'
+        </if>
+        <if test="staffId != null">
+            AND po00908 in(${staffId})
+        </if>
+        ${order};
+    </select>
+    <select id="getCountByParam" resultType="java.lang.Integer">
+        SELECT count(a.po00901) FROM sdpo009 AS a
+        LEFT JOIN sdpj004 AS b ON a.po00908=b.pj00401
+        LEFT JOIN sdpa001 AS c ON a.po00916=c.pa00101
+        WHERE po00902=#{folder}
+        <if test="begin != null and end != null">
+            AND po00910 BETWEEN #{begin} AND #{end}
+        </if>
+        <if test="searchText != null">
+            AND
+            ISNULL(po00903,'')+isNULL(po00904,'')+isNULL(po00906,'')+ISNULL(po00910,'')+isNULL(pj00402,'')+isNULL(pa00102,'')
+            LIKE '%'+#{searchText}+'%'
+        </if>
+        <if test="staffId != null">
+            AND po00908 in(${staffId})
+        </if>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sdpo009 values(#{id},#{folder.id},#{code},#{name},'.doc',#{title},#{staff.section.id},#{staff.id},#{data},
+        #{date},'','',0,#{staff.id},'',#{project.id},'','',0,0,0,'');
+    </insert>
+
+    <select id="getArticleByFolderDate" resultMap="article">
+        SELECT * FROM sdpo009 WHERE po00910 BETWEEN #{begin} AND #{end} AND po00902=#{folder};
+    </select>
+    <select id="getFolders" resultMap="articleFolder">
+        SELECT * FROM sdpo011 WHERE po01103=#{parent} and po01109 != 4;
+    </select>
+    <delete id="delete">
+        DELETE FROM sdpo009 WHERE po00901=#{id};
+    </delete>
+    <update id="updateArticleFolder">
+        UPDATE sdpo011 SET po01102=#{name},po01103=#{parentId},po01104=#{rootId},po01105=#{moduleId},po01109=#{type} WHERE po01101=#{id};
+    </update>
+    <delete id="deleteFolder">
+        delete from sdpo011 where po01101=#{id}
+    </delete>
+    <insert id="addFolder">
+        INSERT INTO sdpo011 VALUES(#{id},#{name},#{parentId},#{rootId},#{moduleId},'','','',#{type});
+    </insert>
+    <select id="getFolderById" resultMap="articleFolder">
+        SELECT * FROM sdpo011 WHERE po01101=#{id};
+    </select>
+    <select id="searchFolder" resultMap="articleFolder">
+        SELECT * FROM sdpo011
+        <where>
+            <if test="str != null and str != ''">
+                and po01102 LIKE '%'+#{str}+'%'
+            </if>
+        </where>
+    </select>
+    <update id="updateArticle">
+        UPDATE sdpo009 SET po00906=#{title},po00904=#{name},
+        po00909=#{data},po00916=#{project.id} WHERE po00901=#{id};
+    </update>
+</mapper>

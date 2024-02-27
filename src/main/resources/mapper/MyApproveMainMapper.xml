@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.MyApproveMainMapper">
+    <resultMap id="main" type="com.yuesheng.pm.entity.MyApproveMain">
+        <id column="po10001" property="id" jdbcType="VARCHAR"></id>
+        <result column="po10002" property="po1000102" jdbcType="VARCHAR"></result>
+        <result column="po10003" property="flowMessageId" jdbcType="VARCHAR"></result>
+        <result column="po10004" property="sendDate" jdbcType="VARCHAR"></result>
+        <result column="po10005" property="name" jdbcType="VARCHAR"></result>
+        <result column="po10006" property="title" jdbcType="VARCHAR"></result>
+        <result column="po10007" property="frameCoding" jdbcType="VARCHAR"></result>
+        <result column="po10008" property="frameId" jdbcType="VARCHAR"></result>
+        <result column="po10009" property="type" jdbcType="TINYINT"></result>
+        <result column="po10010" property="staffName" jdbcType="VARCHAR"></result>
+        <result column="po10011" property="approveAttachedId" jdbcType="VARCHAR"></result>
+        <result column="po10012" property="po10012" jdbcType="TINYINT"></result>
+    </resultMap>
+    <insert id="addApproveMain" parameterType="com.yuesheng.pm.entity.MyApproveMain">
+        INSERT INTO sdpo100
+        (po10001,po10002,po10003,po10004,po10005,po10006,po10007,po10008,po10009,po10010,po10011,po10012)
+        VALUES
+        (#{id},#{po1000102},#{flowMessageId},#{sendDate},#{name},#{title},#{frameCoding},
+        #{frameId},#{type},#{staffName},#{approveAttachedId},#{po10012});
+    </insert>
+    <select id="getMainByMsgId" resultMap="main">
+        SELECT TOP 1 po10002,po10005,po10006,po10007,po10008,po10009,po10010 FROM sdpo100 WHERE po10003=#{msgId};
+    </select>
+    <select id="queryByParam" resultMap="main">
+        select * from sdpo100 where po10004 between #{startDatetime} and #{endDatetime}
+    </select>
+    <delete id="deleteByIds">
+        delete from sdpo100 where po10001 in(${ids})
+    </delete>
+</mapper>

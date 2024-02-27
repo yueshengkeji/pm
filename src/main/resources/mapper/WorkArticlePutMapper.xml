@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.WorkArticlePutMapper">
+    <resultMap id="articlePut" type="com.yuesheng.pm.entity.WorkArticlePut">
+        <id column="po20201" property="id" jdbcType="VARCHAR"></id>
+        <result column="po20202" property="name" jdbcType="VARCHAR"></result>
+        <result column="po20203" property="date" jdbcType="VARCHAR"></result>
+        <result column="po20205" property="remark" jdbcType="VARCHAR"></result>
+        <result column="po20208" property="approveState" jdbcType="TINYINT"></result>
+        <result column="po20210" property="approveDate" jdbcType="VARCHAR"></result>
+
+        <association property="staff" column="po20204"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="approve" column="po20209"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+    </resultMap>
+
+    <insert id="insert">
+        insert into sdpo202 (po20201,
+                             po20202,
+                             po20203,
+                             po20204,
+                             po20205,
+                             po20206,
+                             po20207,
+                             po20208,
+                             po20209,
+                             po20210)
+        values (#{id},
+                #{name},
+                #{date},
+                #{staff.id},
+                #{remark},
+                #{staff.coding},
+                #{date},
+                0,
+                '',
+                '')
+    </insert>
+
+    <delete id="delete">
+        delete
+        from sdpo202
+        where po20201 = #{id}
+    </delete>
+
+    <update id="update">
+        update sdpo202
+        <set>
+            <if test="name != null">
+                po20202=#{name},
+            </if>
+            <if test="date != null">
+                po20203=#{date},
+            </if>
+            <if test="staff != null">
+                po20204=#{staff.id},
+            </if>
+            <if test="remark != null">
+                po20205=#{remark},
+            </if>
+            <if test="approveState != null">
+                po20208=#{approveState},
+            </if>
+            <if test="approve != null">
+                po20209=#{approve.coding},
+            </if>
+            <if test="approveDate != null">
+                po20210=#{approveDate},
+            </if>
+        </set>
+        where po20201 = #{id}
+    </update>
+
+    <select id="queryById" resultMap="articlePut">
+        select *
+        from sdpo202
+        where po20201 = #{id}
+    </select>
+
+</mapper>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ReptileMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.Reptile" id="ReptileMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+        <result property="reptileDatetime" column="reptile_datetime" jdbcType="VARCHAR"/>
+        <result property="key" column="keys" jdbcType="VARCHAR"/>
+        <result property="sourceName" column="source_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ReptileMap">
+        select
+          id, title, content, datetime, reptile_datetime, keys, source_name
+        from reptile
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ReptileMap">
+        select
+          id, title, content, datetime, reptile_datetime, keys, source_name
+        from reptile
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="reptileDatetime != null and reptileDatetime != ''">
+                and reptile_datetime like #{reptileDatetime}+'%'
+            </if>
+            <if test="key != null and key != ''">
+                and keys in (${key})
+            </if>
+            <if test="sourceName != null and sourceName != ''">
+                and source_name = #{sourceName}
+            </if>
+        </where>
+    </select>
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ReptileMap" databaseId="mysql">
+        select
+          id, title, content, datetime, reptile_datetime, keys, source_name
+        from reptile
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="reptileDatetime != null and reptileDatetime != ''">
+                and reptile_datetime like #{reptileDatetime}+'%'
+            </if>
+            <if test="key != null and key != ''">
+                and `keys` in (${key})
+            </if>
+            <if test="sourceName != null and sourceName != ''">
+                and source_name = #{sourceName}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from reptile
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="reptileDatetime != null and reptileDatetime != ''">
+                and reptile_datetime = #{reptileDatetime}
+            </if>
+            <if test="key != null and key != ''">
+                and keys = #{key}
+            </if>
+            <if test="sourceName != null and sourceName != ''">
+                and source_name = #{sourceName}
+            </if>
+        </where>
+    </select>
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long" databaseId="mysql">
+        select count(1)
+        from reptile
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="reptileDatetime != null and reptileDatetime != ''">
+                and reptile_datetime = #{reptileDatetime}
+            </if>
+            <if test="key != null and key != ''">
+                and `keys` = #{key}
+            </if>
+            <if test="sourceName != null and sourceName != ''">
+                and source_name = #{sourceName}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into reptile(id,title, content, datetime, reptile_datetime, keys, source_name)
+        values (#{id},#{title}, #{content}, #{datetime}, #{reptileDatetime}, #{key}, #{sourceName})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into reptile(id,title, content, datetime, reptile_datetime, keys, source_name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.id},#{entity.title}, #{entity.content}, #{entity.datetime}, #{entity.reptileDatetime}, #{entity.key}, #{entity.sourceName})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into reptile(id,title, content, datetime, reptile_datetime, keys, source_name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id},#{entity.title}, #{entity.content}, #{entity.datetime}, #{entity.reptileDatetime}, #{entity.key}, #{entity.sourceName})
+        </foreach>
+        on duplicate key update
+        title = values(title),
+        content = values(content),
+        datetime = values(datetime),
+        reptile_datetime = values(reptile_datetime),
+        keys = values(key),
+        source_name = values(source_name)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update reptile
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="datetime != null and datetime != ''">
+                datetime = #{datetime},
+            </if>
+            <if test="reptileDatetime != null and reptileDatetime != ''">
+                reptile_datetime = #{reptileDatetime},
+            </if>
+            <if test="key != null and key != ''">
+                keys = #{key},
+            </if>
+            <if test="sourceName != null and sourceName != ''">
+                source_name = #{sourceName},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from reptile where id = #{id}
+    </delete>
+
+</mapper>
+

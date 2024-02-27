@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PurchaseContractMapper">
+    <resultMap id="PurchaseContract" type="com.yuesheng.pm.entity.PurchaseContract">
+        <result property="agreementID" column="agreement_id"></result>
+        <result property="projectBase" column="project_base"></result>
+        <result property="agreementName" column="agreement_name"></result>
+        <result property="agreementMoney" column="agreement_money"></result>
+        <result property="signDate" column="sign_date"></result>
+        <result property="paymentDays" column="payment_days"></result>
+        <result property="companyName" column="company_name"></result>
+        <result property="companyAddress" column="company_address"></result>
+        <result property="bankName" column="bank_name"></result>
+        <result property="bankAccount" column="bank_account"></result>
+        <result property="remark" column="remark"></result>
+        <result property="tak" column="tak"></result>
+        <result property="collectedMoney" column="collected_money"></result>
+        <result property="paidMoney" column="paid_money"></result>
+        <result property="createDate" column="create_date"></result>
+        <result property="registrant" column="registrant"></result>
+    </resultMap>
+
+    <select id="selectByID" parameterType="Integer" resultMap="PurchaseContract">
+        select * from purchase_contract_registration
+        where id = #{id}
+    </select>
+
+    <select id="selectByAgreementID" parameterType="String" resultMap="PurchaseContract">
+        select * from purchase_contract_registration
+        where agreement_id = #{agreementID}
+    </select>
+
+    <select id="selectBySearch" parameterType="String" resultMap="PurchaseContract">
+        select * from purchase_contract_registration
+        where
+        isnull(project_base,'') +
+        isnull(agreement_id,'') +
+        isnull(agreement_name,'') +
+        isnull(convert(varchar(100),agreement_money),'') +
+        isnull(convert(varchar(100),sign_date),'') +
+        isnull(company_name,'') +
+        isnull(remark,'') +
+        isnull(registrant,'') +
+        isnull(convert(varchar(100),collected_money),'') +
+        isnull(convert(varchar(100),paid_money),'')
+        like '%' + #{search} + '%'
+        order by create_date desc
+    </select>
+
+    <select id="selectBySearch" parameterType="String" resultMap="PurchaseContract" databaseId="mysql">
+        select * from purchase_contract_registration
+        where concat(project_base,agreement_id,agreement_name,company_name,remark,registrant)
+        like concat('%',#{search},'%')
+        order by create_date desc
+    </select>
+
+    <select id="selectAll" resultMap="PurchaseContract">
+        select * from purchase_contract_registration
+        order by create_date desc
+    </select>
+
+    <select id="selectForPage" resultMap="PurchaseContract">
+        select * from purchase_contract_registration
+        order by create_date desc
+    </select>
+
+    <select id="selectCounts" resultType="Integer">
+        select count(*) from purchase_contract_registration
+    </select>
+
+    <select id="selectByDateForPage" resultMap="PurchaseContract">
+        select * from purchase_contract_registration
+        where sign_date between #{startDate} and #{endDate}
+        order by create_date desc
+    </select>
+
+    <select id="selectByDateYear" parameterType="String" resultMap="PurchaseContract">
+        select * from purchase_contract_registration
+        where YEAR(sign_date) = #{dateserach}
+    </select>
+
+    <select id="selectCountsByDate" resultType="Integer">
+        select count(*) from purchase_contract_registration
+        where sign_date between #{startDate} and #{endDate}
+    </select>
+
+    <insert id="insertContract" parameterType="com.yuesheng.pm.entity.PurchaseContract">
+        insert into purchase_contract_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectBase != null">project_base,
+            </if>
+            <if test="agreementID != null">agreement_id,
+            </if>
+            <if test="agreementName != null">agreement_name,
+            </if>
+            <if test="agreementMoney != null">agreement_money,
+            </if>
+            <if test="signDate != null">sign_date,
+            </if>
+            <if test="paymentDays != null">payment_days,
+            </if>
+            <if test="companyName != null">company_name,
+            </if>
+            <if test="companyAddress != null">company_address,
+            </if>
+            <if test="bankName != null">bank_name,
+            </if>
+            <if test="bankAccount != null">bank_account,
+            </if>
+            <if test="remark != null">remark,
+            </if>
+            <if test="tak != null">tak,
+            </if>
+            <if test="collectedMoney != null">cllected_money,
+            </if>
+            <if test="paidMoney != null">paid_money,
+            </if>
+            <if test="createDate != null">create_date,
+            </if>
+            <if test="registrant != null">registrant,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectBase != null">#{projectBase},
+            </if>
+            <if test="agreementID != null">#{agreementID},
+            </if>
+            <if test="agreementName != null">#{agreementName},
+            </if>
+            <if test="agreementMoney != null">#{agreementMoney},
+            </if>
+            <if test="signDate != null">#{signDate},
+            </if>
+            <if test="paymentDays != null">#{paymentDays},
+            </if>
+            <if test="companyName != null">#{companyName},
+            </if>
+            <if test="companyAddress != null">#{companyAddress},
+            </if>
+            <if test="bankName != null">#{bankName},
+            </if>
+            <if test="bankAccount != null">#{bankAccount},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+            <if test="tak != null">#{tak},
+            </if>
+            <if test="collectedMoney != null">#{collectedMoney},
+            </if>
+            <if test="paidMoney != null">#{paidMoney},
+            </if>
+            <if test="createDate != null">#{createDate},
+            </if>
+            <if test="registrant != null">#{registrant},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteContract" parameterType="Integer">
+        delete from purchase_contract_registration
+        where id = #{id}
+    </delete>
+
+    <update id="updateContract" parameterType="com.yuesheng.pm.entity.PurchaseContract">
+        update purchase_contract_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectBase != null">project_base = #{projectBase},
+            </if>
+            <if test="agreementID != null">agreement_id = #{agreementID},
+            </if>
+            <if test="agreementName != null">agreement_name = #{agreementName},
+            </if>
+            <if test="agreementMoney != null">agreement_money = #{agreementMoney},
+            </if>
+            <if test="signDate != null">sign_date = #{signDate},
+            </if>
+            <if test="paymentDays != null">payment_days = #{paymentDays},
+            </if>
+            <if test="companyName != null">company_name = #{companyName},
+            </if>
+            <if test="companyAddress != null">company_address = #{companyAddress},
+            </if>
+            <if test="bankName != null">bank_name = #{bankName},
+            </if>
+            <if test="bankAccount != null">bank_account = #{bankAccount},
+            </if>
+            <if test="remark != null">remark = #{remark},
+            </if>
+            <if test="tak != null">tak = #{tak},
+            </if>
+            <if test="collectedMoney != null">collected_money = #{collectedMoney},
+            </if>
+            <if test="paidMoney != null">paid_money = #{paidMoney},
+            </if>
+            <if test="createDate != null">create_date = #{createDate},
+            </if>
+            <if test="registrant != null">registrant = #{registrant},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+</mapper>

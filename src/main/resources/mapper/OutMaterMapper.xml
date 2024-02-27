@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.OutMaterMapper">
+
+    <resultMap id="outMater" type="com.yuesheng.pm.entity.MaterOut">
+        <id column="pm02001" jdbcType="VARCHAR" property="id"></id>
+        <result column="pm02002" jdbcType="VARCHAR" property="outDate"></result>
+        <result column="pm02003" jdbcType="VARCHAR" property="outNumber"></result>
+        <result column="pm02005" jdbcType="VARCHAR" property="pm02005"></result>
+
+        <result column="pm02009" jdbcType="VARCHAR" property="remark"></result>
+        <result column="pm02011" jdbcType="VARCHAR" property="date"></result>
+        <result column="pm02015" jdbcType="VARCHAR" property="putId"></result>
+        <result column="pm02016" jdbcType="VARCHAR" property="approveDate"></result>
+        <result column="pm02017" jdbcType="VARCHAR" property="approveStaff.coding"></result>
+        <result column="pm02019" jdbcType="INTEGER" property="state"></result>
+
+        <association property="outPerson" column="pm02021"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="staff" column="pm02013"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="company" column="pm02008"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="section" column="pm02007"
+                     select="com.yuesheng.pm.mapper.SectionMapper.getSevtionByid"></association>
+        <association property="storage" column="pm02006"
+                     select="com.yuesheng.pm.mapper.StorageMapper.getStorageById"></association>
+        <association property="project" column="pm02004"
+                     select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+    </resultMap>
+
+    <select id="getOutMaterByNumber" resultMap="outMater">
+        SELECT * FROM sdpm020 WHERE pm02003=#{outNumber}
+    </select>
+
+    <select id="getNowOutMater" resultMap="outMater">
+        SELECT * FROM sdpm020 WHERE pm02002=#{data} AND pm02013=#{name} ORDER BY pm02003 DESC
+    </select>
+
+    <select id="getOutMaterList" parameterType="java.util.Map" resultMap="outMater">
+        SELECT DISTINCT a.* FROM sdpm020 AS a
+        LEFT JOIN sdpm021 AS b ON a.pm02001=b.pm02101
+        LEFT JOIN sdpm002 AS c ON b.pm02103=c.pm00201
+        LEFT JOIN sdpa001 AS d ON d.pa00101=a.pm02004
+        LEFT JOIN sdpm004 AS e ON a.pm02006=e.pm00401
+        LEFT JOIN sdpa001 AS f ON f.pa00101=a.pm02004
+        LEFT JOIN sdpj004 AS j ON j.pj00401=a.pm02021
+        LEFT JOIN sdpf003 AS h ON h.pf00301=a.pm02008
+        <where>
+            <if test="start != null and end != null">
+                AND a.pm02002 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="type != null">
+                AND a.pm02019 in(${type})
+            </if>
+            <if test="str != null">
+                AND a.pm02002+a.pm02003+a.pm02009+CAST(b.pm02104 AS
+                varchar(100))+c.pm00201+c.pm00202+c.pm00221+c.pm00205
+                +f.pa00102+j.pj00402+h.pf00302 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="storage != null">
+                AND a.pm02006 = #{storage}
+            </if>
+            <if test="staff != null">
+                AND (a.pm02013 in(#{staff}) OR a.pm02021 in(#{staff}))
+            </if>
+        </where>
+    </select>
+    <select id="getOutMaterList" parameterType="java.util.Map" resultMap="outMater" databaseId="mysql">
+        SELECT DISTINCT a.* FROM sdpm020 AS a
+        LEFT JOIN sdpm021 AS b ON a.pm02001=b.pm02101
+        LEFT JOIN sdpm002 AS c ON b.pm02103=c.pm00201
+        LEFT JOIN sdpa001 AS d ON d.pa00101=a.pm02004
+        LEFT JOIN sdpm004 AS e ON a.pm02006=e.pm00401
+        LEFT JOIN sdpa001 AS f ON f.pa00101=a.pm02004
+        LEFT JOIN sdpj004 AS j ON j.pj00401=a.pm02021
+        LEFT JOIN sdpf003 AS h ON h.pf00301=a.pm02008
+        <where>
+            <if test="start != null and end != null">
+                AND a.pm02002 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="type != null">
+                AND a.pm02019 in(${type})
+            </if>
+            <if test="str != null">
+                AND concat(a.pm02002,a.pm02003,a.pm02009,b.pm02104,c.pm00201,c.pm00202,c.pm00221,c.pm00205
+                ,f.pa00102,j.pj00402,h.pf00302) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="storage != null">
+                AND a.pm02006 = #{storage}
+            </if>
+            <if test="staff != null">
+                AND (a.pm02013 in(#{staff}) OR a.pm02021 in(#{staff}))
+            </if>
+        </where>
+    </select>
+    <select id="getOutSumByParam" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT a.pm02001) FROM sdpm020 AS a
+        LEFT JOIN sdpm021 AS b ON a.pm02001=b.pm02101
+        LEFT JOIN sdpm002 AS c ON b.pm02103=c.pm00201
+        LEFT JOIN sdpa001 AS d ON d.pa00101=a.pm02004
+        LEFT JOIN sdpm004 AS e ON a.pm02006=e.pm00401
+        LEFT JOIN sdpa001 AS f ON f.pa00101=a.pm02004
+        LEFT JOIN sdpj004 AS j ON j.pj00401=a.pm02021
+        LEFT JOIN sdpf003 AS h ON h.pf00301=a.pm02008
+        <where>
+            <if test="start != null and end != null">
+                AND a.pm02002 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="type != null">
+                AND a.pm02019 in(${type})
+            </if>
+            <if test="str != null">
+                AND a.pm02002+a.pm02003+a.pm02009+CAST(b.pm02104 AS
+                varchar(100))+c.pm00201+c.pm00202+c.pm00221+c.pm00205
+                +f.pa00102+j.pj00402+h.pf00302 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="storage != null">
+                AND a.pm02006 = #{storage}
+            </if>
+            <if test="staff != null">
+                AND (a.pm02013 in(#{staff}) OR a.pm02021 in(#{staff}))
+            </if>
+        </where>
+    </select>
+    <select id="getOutSumByParam" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT COUNT(DISTINCT a.pm02001) FROM sdpm020 AS a
+        LEFT JOIN sdpm021 AS b ON a.pm02001=b.pm02101
+        LEFT JOIN sdpm002 AS c ON b.pm02103=c.pm00201
+        LEFT JOIN sdpa001 AS d ON d.pa00101=a.pm02004
+        LEFT JOIN sdpm004 AS e ON a.pm02006=e.pm00401
+        LEFT JOIN sdpa001 AS f ON f.pa00101=a.pm02004
+        LEFT JOIN sdpj004 AS j ON j.pj00401=a.pm02021
+        LEFT JOIN sdpf003 AS h ON h.pf00301=a.pm02008
+        <where>
+            <if test="start != null and end != null">
+                AND a.pm02002 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="type != null">
+                AND a.pm02019 in(${type})
+            </if>
+            <if test="str != null">
+                AND concat(a.pm02002,a.pm02003,a.pm02009,b.pm02104,c.pm00201,c.pm00202,c.pm00221,c.pm00205
+                ,f.pa00102,j.pj00402,h.pf00302) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="storage != null">
+                AND a.pm02006 = #{storage}
+            </if>
+            <if test="staff != null">
+                AND (a.pm02013 in(#{staff}) OR a.pm02021 in(#{staff}))
+            </if>
+        </where>
+    </select>
+    <select id="getMaxOutNumber" resultType="String">
+        SELECT pm02003
+        FROM sdpm020
+        WHERE pm02002 = #{date}
+        ORDER BY pm02003 DESC
+    </select>
+    <insert id="addOutMater" parameterType="com.yuesheng.pm.entity.MaterOut">
+        insert into sdpm020 values(#{id},#{outDate},#{outNumber},#{project.id},#{pm02005},#{storage.id},#{section.id},#{company.id},#{remark},#{pm02010},#{date},#{pm02012},
+         #{staff.coding},#{pm02014},#{putId},'','',#{pm02018},0,0,#{outPerson.id})
+    </insert>
+    <select id="getCountForStaff" resultType="com.yuesheng.pm.entity.Count">
+        SELECT pm02021 AS id,COUNT(pm02021) AS myCount from sdpm020 GROUP BY pm02021 ORDER BY count(pm02021) DESC
+    </select>
+
+    <update id="updateState">
+        UPDATE sdpm020 SET pm02019=#{state},pm02017=#{approveStaff.coding},pm02016=#{approveDate} WHERE pm02001=#{id}
+    </update>
+    <select id="getOutMaterById" resultMap="outMater">
+        SELECT * FROM sdpm020 WHERE pm02001=#{outId}
+    </select>
+    <select id="getOutMaterByProjectId" resultMap="outMater">
+        SELECT distinct a.* FROM sdpm020 as a
+        LEFT JOIN sdpm021 AS b ON a.pm02001=b.pm02101
+        LEFT JOIN sdpm002 AS c ON b.pm02103=c.pm00201
+        <where>
+            and pm02019=1
+            <if test="projectId != null and projectId != ''">
+                and a.pm02004=#{projectId}
+            </if>
+            <if test="searchStr != null and searchStr != ''">
+                AND a.pm02002+a.pm02003+a.pm02009+CAST(b.pm02104 AS
+                varchar(100))+c.pm00201+c.pm00202+c.pm00221+c.pm00205 LIKE '%'+#{searchStr}+'%'
+            </if>
+        </where>
+        order by a.pm02003 desc
+    </select>
+    <select id="getOutMaterByProjectId" resultMap="outMater" databaseId="mysql">
+        SELECT distinct a.* FROM sdpm020 as a
+        LEFT JOIN sdpm021 AS b ON a.pm02001=b.pm02101
+        LEFT JOIN sdpm002 AS c ON b.pm02103=c.pm00201
+        <where>
+            and pm02019=1
+            <if test="projectId != null and projectId != ''">
+                and a.pm02004=#{projectId}
+            </if>
+            <if test="searchStr != null and searchStr != ''">
+                AND concat(a.pm02002,a.pm02003,a.pm02009,b.pm02104,c.pm00201,c.pm00202,c.pm00221,c.pm00205) LIKE concat('%',#{searchStr},'%')
+            </if>
+        </where>
+        order by a.pm02003 desc
+    </select>
+    <select id="getOutMaterByMaterId" resultMap="com.yuesheng.pm.mapper.OutMaterChildMapper.outMater">
+        SELECT a.*,b.* FROM sdpm020 AS a
+        RIGHT JOIN sdpm021 AS b ON a.pm02001=b.pm02101
+        WHERE b.pm02103=#{materId}
+        <if test="param != null">
+            AND a.pm02002 BETWEEN #{param[0]} AND #{param[1]}
+        </if>
+    </select>
+
+    <update id="updateMaterOut">
+        UPDATE sdpm020 SET pm02002=#{outDate},pm02003=#{outNumber},pm02009=#{remark} WHERE pm02001=#{id}
+    </update>
+
+    <delete id="deleteOut" parameterType="String">
+        delete from sdpm020 where pm02001=#{id}
+    </delete>
+
+    <select id="getOutSum" resultType="java.lang.Integer">
+        SELECT COUNT(pm02001) FROM sdpm020 WHERE pm02002 BETWEEN #{start} AND #{end}
+        <if test="type != null">
+            AND pm02019 in(#{type})
+        </if>
+        <if test="staffCoding != null">
+            AND pm02017=#{staffCoding}
+        </if>
+    </select>
+    <select id="getOutMaxByProject" resultType="java.util.Map">
+        SELECT out.pm02004 AS projectId,out.pm02106 AS outMoney,back.pm02406 AS backMoney
+        FROM (SELECT a.pm02004,SUM(b.pm02106) AS pm02106 FROM sdpm020 AS a LEFT JOIN sdpm021 AS b ON a.pm02001=b.pm02101
+        WHERE pm02002 LIKE #{year}+'%' GROUP BY a.pm02004) AS out
+        LEFT JOIN (SELECT a.pm02404,SUM(b.pm02506) AS pm02406 FROM sdpm024 AS a LEFT JOIN sdpm025 AS b ON
+        a.pm02401=b.pm02501
+        WHERE pm02402 LIKE #{year}+'%' GROUP BY a.pm02404) AS back
+        ON out.pm02004=back.pm02404 ORDER BY ISNULL(out.pm02106,0)-ISNULL(back.pm02406,0) DESC
+    </select>
+    <select id="getOutMaxByProject" resultType="java.util.Map" databaseId="mysql">
+        SELECT out.pm02004 AS projectId,out.pm02106 AS outMoney,back.pm02406 AS backMoney
+        FROM (SELECT a.pm02004,SUM(b.pm02106) AS pm02106 FROM sdpm020 AS a LEFT JOIN sdpm021 AS b ON a.pm02001=b.pm02101
+        WHERE pm02002 LIKE concat(#{year},'%') GROUP BY a.pm02004) AS out
+        LEFT JOIN (SELECT a.pm02404,SUM(b.pm02506) AS pm02406 FROM sdpm024 AS a LEFT JOIN sdpm025 AS b ON
+        a.pm02401=b.pm02501
+        WHERE pm02402 LIKE concat(#{year},'%') GROUP BY a.pm02404) AS back
+        ON out.pm02004=back.pm02404 ORDER BY IFNULL(out.pm02106,0)-IFNULL(back.pm02406,0) DESC
+    </select>
+    <select id="getOutMaterialMoney" resultType="com.yuesheng.pm.model.OutMaterData">
+        SELECT SUM(pm02106) as money,pa00102 AS pname ,pa00101 AS pid from sdpm020
+        LEFT JOIN sdpm021 ON pm02101=pm02001
+        left join sdpa001 ON pa00101=pm02004
+        where pm02019=1 AND pm02016 BETWEEN #{start} AND #{end} GROUP BY pa00102,pa00101 ORDER BY money desc
+    </select>
+</mapper>

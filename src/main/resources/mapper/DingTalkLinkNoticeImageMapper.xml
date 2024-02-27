@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.DingTalkLinkNoticeImageMapper">
+    <resultMap id="DingTalkLinkNoticeImage" type="com.yuesheng.pm.entity.DingTalkLinkNoticeImage">
+        <result property="id" column="id"></result>
+        <result property="name" column="name"></result>
+        <result property="status" column="status"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="mediaId" column="media_id"></result>
+        <result property="picUrl" column="pic_url"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.DingTalkLinkNoticeImage">
+        insert into ding_talk_link_notice_image
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="mediaId != null">media_id,</if>
+            <if test="picUrl != null">pic_url,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="mediaId != null">#{mediaId},</if>
+            <if test="picUrl != null">#{picUrl},</if>
+        </trim>
+    </insert>
+
+    <select id="selectAll" resultMap="DingTalkLinkNoticeImage">
+        select * from ding_talk_link_notice_image
+    </select>
+
+    <delete id="delete">
+        delete from ding_talk_link_notice_image
+        where id = #{id}
+    </delete>
+
+    <update id="update">
+        update ding_talk_link_notice_image
+        set status = CASE WHEN id=#{id} THEN 1 ELSE 0 END
+    </update>
+
+    <update id="resetStatus">
+        update ding_talk_link_notice_image
+        set status = 0
+    </update>
+
+    <select id="selectUsed" resultMap="DingTalkLinkNoticeImage">
+        select * from ding_talk_link_notice_image
+        where status = 1
+    </select>
+
+    <select id="selectFirst" resultMap="DingTalkLinkNoticeImage">
+        select top 1 * from ding_talk_link_notice_image
+    </select>
+</mapper>

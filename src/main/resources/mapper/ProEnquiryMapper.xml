@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProEnquiryMapper">
+    <resultMap id="enquiry" type="com.yuesheng.pm.entity.ProEnquiry">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="apply_id" property="applyId" jdbcType="VARCHAR"></result>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="date" property="date" jdbcType="TIMESTAMP"></result>
+        <result column="is_close" property="isClose" jdbcType="TINYINT"></result>
+        <result column="staff_id" property="staffId" jdbcType="TINYINT"></result>
+    </resultMap>
+    <insert id="insert">
+        INSERT INTO pro_enquiry (id,apply_id,name,date,is_close,staff_id) values(#{id},#{applyId},#{name},#{date},0,#{staffId});
+    </insert>
+    <update id="updateEnquiry">
+        UPDATE pro_enquiry set name=#{name} where id=#{id};
+    </update>
+    <update id="closeEnquiry">
+        UPDATE pro_enquiry set is_close=#{state} where id=#{id};
+    </update>
+    <select id="queryEnquiryList" resultMap="enquiry">
+        SELECT * FROM pro_enquiry
+        <where>
+            <if test="applyId != null">
+                AND apply_id=#{applyId}
+            </if>
+            <if test="isClose != null">
+                and is_close=#{isClose}
+            </if>
+            <if test="staffId != null">
+                AND staff_id=#{staffId}
+            </if>
+            <if test="startDate != null">
+                AND BETWEEN date #{startDate} and #{endDate}
+            </if>
+            <if test="str != null">
+                AND name LIKE '%'+#{str}+'%'
+            </if>
+        </where>
+        ${order}
+    </select>
+    <select id="queryEnquiryListV2" resultMap="enquiry">
+        SELECT * FROM pro_enquiry
+        <where>
+            <if test="applyId != null">
+                AND apply_id=#{applyId}
+            </if>
+            <if test="isClose != null">
+                and is_close=#{isClose}
+            </if>
+            <if test="staffId != null">
+                AND staff_id=#{staffId}
+            </if>
+            <if test="startDate != null">
+                AND BETWEEN date #{startDate} and #{endDate}
+            </if>
+            <if test="str != null">
+                AND name LIKE '%'+#{str}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="queryEnquiryCount" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM pro_enquiry
+        WHERE 1=1
+        <if test="applyId != null">
+            AND apply_id=#{applyId}
+        </if>
+        <if test="isClose != null">
+            and is_close=#{isClose}
+        </if>
+        <if test="staffId != null">
+            AND staff_id=#{staffId}
+        </if>
+        <if test="startDate != null">
+            AND BETWEEN date #{startDate} and #{endDate}
+        </if>
+        <if test="str != null">
+            AND name LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="queryEnquiry" resultMap="enquiry">
+        SELECT * FROM pro_enquiry WHERE id=#{id};
+    </select>
+</mapper>

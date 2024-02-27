@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.OutMaterChildMapper">
+    <resultMap id="outMater" type="com.yuesheng.pm.entity.MaterOutChild">
+        <id column="pm02102" jdbcType="VARCHAR" property="id"></id>
+        <result column="pm02101" jdbcType="VARCHAR" property="materOutId"></result>
+        <result column="pm02104" jdbcType="DECIMAL" property="sum"></result>
+        <result column="pm02105" jdbcType="DECIMAL" property="taxPrice"></result>
+        <result column="pm02106" jdbcType="DECIMAL" property="taxMoney"></result>
+        <result column="pm02108" jdbcType="VARCHAR" property="putMaterId"></result>
+        <result column="outNumber" property="outNumber" jdbcType="VARCHAR"></result>
+        <result column="outDate" property="outDate" jdbcType="VARCHAR"></result>
+        <association property="tax" column="pm02102" select="getTax"></association>
+        <association property="material" column="pm02103"
+                     select="com.yuesheng.pm.mapper.MaterialMapper.getMaterialByid"></association>
+        <association property="materOut" javaType="com.yuesheng.pm.entity.MaterOut">
+            <result column="pm02002" jdbcType="VARCHAR" property="outDate"></result>
+            <result column="pm02003" jdbcType="VARCHAR" property="outNumber"></result>
+            <association property="outPerson" column="pm02021"
+                         select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+            <association property="project" column="pm02004"
+                         select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+        </association>
+    </resultMap>
+
+    <select id="getOutMaterMoney" resultType="Double">
+        SELECT SUM(pm02106) as money from sdpm021
+        right join sdpm020 on pm02001=pm02101
+        where pm02019=1 and pm02004=#{projectId}
+    </select>
+
+    <resultMap id="materChildHistory" type="com.yuesheng.pm.entity.OutMaterChildHistory">
+        <id column="fifoo_01id" jdbcType="DECIMAL" property="id"></id>
+        <result column="fifoo_02mat" property="materId" jdbcType="VARCHAR"></result>
+        <result column="fifoo_03date" property="dateTime" jdbcType="VARCHAR"></result>
+        <result column="fifoo_04oqty" property="outSum" jdbcType="DECIMAL"></result>
+        <result column="fifoo_05rqty" property="RQty05" jdbcType="DECIMAL"></result>
+        <result column="fifoo_06pri" property="price" jdbcType="DECIMAL"></result>
+        <result column="fifoo_07oamt" property="money" jdbcType="DECIMAL"></result>
+        <result column="fifoo_08tranid" property="outMaterChildId" jdbcType="VARCHAR"></result>
+        <result column="fifoo_09type" property="type" jdbcType="TINYINT"></result>
+        <result column="fifoo_10fromid" property="fifoiId" jdbcType="DECIMAL"></result>
+    </resultMap>
+    <select id="getOutMaterHistory" resultMap="com.yuesheng.pm.mapper.MaterialMapper.materHistory">
+        select pm00201,pm00202,pm00205,pm00206,pm00221,pm02101,
+        pm02102,pm02104,pm02105,pm02106,pm02108,pm02002,pm02003,pa00102 from sdpm002
+        left join sdpm021 on pm02103 = pm00201
+        LEFT join sdpm020 on pm02001=pm02101 and pm02019=1
+        LEFT join sdpa001 on pa00101=pm02004
+        <where>
+            <if test="name != null">
+                and pm00202 LIKE '%'+#{name}+'%'
+            </if>
+            <if test="model != null">
+                and pm00205 LIKE '%'+#{model}+'%'
+            </if>
+            <if test="brand != null">
+                and pm00221 LIKE '%'+#{brand}+'%'
+            </if>
+            <if test="startDate != null">
+                and pm02016 between #{startDate} and #{endDate}
+            </if>
+            <if test="single != null">
+                and pm02004 = #{single}
+            </if>
+            <if test="projectId != null">
+                and pm02004 in(${projectId})
+            </if>
+        </where>
+        order by pm02016 desc
+    </select>
+    <select id="getOutMaterHistory" resultMap="com.yuesheng.pm.mapper.MaterialMapper.materHistory" databaseId="mysql">
+        select pm00201,pm00202,pm00205,pm00206,pm00221,pm02101,
+        pm02102 as detailId,pm02104,pm02105,pm02106,pm02108,pm02002,pm02003,pa00102 from sdpm002
+        left join sdpm021 on pm02103 = pm00201
+        LEFT join sdpm020 on pm02001=pm02101 and pm02019=1
+        LEFT join sdpa001 on pa00101=pm02004
+        <where>
+            <if test="name != null">
+                and pm00202 LIKE concat('%',#{name},'%')
+            </if>
+            <if test="model != null">
+                and pm00205 LIKE concat('%',#{model},'%')
+            </if>
+            <if test="brand != null">
+                and pm00221 LIKE concat('%',#{brand},'%')
+            </if>
+            <if test="startDate != null">
+                and pm02016 between #{startDate} and #{endDate}
+            </if>
+            <if test="single != null">
+                and pm02004 = #{single}
+            </if>
+            <if test="projectId != null">
+                and pm02004 in(${projectId})
+            </if>
+        </where>
+        order by pm02016 desc
+    </select>
+    <select id="getOutMaterHistoryCount" resultType="Integer">
+        select count(pm00201) from sdpm002
+        left join sdpm021 on pm02103 = pm00201
+        LEFT join sdpm020 on pm02001=pm02101 and pm02019=1
+        LEFT join sdpa001 on pa00101=pm02004
+        <where>
+            <if test="name != null">
+                and pm00202 LIKE '%'+#{name}+'%'
+            </if>
+            <if test="model != null">
+                and pm00205 LIKE '%'+#{model}+'%'
+            </if>
+            <if test="brand != null">
+                and pm00221 LIKE '%'+#{brand}+'%'
+            </if>
+            <if test="startDate != null">
+                and pm02016 between #{startDate} and #{endDate}
+            </if>
+            <if test="single != null">
+                and pm02004 = #{single}
+            </if>
+            <if test="projectId != null">
+                and pm02004 in(${projectId})
+            </if>
+        </where>
+    </select>
+    <select id="getOutMaterHistoryCount" resultType="Integer" databaseId="mysql">
+        select count(pm00201) from sdpm002
+        left join sdpm021 on pm02103 = pm00201
+        LEFT join sdpm020 on pm02001=pm02101 and pm02019=1
+        LEFT join sdpa001 on pa00101=pm02004
+        <where>
+            <if test="name != null">
+                and pm00202 LIKE concat('%',#{name},'%')
+            </if>
+            <if test="model != null">
+                and pm00205 LIKE concat('%',#{model},'%')
+            </if>
+            <if test="brand != null">
+                and pm00221 LIKE concat('%',#{brand},'%')
+            </if>
+            <if test="startDate != null">
+                and pm02016 between #{startDate} and #{endDate}
+            </if>
+            <if test="single != null">
+                and pm02004 = #{single}
+            </if>
+            <if test="projectId != null">
+                and pm02004 in(${projectId})
+            </if>
+        </where>
+    </select>
+
+    <select id="getOutMaterHistoryMoney" resultType="Double">
+        select sum(pm02106) from sdpm002
+        left join sdpm021 on pm02103 = pm00201
+        LEFT join sdpm020 on pm02001=pm02101 and pm02019=1
+        LEFT join sdpa001 on pa00101=pm02004
+        <where>
+            <if test="name != null">
+                and pm00202 LIKE '%'+#{name}+'%'
+            </if>
+            <if test="model != null">
+                and pm00205 LIKE '%'+#{model}+'%'
+            </if>
+            <if test="brand != null">
+                and pm00221 LIKE '%'+#{brand}+'%'
+            </if>
+            <if test="startDate != null">
+                and pm02016 between #{startDate} and #{endDate}
+            </if>
+            <if test="projectId != null">
+                and pm02004 in(${projectId})
+            </if>
+        </where>
+    </select>
+    <select id="getOutMaterHistoryMoney" resultType="Double" databaseId="mysql">
+        select sum(pm02106) from sdpm002
+        left join sdpm021 on pm02103 = pm00201
+        LEFT join sdpm020 on pm02001=pm02101 and pm02019=1
+        LEFT join sdpa001 on pa00101=pm02004
+        <where>
+            <if test="name != null">
+                and pm00202 LIKE concat('%',#{name},'%')
+            </if>
+            <if test="model != null">
+                and pm00205 LIKE concat('%',#{model},'%')
+            </if>
+            <if test="brand != null">
+                and pm00221 LIKE concat('%',#{brand},'%')
+            </if>
+            <if test="startDate != null">
+                and pm02016 between #{startDate} and #{endDate}
+            </if>
+            <if test="projectId != null">
+                and pm02004 in(${projectId})
+            </if>
+        </where>
+    </select>
+
+    <insert id="addOutMater" parameterType="com.yuesheng.pm.entity.MaterOutChild">
+        insert into sdpm021 (pm02101,pm02102,pm02103,pm02104,pm02105,pm02106,pm02107,pm02108,
+                             pm02109,pm02110,pm02111,pm02112)
+        values (#{materOutId}, #{id}, #{material.id}, #{sum}, #{taxPrice}, #{taxMoney}, #{planPrice}, #{putMaterId}
+        , #{pm02109}, #{pm02110}, 0, #{pm02112})
+    </insert>
+
+    <insert id="addOutTax">
+        INSERT INTO out_tax (out_id,tax)
+        VALUES (#{id}, #{tax})
+    </insert>
+
+    <insert id="addOutMaterHistory">
+        INSERT INTO sdfifoo
+        (fifoo_01id,fifoo_02mat,fifoo_03date,fifoo_04oqty,fifoo_05rqty,fifoo_06pri,fifoo_07oamt,fifoo_08tranid,fifoo_09type,fifoo_10fromid)
+        VALUES(#{id},#{materId},#{dateTime},#{outSum},#{RQty05},#{price},#{money},#{outMaterChildId},#{type},#{fifoiId})
+    </insert>
+
+    <select id="getMaxHistory" resultType="String">
+        SELECT MAX(fifoo_01id) FROM sdfifoo
+    </select>
+
+    <delete id="deleteOutMaterHistory">
+        DELETE FROM sdfifoo WHERE fifoo_08tranid=#{materOutId}
+    </delete>
+
+    <update id="updateOutMaterHistory" parameterType="com.yuesheng.pm.entity.OutMaterChildHistory">
+        UPDATE sdfifoo SET fifoo_03date=#{dateTime},fifoo_04oqty=#{outSum},fifoo_05rqty=#{RQty05},fifoo_06pri=#{price},
+        fifoo_07oamt=#{money} WHERE fifoo_08tranid=#{outMaterChildId} AND #{fifoiId}
+    </update>
+    <select id="getChildHistoryByMater" resultMap="materChildHistory">
+        SELECT * FROM sdfifoo WHERE fifoo_08tranid=#{outMaterId}
+    </select>
+    <update id="updateMaterChild" parameterType="com.yuesheng.pm.entity.MaterOutChild">
+        UPDATE sdpm021 SET pm02104=#{sum},pm02105=#{taxPrice},pm02106=#{taxMoney},pm02111=#{pm02111} WHERE
+        pm02102=#{id}
+    </update>
+    <update id="updateTax">
+        UPDATE out_tax
+        SET tax=#{tax}
+        WHERE out_id = #{id}
+    </update>
+    <select id="getOutMatersByOutId" resultMap="outMater">
+        SELECT * FROM sdpm021 WHERE pm02101=#{outId} order by pm02110 asc
+    </select>
+    <select id="getOutMatersByProject" resultMap="outMater">
+        SELECT b.*,a.pm02002 AS outDate,a.pm02003 AS outNumber from sdpm020 AS a
+        RIGHT JOIN sdpm021 AS b ON a.pm02001=b.pm02101
+        WHERE a.pm02004=#{projectId}
+    </select>
+    <select id="getTax" resultType="java.lang.Double">
+        SELECT isnull(tax,0) FROM out_tax WHERE out_id=#{id}
+    </select>
+    <select id="getTax" resultType="java.lang.Double" databaseId="mysql">
+        SELECT ifnull(tax,0) FROM out_tax WHERE out_id=#{id}
+    </select>
+    <select id="getMaterByMaterId" resultMap="com.yuesheng.pm.mapper.MaterialMapper.material">
+        SELECT a.* FROM sdpm002 AS a
+        RIGHT JOIN sdpm021 AS b ON b.pm02103=a.pm00201
+        WHERE b.pm02103=#{id}
+    </select>
+    <select id="getMaterialUseMaterId" resultMap="outMater">
+        SELECT a.*,b.pm02002,b.pm02003,b.pm02021 FROM sdpm021 AS a LEFT JOIN sdpm020 AS b ON a.pm02101=b.pm02001 WHERE
+        a.pm02103=#{id}
+    </select>
+    <select id="getOutMaterById" resultMap="outMater">
+        SELECT a.* FROM sdpm021 AS a LEFT JOIN sdpm020 AS b ON a.pm02101=b.pm02001 WHERE
+        a.pm02102=#{id}
+    </select>
+    <delete id="deleteOutMater">
+        delete from sdpm021 where pm02102=#{materId}
+    </delete>
+    <delete id="deleteTax">
+        delete from out_tax where out_id=#{materId}
+    </delete>
+    <select id="getLastOutMater" resultMap="outMater">
+        select distinct a.*,b.pm02016 from sdpm021 as a
+         LEFT join sdpm020 as b on b.pm02001=a.pm02101 and b.pm02019=1
+         where a.pm02103=#{materId} order by b.pm02016 desc
+    </select>
+    <select id="getProjectMaterial" resultMap="com.yuesheng.pm.mapper.ProjectMapper.projectMater">
+        SELECT a.pm02103 AS 'pm00201',sum(a.pm02104) AS 'pm02104',sum(a.pm02106) AS 'pm02106','5' AS 'type'
+        FROM sdpm021 AS a
+                 RIGHT JOIN sdpm020 AS b ON a.pm02101 = b.pm02001
+        WHERE b.pm02004 = #{projectId}
+        GROUP BY a.pm02103
+    </select>
+</mapper>

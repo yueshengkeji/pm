@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.SaleDataMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.SaleData" id="SaleDataMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="date" column="date" jdbcType="VARCHAR"/>
+        <result property="saleDate" column="sale_date" jdbcType="VARCHAR"/>
+        <result property="brand" column="brand" jdbcType="VARCHAR"/>
+        <result property="yetai" column="yetai" jdbcType="VARCHAR"/>
+        <result property="money" column="money" jdbcType="NUMERIC"/>
+        <result property="tel" column="tel" jdbcType="VARCHAR"/>
+        <result property="person" column="person" jdbcType="VARCHAR"/>
+        <association property="staff" column="staff_id" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SaleDataMap">
+        select
+          id, date, sale_date, brand, yetai, money, tel, person, staff_id
+        from sale_data
+        where id = #{id}
+    </select>
+
+    <select id="queryAll" resultMap="SaleDataMap">
+        select
+        id, date, sale_date, brand, yetai, money, tel, person, staff_id
+        from sale_data
+        <where>
+            <if test="saleStartDate != null and saleStartDate != ''">
+                and sale_date between #{saleStartDate} and #{saleEndDate}
+            </if>
+            <if test="yetai != null and yetai != ''">
+                and yetai = #{yetai}
+            </if>
+            <if test="searchText != null">
+                and isnull(tel,'')+isnull(person,'')+isnull(brand,'') like '%'+#{searchText}+'%'
+            </if>
+            <if test="tel != null and tel != ''">
+                and tel = #{tel}
+            </if>
+            <if test="person != null and person != ''">
+                and person = #{person}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryMoneyGroupSaleDate" resultType="com.yuesheng.pm.model.DateGroupModel">
+        select SUM(money) as money,
+               sale_date as date
+        from sale_data
+        where sale_date between #{saleStartDate} and #{saleEndDate}
+        group by sale_date order by sale_date
+    </select>
+
+    <select id="queryMoney" resultType="Double">
+        select
+        SUM(money)
+        from sale_data
+        <where>
+            <if test="saleStartDate != null and saleStartDate != ''">
+                and sale_date between #{saleStartDate} and #{saleEndDate}
+            </if>
+            <if test="yetai != null and yetai != ''">
+                and yetai = #{yetai}
+            </if>
+            <if test="searchText != null">
+                and isnull(tel,'')+isnull(person,'')+isnull(brand,'') like '%'+#{searchText}+'%'
+            </if>
+            <if test="tel != null and tel != ''">
+                and tel = #{tel}
+            </if>
+            <if test="person != null and person != ''">
+                and person = #{person}
+            </if>
+        </where>
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SaleDataMap">
+        select
+          id, date, sale_date, brand, yetai, money, tel, person, staff_id
+        from sale_data
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="date != null and date != ''">
+                and date = #{date}
+            </if>
+            <if test="saleDate != null and saleDate != ''">
+                and sale_date = #{saleDate}
+            </if>
+            <if test="brand != null and brand != ''">
+                and brand = #{brand}
+            </if>
+            <if test="yetai != null and yetai != ''">
+                and yetai = #{yetai}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="tel != null and tel != ''">
+                and tel = #{tel}
+            </if>
+            <if test="person != null and person != ''">
+                and person = #{person}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from sale_data
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="date != null and date != ''">
+                and date = #{date}
+            </if>
+            <if test="saleDate != null and saleDate != ''">
+                and sale_date = #{saleDate}
+            </if>
+            <if test="brand != null and brand != ''">
+                and brand = #{brand}
+            </if>
+            <if test="yetai != null and yetai != ''">
+                and yetai = #{yetai}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="tel != null and tel != ''">
+                and tel = #{tel}
+            </if>
+            <if test="person != null and person != ''">
+                and person = #{person}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into sale_data(id,date, sale_date, brand, yetai, money, tel, person, staff_id)
+        values (#{id},#{date}, #{saleDate}, #{brand}, #{yetai}, #{money}, #{tel}, #{person}, #{staff.id})
+    </insert>
+
+    <insert id="insertBatch">
+        insert into sale_data(id,date, sale_date, brand, yetai, money, tel, person, staff_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.id},#{entity.date}, #{entity.saleDate}, #{entity.brand}, #{entity.yetai}, #{entity.money}, #{entity.tel}, #{entity.person}, #{entity.staff.id})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into sale_data(date, sale_date, brand, yetai, money, tel, person, staff_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.date}, #{entity.saleDate}, #{entity.brand}, #{entity.yetai}, #{entity.money}, #{entity.tel}, #{entity.person}, #{entity.staff.id})
+        </foreach>
+        on duplicate key update
+        date = values(date),
+        sale_date = values(sale_date),
+        brand = values(brand),
+        yetai = values(yetai),
+        money = values(money),
+        tel = values(tel),
+        person = values(person),
+        staff_id = values(staff_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update sale_data
+        <set>
+            <if test="date != null and date != ''">
+                date = #{date},
+            </if>
+            <if test="saleDate != null and saleDate != ''">
+                sale_date = #{saleDate},
+            </if>
+            <if test="brand != null and brand != ''">
+                brand = #{brand},
+            </if>
+            <if test="yetai != null and yetai != ''">
+                yetai = #{yetai},
+            </if>
+            <if test="money != null">
+                money = #{money},
+            </if>
+            <if test="tel != null and tel != ''">
+                tel = #{tel},
+            </if>
+            <if test="person != null and person != ''">
+                person = #{person},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from sale_data where id = #{id}
+    </delete>
+
+    <select id="queryByDayTopList" resultType="com.yuesheng.pm.model.DateGroupModel">
+        select SUM(money) as money,
+               sale_date as date,
+               brand as title
+        from sale_data
+        where sale_date between #{saleStartDate} and #{saleEndDate}
+        group by sale_date,brand order by sale_date desc,money desc;
+    </select>
+
+
+    <select id="queryByDateTopList" resultType="com.yuesheng.pm.model.DateGroupModel">
+        select SUM(money) as money,
+               brand as title
+        from sale_data
+        where sale_date between #{saleStartDate} and #{saleEndDate}
+        group by brand order by money desc;
+    </select>
+
+</mapper>
+

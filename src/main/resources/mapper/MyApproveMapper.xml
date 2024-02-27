@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.MyApproveMapper">
+
+    <resultMap id="myApprove" type="com.yuesheng.pm.entity.MyApprove">
+        <id column="po00601" jdbcType="VARCHAR" property="id"></id>
+        <result column="po00602" jdbcType="VARCHAR" property="acceptDate"></result>
+        <result column="po00603" jdbcType="VARCHAR" property="sendPerson"></result>
+        <result column="po00604" jdbcType="VARCHAR" property="name"></result>
+        <result column="po00605" jdbcType="VARCHAR" property="title"></result>
+        <result column="po00611" jdbcType="VARCHAR" property="frameCoding"></result>
+        <result column="po00612" jdbcType="VARCHAR" property="frameId"></result>
+        <result column="po00308" jdbcType="INTEGER" property="state"></result>
+        <result column="po00302" jdbcType="VARCHAR" property="date"></result>
+        <association property="approve" javaType="com.yuesheng.pm.entity.FlowApprove">
+            <id column="po00401" property="id" jdbcType="VARCHAR"></id>
+            <result column="po00402" property="flowMessageId" jdbcType="VARCHAR"></result>
+            <result column="po00403" property="courseId" jdbcType="VARCHAR"></result>
+            <result column="po00404" property="staffId" jdbcType="VARCHAR"></result>
+            <result column="po00405" property="acceptStaffId" jdbcType="VARCHAR"></result>
+            <result column="po00406" property="accrptDate" jdbcType="VARCHAR"></result>
+            <result column="po00407" property="readDate" jdbcType="VARCHAR"></result>
+            <result column="po00408" property="approveDate" jdbcType="VARCHAR"></result>
+            <result column="po00410" property="content" jdbcType="VARCHAR"></result>
+            <result column="po00411" property="approveState" jdbcType="INTEGER"></result>
+            <result column="po00418" property="po00418Id" jdbcType="VARCHAR"></result>
+            <association property="attached" javaType="com.yuesheng.pm.entity.MyApproveAttached">
+                <result column="po00708" property="po00708" jdbcType="INTEGER"></result>
+            </association>
+        </association>
+        <association property="initiate" column="po00303"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="sendUser" column="po00404"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <insert id="addMyApprove" parameterType="com.yuesheng.pm.entity.MyApprove">
+        INSERT INTO sdpo006
+        (po00601,po00602,po00603,po00604,po00605,po00611,po00612)
+        VALUES(#{id},#{acceptDate},#{sendPerson},#{name},#{title},#{frameCoding},#{frameId});
+    </insert>
+
+    <select id="getMessageById" resultMap="myApprove" parameterType="String">
+        SELECT * FROM sdpo006 WHERE po00601=#{id};
+    </select>
+
+    <delete id="deleteById">
+        delete from sdpo006 where po00601=#{id}
+    </delete>
+
+    <select id="queryByParam" resultMap="myApprove">
+        select * from sdpo006 where po00602 between #{startDatetime} and #{endDatetime}
+    </select>
+</mapper>

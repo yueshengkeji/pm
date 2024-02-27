@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.SystemLogMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.SystemLog" id="SystemLogMap">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="params" column="params" jdbcType="VARCHAR"/>
+        <result property="ip" column="ip" jdbcType="VARCHAR"/>
+        <result property="method" column="method" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="result" column="result" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="dateCount" type="com.yuesheng.pm.model.DateCount">
+        <id column="date" property="date" jdbcType="VARCHAR"></id>
+        <result column="count" property="count" jdbcType="INTEGER"></result>
+    </resultMap>
+
+    <select id="queryCountByDate" resultMap="dateCount">
+        select count(id) as count,#{date} as date from system_log
+        where substring(datetime,0,11) between #{date} and #{date}
+        group by substring(datetime,0,11)
+    </select>
+
+    <select id="queryCountByGroup" resultMap="dateCount">
+        select count(id) as count,substring(datetime,0,11) as date from system_log
+        group by substring(datetime,0,11)
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SystemLogMap">
+        select
+          id, type, datetime, url, user_id, user_name, params, ip,method,title,result
+        from system_log
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SystemLogMap">
+        select
+          id, type, datetime, url, user_id, user_name, params, ip,method,title,result
+        from system_log
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="SystemLogMap">
+        select
+        id, type, datetime, url, user_id, user_name, params, ip,method,title,result
+        from system_log
+        <where>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="url != null and url != ''">
+                and url = #{url}
+            </if>
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name = #{userName}
+            </if>
+            <if test="params != null and params != ''">
+                and params = #{params}
+            </if>
+            <if test="ip != null and ip != ''">
+                and ip = #{ip}
+            </if>
+            <if test="method != null and method != ''">
+                and method = #{method}
+            </if>
+            <if test="title != null ">
+                and title = #{title}
+            </if>
+        </where>
+    </select>
+    <select id="queryByParam" resultMap="SystemLogMap">
+        select
+        id, type, datetime, url, user_id, user_name, params, ip,method,title,result
+        from system_log
+        <where>
+            <if test="datetime != null and datetime != ''">
+                and datetime LIKE '%'+#{datetime}+'%'
+            </if>
+            <if test="params != null and params != ''">
+                and isnull(user_name,'')+isnull(params,'') LIKE '%'+#{params}+'%'
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="method != null and method != ''">
+                and method = #{method}
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name = #{userName}
+            </if>
+            <if test="url != null and url !=''">
+                and url LIKE #{url}+'%'
+            </if>
+            <if test="title != null and title !=''">
+                and title LIKE #{title}+'%'
+            </if>
+            <if test="result != null and result !=''">
+                and result LIKE #{result}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="queryCountByParam" resultType="Integer">
+        select
+        COUNT(id)
+        from system_log
+        <where>
+            <if test="datetime != null and datetime != ''">
+                and datetime LIKE '%'+#{datetime}+'%'
+            </if>
+            <if test="params != null and params != ''">
+                and isnull(url,'')+isnull(user_name,'')+isnull(params,'') LIKE '%'+#{params}+'%'
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into system_log(type, datetime, url, user_id, user_name, params, ip,title,result,method)
+        values (#{type}, #{datetime}, #{url}, #{userId}, #{userName}, #{params}, #{ip},#{title},#{result},#{method})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update system_log
+        <set>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="datetime != null and datetime != ''">
+                datetime = #{datetime},
+            </if>
+            <if test="url != null and url != ''">
+                url = #{url},
+            </if>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="params != null and params != ''">
+                params = #{params},
+            </if>
+            <if test="ip != null and ip != ''">
+                ip = #{ip},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from system_log where id = #{id}
+    </delete>
+    <!--通过时间删除-->
+    <delete id="deleteByDate">
+        delete from system_log where datetime between #{start} and #{end}
+    </delete>
+
+</mapper>

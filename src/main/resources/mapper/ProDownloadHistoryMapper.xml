@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProDownloadHistoryMapper">
+    <resultMap id="downloadHistory" type="com.yuesheng.pm.entity.ProDownloadHistory">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="datetime" property="dateTime" jdbcType="VARCHAR"></result>
+        <result column="img" property="img" jdbcType="VARCHAR"></result>
+        <association property="procurement" javaType="com.yuesheng.pm.entity.Procurement">
+            <id column="pro_id" property="id" jdbcType="VARCHAR"></id>
+            <result column="pm01302" property="pmDate" jdbcType="VARCHAR"></result>
+            <result column="pm01303" property="pmNumber" jdbcType="VARCHAR"></result>
+            <result column="pm01316" property="tax" jdbcType="DECIMAL"></result>
+            <result column="pm01307" property="remark" jdbcType="DECIMAL"></result>
+            <result column="pm01308" property="voucherDate" jdbcType="VARCHAR"></result>
+            <result column="pm01314" property="state" jdbcType="INTEGER"></result>
+            <result column="pm01321" property="putState" jdbcType="TINYINT"></result>
+            <result column="pm01318" property="isContract" jdbcType="TINYINT"></result>
+            <result column="pm01324" property="isInvoice" jdbcType="VARCHAR"></result>
+            <result column="pm01322" property="saleMoney" jdbcType="VARCHAR"></result>
+            <association property="staff" column="pm01310"
+                         select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+            <association property="voucherName" javaType="String" column="pm01310"
+                         select="com.yuesheng.pm.mapper.StaffMapper.getNameByCoding">
+                <result javaType="String" jdbcType="VARCHAR" property="name" column="pj00402"></result>
+            </association>
+            <association property="auditName" column="pm01313"
+                         select="com.yuesheng.pm.mapper.StaffMapper.getNameByCoding">
+                <result property="name" javaType="String" jdbcType="VARCHAR" column="pj00402"></result>
+            </association>
+            <association property="company" column="pm01304"
+                         select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+            <association property="contract" column="pm01305"
+                         select="com.yuesheng.pm.mapper.ContractMapper.getContractById"></association>
+            <association property="city" column="pm01306"
+                         select="com.yuesheng.pm.mapper.CityMapper.getCityById"></association>
+        </association>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <id column="staff_id" jdbcType="VARCHAR" property="id"></id>
+            <result column="pj00402" property="name" jdbcType="VARCHAR"></result>
+            <result column="pj00403" property="sex" jdbcType="TINYINT"></result>
+            <result column="pj00421" property="coding" jdbcType="VARCHAR"></result>
+            <result column="pj00417" property="sectionCoding" jdbcType="VARCHAR"></result>
+            <result column="pj00420" property="tel" jdbcType="VARCHAR"></result>
+            <result column="pj00441" property="email" jdbcType="VARCHAR"></result>
+            <result property="lastLogin" column="pj00411" jdbcType="VARCHAR"></result>
+            <result property="isLeader" column="pj00305" jdbcType="VARCHAR"></result>
+            <result column="ey00313" property="userName" jdbcType="VARCHAR"></result>
+            <result column="pj00426" property="isLogin" jdbcType="TINYINT"></result>
+        </association>
+    </resultMap>
+    <insert id="insert">
+        insert into pro_download_history (id,pro_id,datetime,staff_id,state,img)
+        values (#{id},#{procurement.id},#{dateTime},#{staff.id},#{state},#{img})
+    </insert>
+    <update id="update">
+        update pro_download_history set state=#{state},staff_id=#{staff.id},datetime=#{dateTime} where pro_id=#{procurement.id}
+    </update>
+    <delete id="delete">
+        delete from pro_download_history
+        where pro_id=#{proId}
+    </delete>
+    <select id="queryByProId" resultMap="downloadHistory">
+        select * from pro_download_history where pro_id=#{proId}
+    </select>
+</mapper>

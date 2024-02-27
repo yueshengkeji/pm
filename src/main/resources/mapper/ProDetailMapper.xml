@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProDetailMapper">
+    <resultMap id="proDetail" type="com.yuesheng.pm.entity.ProDetail">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="company_name" property="comName" jdbcType="VARCHAR"></result>
+        <result column="sale_person" property="saleName" jdbcType="VARCHAR"></result>
+        <result column="tel" property="tel" jdbcType="VARCHAR"></result>
+        <result column="settle_type" property="settleType" jdbcType="VARCHAR"></result>
+        <result column="tax" property="tax" jdbcType="DECIMAL"></result>
+        <result column="series" property="series" jdbcType="VARCHAR"></result>
+        <result column="year_owe" property="yearOwe" jdbcType="DECIMAL"></result>
+        <result column="end_owe" property="endOwe" jdbcType="DECIMAL"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <result column="date" property="date" jdbcType="VARCHAR"></result>
+        <result column="last_date" property="lastDate" jdbcType="VARCHAR"></result>
+        <result column="type" property="type" jdbcType="INTEGER"></result>
+        <result column="year_key" property="year" jdbcType="VARCHAR"></result>
+        <result column="true_money" property="trueMoney" jdbcType="DECIMAL"></result>
+        <result column="owe_bill_money" property="oweBillMoney" jdbcType="DECIMAL"></result>
+        <result column="company_belong" property="companyBelong" jdbcType="INTEGER"></result>
+        <result column="owe_money" property="yearOweFinance" jdbcType="DECIMAL"></result>
+        <result column="year_bill" property="yearBillFinance" jdbcType="DECIMAL"></result>
+        <result column="year_pro" property="yearPro" jdbcType="DECIMAL"></result>
+        <result column="yet_money" property="yetMoney" jdbcType="DECIMAL"></result>
+        <result column="put_money" property="putMoney" jdbcType="DECIMAL"></result>
+        <result column="bill_money" property="billMoney" jdbcType="DECIMAL"></result>
+        <result column="paper_owe" property="paperOwe" jdbcType="DECIMAL"></result>
+        <result column="sub_series" property="subjectSeries" jdbcType="VARCHAR"></result>
+<!--        <association property="yearPro" column="id"-->
+<!--                     select="com.yuesheng.pm.mapper.ProPutDetailMapper.getProMoneySumByMain"></association>-->
+<!--        <association property="yetMoney" column="id"-->
+<!--                     select="com.yuesheng.pm.mapper.ProDetailPayMapper.getPayMoneyByMain"></association>-->
+<!--        <association property="putMoney" column="id"-->
+<!--                     select="com.yuesheng.pm.mapper.ProPutDetailMapper.getPutMoneySumByMain"></association>-->
+<!--        <association property="billMoney" column="id"-->
+<!--                     select="com.yuesheng.pm.mapper.ProDetailPayMapper.getBillMoneyByMain"></association>-->
+<!--        <association property="paperOwe" column="id"-->
+<!--                     select="com.yuesheng.pm.mapper.ProDetailMoneyMapper.getMoneySumByMainId"></association>-->
+        <association property="company" javaType="com.yuesheng.pm.entity.Company">
+            <id column="company_id" property="id" jdbcType="VARCHAR"></id>
+        </association>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <id column="staff" property="id" jdbcType="VARCHAR"></id>
+        </association>
+
+    </resultMap>
+
+    <update id="updateYearOweAndBill">
+        update pro_detail
+        <set>
+            <if test="yearOwe != null">
+                year_owe=#{yearOwe},
+            </if>
+            <if test="yearBillFinance != null">
+                year_bill=#{yearBillFinance},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <insert id="addDetail">
+        INSERT INTO pro_detail (id,company_id,company_name,sale_person,tel,settle_type,tax,series,year_owe,end_owe,remark,date,last_date,last_staff,staff,type,year_key,company_belong,year_bill)
+        VALUES(#{id},#{company.id},#{comName},#{saleName},#{tel},#{settleType},#{tax},#{series},#{yearOwe},#{endOwe},#{remark},#{date},#{date},#{staff.id},
+        #{staff.id},#{type},#{year},#{companyBelong},#{yearBillFinance})
+    </insert>
+    <update id="updateRemark">
+        UPDATE pro_detail SET remark=#{remark} WHERE id=#{id}
+    </update>
+    <update id="updateSaleName">
+        UPDATE pro_detail SET sale_name=#{saleName} WHERE id=#{id}
+    </update>
+    <update id="updateSaleTel">
+        UPDATE pro_detail SET tel=#{tel} WHERE id=#{id}
+    </update>
+    <update id="updateTax">
+        UPDATE pro_detail SET tax=#{tax} WHERE id=#{id}
+    </update>
+    <update id="updateSex">
+        UPDATE pro_detail SET type=#{type} WHERE id=#{id}
+    </update>
+    <update id="updateYearOwe">
+        UPDATE pro_detail SET year_owe=#{money} WHERE id=#{id}
+    </update>
+    <update id="updateEndOwe">
+        UPDATE pro_detail SET end_owe=#{money} WHERE id=#{id}
+    </update>
+    <update id="updatePaper">
+        UPDATE pro_detail SET paper_owe=#{money} WHERE id=#{id}
+    </update>
+    <update id="updateLastMsg">
+        UPDATE pro_detail SET last_date=#{lastDate},last_staff=#{staffId} WHERE id=#{id}
+    </update>
+
+    <update id="updateProAndPutMoney">
+        UPDATE pro_detail SET year_pro=#{yearPro},put_money=#{putMoney} WHERE id=#{id}
+    </update>
+    <update id="updatePayAndBillMoney">
+        UPDATE pro_detail SET yet_money=#{yetMoney},bill_money=#{billMoney} WHERE id=#{id}
+    </update>
+    <update id="updateYearPro">
+        UPDATE pro_detail SET year_pro=#{yearPro} WHERE id=#{id}
+    </update>
+    <update id="updatePutMoney">
+        UPDATE pro_detail SET put_money=#{putMoney} WHERE id=#{id}
+    </update>
+    <update id="updateBillMoney">
+        UPDATE pro_detail SET bill_money=#{billMoney} WHERE id=#{id}
+    </update>
+    <update id="updateYetMoney">
+        UPDATE pro_detail SET yet_money=#{yetMoney} WHERE id=#{id}
+    </update>
+
+    <update id="updateDetail">
+        UPDATE pro_detail SET sale_person=#{saleName},
+        tel=#{tel},settle_type=#{settleType},tax=#{tax},year_owe=#{yearOwe},remark=#{remark},
+        last_date=#{lastDate},last_staff=#{lastStaff.id},type=#{type},true_money=#{trueMoney},
+        owe_bill_money=#{oweBillMoney} WHERE id=#{id}
+    </update>
+    <update id="updateMoney">
+        UPDATE pro_detail
+        <set>
+            <if test="yearOwe != null">
+                year_owe=#{yearOwe},
+            </if>
+            <if test="billMoney != null">
+                owe_bill_money=#{oweBillMoney},
+            </if>
+            <if test="trueMoney != null">
+                true_money=#{trueMoney},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <update id="updateDate">
+        UPDATE pro_detail SET date=#{date} where id=#{id}
+    </update>
+    <delete id="deleteDetail">
+        DELETE FROM pro_detail WHERE id=#{id}
+    </delete>
+    <select id="getDetailByYear" resultMap="proDetail">
+        SELECT a.*,b.owe_money FROM pro_detail AS a
+         LEFT JOIN pro_detail_owe AS b ON a.id=b.pro_detail_id AND b.type=1 WHERE a.year_key=#{year} ORDER BY a.date ASC
+    </select>
+    <select id="getDetailByParam" resultMap="proDetail">
+        SELECT a.*,b.owe_money,c.owe_money as year_bill_money FROM pro_detail AS a
+        LEFT JOIN pro_detail_owe AS b ON a.id=b.pro_detail_id AND b.type=1
+        LEFT JOIN pro_detail_owe AS c ON a.id=c.pro_detail_id AND c.type=0
+        WHERE a.year_key=#{year}
+        <if test="str != null">
+            AND a.company_name+a.sale_person+a.tel+a.settle_type+convert(varchar(10),a.tax)+a.series+a.remark LIKE
+            '%'+#{str}+'%'
+        </if>
+        <if test="type != null">
+            AND a.company_belong=#{type}
+        </if>
+        ORDER BY a.date ASC
+    </select>
+    <select id="getDetailByParam" resultMap="proDetail" databaseId="mysql">
+        SELECT a.*,b.owe_money,c.owe_money as year_bill_money FROM pro_detail AS a
+        LEFT JOIN pro_detail_owe AS b ON a.id=b.pro_detail_id AND b.type=1
+        LEFT JOIN pro_detail_owe AS c ON a.id=c.pro_detail_id AND c.type=0
+        WHERE a.year_key=#{year}
+        <if test="str != null">
+            AND concat(a.company_name,a.sale_person,a.tel,a.settle_type,a.tax,a.series,a.remark) LIKE
+            concat('%',#{str},'%')
+        </if>
+        <if test="type != null">
+            AND a.company_belong=#{type}
+        </if>
+        ORDER BY a.date ASC
+    </select>
+
+    <select id="getDetailByParamV2" resultMap="proDetail">
+        SELECT a.* FROM pro_detail AS a
+        <where>
+            <if test="year != null">
+                and year_key=#{year}
+            </if>
+            <if test="str != null">
+                AND a.company_name+a.sale_person+a.tel+a.settle_type+convert(varchar(10),a.tax)+a.series+a.remark LIKE
+                '%'+#{str}+'%'
+            </if>
+            <if test="type != null">
+                AND a.company_belong=#{type}
+            </if>
+            <if test="companyBelong != null">
+                and company_belong=#{companyBelong}
+            </if>
+        </where>
+    </select>
+    <select id="getDetailByParamV2" resultMap="proDetail" databaseId="mysql">
+        SELECT a.* FROM pro_detail AS a
+        <where>
+            <if test="year != null">
+                and year_key=#{year}
+            </if>
+            <if test="str != null">
+                AND concat(a.company_name,a.sale_person,a.tel,a.settle_type,a.tax,a.series,a.remark)
+                   LIKE concat('%',#{str},'%')
+            </if>
+            <if test="type != null">
+                AND a.company_belong=#{type}
+            </if>
+            <if test="companyBelong != null">
+                and company_belong=#{companyBelong}
+            </if>
+        </where>
+    </select>
+
+    <select id="getDetailCountByParam" resultType="Integer">
+        SELECT COUNT(a.company_id) FROM pro_detail AS a
+        LEFT JOIN pro_detail_owe AS b ON a.id=b.pro_detail_id AND b.type=1 WHERE a.year_key=#{year}
+        <if test="str != null">
+            AND a.company_name+a.sale_person+a.tel+a.settle_type+convert(varchar(10),a.tax)+a.series+a.remark LIKE
+            '%'+#{str}+'%'
+        </if>
+
+        <if test="type != null">
+            AND a.company_belong=#{type}
+        </if>
+    </select>
+    <select id="getDetailCountByParam" resultType="Integer" databaseId="mysql">
+        SELECT COUNT(a.company_id) FROM pro_detail AS a
+        LEFT JOIN pro_detail_owe AS b ON a.id=b.pro_detail_id AND b.type=1 WHERE a.year_key=#{year}
+        <if test="str != null">
+            AND concat(a.company_name,a.sale_person,a.tel,a.settle_type,a.tax,a.series,a.remark)
+                    LIKE concat('%',#{str},'%')
+        </if>
+
+        <if test="type != null">
+            AND a.company_belong=#{type}
+        </if>
+    </select>
+    <select id="companyExist" resultType="String">
+        SELECT company_id FROM pro_detail WHERE (company_id=#{companyId} OR company_name=#{companyName}) AND year_key=#{year} AND company_belong=#{companyBelong}
+    </select>
+    <select id="companyExistDetailId" resultType="String">
+        SELECT id FROM pro_detail WHERE (company_id=#{companyId} OR company_name=#{companyName}) AND year_key=#{newYear} AND company_belong=#{companyBelong}
+    </select>
+    <select id="getYearMoney" resultType="java.lang.Double">
+        SELECT year_owe FROM pro_detail WHERE id=#{id}
+    </select>
+    <select id="getDetailById" resultMap="proDetail">
+        SELECT a.*,b.owe_money FROM pro_detail AS a
+         LEFT JOIN pro_detail_owe AS b ON a.id=b.pro_detail_id AND b.type=1
+         WHERE a.id=#{id}
+    </select>
+    <select id="getDetailByCompany" resultMap="proDetail">
+        select * from pro_detail where company_id=#{companyId} and year_key=#{year}
+    </select>
+    <select id="getDetailByCompanyBelong" resultMap="proDetail">
+        select * from pro_detail where company_id=#{companyId} and year_key=#{year} and company_belong=#{companyBelong}
+    </select>
+    <update id="companyMerge">
+        update pro_detail_c set pro_detail_id=#{newProDetail} where pro_detail_id=#{oldProDetail}
+        update pro_detail_dp set pro_detail_id=#{newProDetail} where pro_detail_id=#{oldProDetail}
+        update pro_detail_money set pro_detail_id=#{newProDetail} where pro_detail_id=#{oldProDetail}
+        update pro_detail_owe set pro_detail_id=#{newProDetail} where pro_detail_id=#{oldProDetail}
+        update pro_detail_pay set pro_detail_id=#{newProDetail} where pro_detail_id=#{oldProDetail}
+    </update>
+
+    <update id="updateSubjects">
+        update pro_detail set sub_series=#{subSeries} where id=#{id}
+    </update>
+</mapper>

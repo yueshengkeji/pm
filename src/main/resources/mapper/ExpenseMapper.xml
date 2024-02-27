@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ExpenseMapper">
+    <resultMap id="Expense" type="com.yuesheng.pm.entity.Expense">
+        <result property="id" column="id"></result>
+        <result property="project" column="project"></result>
+        <result property="projectId" column="project_id"></result>
+        <result property="totalMoney" column="total_money"></result>
+        <result property="remark" column="remark"></result>
+        <result property="applyDate" column="apply_date"></result>
+        <result property="createDate" column="create_date"></result>
+        <result property="status" column="status"></result>
+        <association property="staff" column="staff"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <update id="update">
+        update expense
+        <set>
+            <if test="project != null">
+                project=#{project},
+            </if>
+            <if test="projectId != null">
+                project_id=#{projectId},
+            </if>
+            <if test="totalMoney != null">
+                total_money=#{totalMoney},
+            </if>
+            <if test="remark != null">
+                remark=#{remark},
+            </if>
+            <if test="applyDate != null">
+                apply_date=#{applyDate},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.Expense">
+        insert into expense
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="id != null">id,</if>
+            <if test="project != null">project,</if>
+            <if test="projectId != null">project_id,</if>
+            <if test="totalMoney != null">total_money,</if>
+            <if test="remark != null">remark,</if>
+            <if test="applyDate != null">apply_date,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="staff != null">staff,</if>
+        </trim>
+        <trim prefix="values (" suffixOverrides="," suffix=")">
+            <if test="id != null">#{id},</if>
+            <if test="project != null">#{project},</if>
+            <if test="projectId != null">#{projectId},</if>
+            <if test="totalMoney != null">#{totalMoney},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="applyDate != null">#{applyDate},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="staff != null">#{staff.id},</if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="string">
+        delete from expense where id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="Expense">
+        select * from expense where id = #{id}
+    </select>
+
+    <select id="list" resultMap="Expense">
+        select * from expense
+        <where>
+            <if test="staff != null">
+                AND staff = #{staff}
+            </if>
+            <if test="str != null">
+                AND isnull(project,'') + isnull(remark,'') LIKE '%'+#{str}+'%'
+            </if>
+            <if test="searchProjectName != null">
+                AND project = #{searchProjectName}
+            </if>
+            <if test="start != null and end != null">
+                AND apply_date BETWEEN #{start} AND #{end}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateState">
+        update expense set status=#{status} where id=#{id}
+    </update>
+
+</mapper>

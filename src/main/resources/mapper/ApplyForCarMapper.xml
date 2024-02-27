@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ApplyForCarMapper">
+    <resultMap id="ApplyForCar" type="com.yuesheng.pm.entity.ApplyForCar">
+        <result property="useTime" column="use_time" jdbcType="VARCHAR"></result>
+        <result property="useTimeDetailed" column="use_time_detailed"></result>
+        <result property="projectName" column="project_name"></result>
+        <result property="projectId" column="project_id"></result>
+        <result property="remark" column="remark"></result>
+        <result property="direction" column="direction"></result>
+        <result property="driver" column="driver"></result>
+        <result property="checkState" column="check_state"></result>
+        <result property="applicantId" column="applicant_id"></result>
+        <result property="runState" column="run_state"></result>
+        <result property="mileageStart" column="mileage_start"></result>
+        <result property="mileageEnd" column="mileage_end"></result>
+        <result property="driverId" column="driver_id"></result>
+        <result property="startTime" column="start_time" jdbcType="VARCHAR"></result>
+        <result property="endTime" column="end_time" jdbcType="VARCHAR"></result>
+        <result property="remark2" column="remark2"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="markId" column="mark_id"></result>
+        <result property="returnTime" column="return_time"></result>
+    </resultMap>
+
+    <resultMap id="StatisticByProject" type="com.yuesheng.pm.entity.StatisticByProject">
+        <result property="projectId" column="project_id"></result>
+        <result property="projectName" column="project_name"></result>
+        <result property="count" column="count"></result>
+    </resultMap>
+
+    <resultMap id="StatisticByDriver" type="com.yuesheng.pm.entity.StatisticByDriver">
+        <result property="driverId" column="driver_id"></result>
+        <result property="driverName" column="driver_name"></result>
+        <result property="count" column="count"></result>
+    </resultMap>
+
+    <select id="selectByParam" resultMap="ApplyForCar">
+        select * from apply_for_car
+        where use_time BETWEEN #{begin} AND #{end}
+        <if test="driverId != null">
+            AND driver_id = #{driverId}
+        </if>
+        <if test="projectId != null">
+            AND project_id = #{projectId}
+        </if>
+        <if test="searchText != null">
+            AND
+            use_time + project_name + remark + direction + isnull(driver,'') + check_state
+            LIKE '%' + #{searchText} + '%'
+        </if>
+        <if test="staffId != null">
+            AND applicant_id = #{staffId}
+        </if>
+        ${order}
+    </select>
+
+    <select id="selectByParam" resultMap="ApplyForCar" databaseId="mysql">
+        select * from apply_for_car
+        where use_time BETWEEN #{begin} AND #{end}
+        <if test="driverId != null">
+            AND driver_id = #{driverId}
+        </if>
+        <if test="projectId != null">
+            AND project_id = #{projectId}
+        </if>
+        <if test="searchText != null">
+            AND concat(use_time,project_name,remark,direction,driver,check_state)
+            LIKE concat('%',#{searchText},'%')
+        </if>
+        <if test="staffId != null">
+            AND applicant_id = #{staffId}
+        </if>
+        ${order}
+    </select>
+
+    <select id="getCountByParam" resultType="integer">
+        select count(id) from apply_for_car
+        where use_time BETWEEN #{begin} AND #{end}
+        <if test="driverId != null">
+            AND driver_id = #{driverId}
+        </if>
+        <if test="projectId != null">
+            AND project_id = #{projectId}
+        </if>
+        <if test="searchText != null">
+            AND
+            use_time + project_name + remark + direction + isnull(driver,'') + check_state
+            LIKE '%' + #{searchText} + '%'
+        </if>
+        <if test="staffId != null">
+            AND applicant_id=#{staffId}
+        </if>
+    </select>
+
+    <select id="getCountByParam" resultType="integer" databaseId="mysql">
+        select count(id) from apply_for_car
+        where use_time BETWEEN #{begin} AND #{end}
+        <if test="driverId != null">
+            AND driver_id = #{driverId}
+        </if>
+        <if test="projectId != null">
+            AND project_id = #{projectId}
+        </if>
+        <if test="searchText != null">
+            AND concat(use_time,project_name,remark,direction,driver,check_state)
+            LIKE concat('%',#{searchText},'%')
+        </if>
+        <if test="staffId != null">
+            AND applicant_id=#{staffId}
+        </if>
+    </select>
+
+    <select id="selectByParamNoPage" resultMap="ApplyForCar">
+        select * from apply_for_car
+        where use_time BETWEEN #{begin} AND #{end}
+        <if test="driverId != null">
+            AND driver_id = #{driverId}
+        </if>
+        <if test="projectId != null">
+            AND project_id = #{projectId}
+        </if>
+        <if test="searchText != null">
+            AND
+            use_time + project_name + remark + direction + isnull(driver,'') + check_state
+            LIKE '%' + #{searchText} + '%'
+        </if>
+        <if test="staffId != null">
+            AND applicant_id=#{staffId}
+        </if>
+        ${order}
+    </select>
+
+    <select id="selectByParamNoPage" resultMap="ApplyForCar" databaseId="mysql">
+        select * from apply_for_car
+        where use_time BETWEEN #{begin} AND #{end}
+        <if test="driverId != null">
+            AND driver_id = #{driverId}
+        </if>
+        <if test="projectId != null">
+            AND project_id = #{projectId}
+        </if>
+        <if test="searchText != null">
+            AND concat(use_time,project_name,remark,direction,driver,check_state)
+            LIKE concat('%',#{searchText},'%')
+        </if>
+        <if test="staffId != null">
+            AND applicant_id=#{staffId}
+        </if>
+        ${order}
+    </select>
+
+    <select id="selectById" resultMap="ApplyForCar">
+        select * from apply_for_car
+        where id = #{id}
+    </select>
+    <select id="selectByMarkId" resultMap="ApplyForCar">
+        select * from apply_for_car
+        where mark_id = #{markId}
+    </select>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.ApplyForCar">
+        insert into apply_for_car
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="useTime != null">use_time,
+            </if>
+            <if test="useTimeDetailed != null">use_time_detailed,
+            </if>
+            <if test="projectName != null">project_name,
+            </if>
+            <if test="remark != null">remark,
+            </if>
+            <if test="remark2 != null">remark2,
+            </if>
+            <if test="direction != null">direction,
+            </if>
+            <if test="driver != null">driver,
+            </if>
+            <if test="driverId != null">driver_id,
+            </if>
+            <if test="checkState != null">check_state,
+            </if>
+            <if test="runState != null">run_state,
+            </if>
+            <if test="applicantId != null">applicant_id,
+            </if>
+            <if test="startTime != null">start_time,
+            </if>
+            <if test="endTime != null">end_time,
+            </if>
+            <if test="mileageStart != null">mileage_start,
+            </if>
+            <if test="mileageEnd != null">mileage_end,
+            </if>
+            <if test="createTime != null">create_time,
+            </if>
+            <if test="markId != null">mark_id,
+            </if>
+            <if test="projectId != null">project_id,
+            </if>
+            <if test="returnTime != null">return_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="useTime != null">#{useTime},
+            </if>
+            <if test="useTimeDetailed != null">#{useTimeDetailed},
+            </if>
+            <if test="projectName != null">#{projectName},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+            <if test="remark2 != null">#{remark2},
+            </if>
+            <if test="direction != null">#{direction},
+            </if>
+            <if test="driver != null">#{driver},
+            </if>
+            <if test="driverId != null">#{driverId},
+            </if>
+            <if test="checkState != null">#{checkState},
+            </if>
+            <if test="runState != null">#{runState},
+            </if>
+            <if test="applicantId != null">#{applicantId},
+            </if>
+            <if test="startTime != null">#{startTime},
+            </if>
+            <if test="endTime != null">#{endTime},
+            </if>
+            <if test="mileageStart != null">#{mileageStart},
+            </if>
+            <if test="mileageEnd != null">#{mileageEnd},
+            </if>
+            <if test="createTime != null">#{createTime},
+            </if>
+            <if test="markId != null">#{markId},
+            </if>
+            <if test="projectId != null">#{projectId},
+            </if>
+            <if test="returnTime != null">#{returnTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.ApplyForCar">
+        update apply_for_car
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="useTime != null">use_time = #{useTime},
+            </if>
+            <if test="useTimeDetailed != null">use_time_detailed = #{useTimeDetailed},
+            </if>
+            <if test="projectName != null">project_name = #{projectName},
+            </if>
+            <if test="remark != null">remark = #{remark},
+            </if>
+            <if test="remark2 != null">remark2 = #{remark2},
+            </if>
+            <if test="direction != null">direction = #{direction},
+            </if>
+            <if test="driver != null">driver = #{driver},
+            </if>
+            <if test="driverId != null">driver_id = #{driverId},
+            </if>
+            <if test="checkState != null">check_state = #{checkState},
+            </if>
+            <if test="runState != null">run_state = #{runState},
+            </if>
+            <if test="applicantId != null">applicant_id = #{applicantId},
+            </if>
+            <if test="startTime != null">start_time = #{startTime},
+            </if>
+            <if test="endTime != null">end_time = #{endTime},
+            </if>
+            <if test="mileageStart != null">mileage_start = #{mileageStart},
+            </if>
+            <if test="mileageEnd != null">mileage_end = #{mileageEnd},
+            </if>
+            <if test="createTime != null">create_time = #{createTime},
+            </if>
+            <if test="projectId != null">project_id = #{projectId},
+            </if>
+            <if test="markId != null">mark_id = #{markId},
+            </if>
+            <if test="returnTime != null">return_time = #{returnTime},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="integer">
+        delete from apply_for_car
+        where id = #{id}
+    </delete>
+
+    <select id="selectAll" resultMap="ApplyForCar">
+        select project_id,project_name from apply_for_car
+    </select>
+
+    <select id="selectByDate" resultMap="StatisticByDriver">
+        select a.driver_id,a.driver_name,a.count from (select driver_id 'driver_id',driver 'driver_name',count(id) 'count' from apply_for_car
+        where use_time BETWEEN #{startDate} AND #{endDate}
+        group by driver_id,driver) a
+    </select>
+
+    <select id="selectByDateCounts" resultType="integer">
+        select count(a.driver_id) from (select driver_id 'driver_id',driver 'driver_name',count(id) 'count' from apply_for_car
+        where use_time BETWEEN #{startDate} AND #{endDate}
+        group by driver_id,driver) a
+    </select>
+
+    <select id="selectByGroup" resultMap="StatisticByProject">
+        select a.project_id,a.project_name,a.count from (select project_id 'project_id',project_name 'project_name',count(id) 'count' from apply_for_car
+                      group by project_id, project_name) a
+    </select>
+
+    <select id="selectByGroupCounts" resultType="integer">
+        select count(a.project_id) from (select project_id 'project_id',project_name 'project_name',count(id) 'count' from apply_for_car
+                      group by project_id, project_name) a
+    </select>
+
+    <update id="setCheckState">
+        update apply_for_car
+        set check_state = '已审核'
+        where id = #{id}
+    </update>
+
+    <update id="setDriver">
+        update apply_for_car
+        set driver_id = #{driverId},
+        driver = #{driverName}
+        where id = #{id}
+    </update>
+
+    <select id="getDriverTask" resultMap="ApplyForCar">
+        select * from apply_for_car
+        where driver_id = #{driverId}
+        and run_state != '已到达'
+        and check_state = '已审核'
+    </select>
+
+    <select id="getDriverTaskCounts" resultType="integer">
+        select count(*) from apply_for_car
+        where driver_id = #{driverId}
+        and run_state != '已到达'
+        and check_state = '已审核'
+    </select>
+
+    <select id="getDriverTaskDone" resultMap="ApplyForCar">
+        select * from apply_for_car
+        where driver_id = #{driverId}
+        and run_state = '已到达'
+        and check_state = '已审核'
+    </select>
+
+    <select id="getDriverTaskDoneCounts" resultType="integer">
+        select count(*) from apply_for_car
+        where driver_id = #{driverId}
+        and run_state = '已到达'
+        and check_state = '已审核'
+    </select>
+
+    <select id="getTaskToDo" resultMap="ApplyForCar">
+        select * from apply_for_car
+        where run_state != '已到达'
+        and check_state = '已审核'
+    </select>
+</mapper>

@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ApplyMapper">
+    <resultMap id="applyJanl" type="com.yuesheng.pm.entity.Apply">
+        <id column="pm03401" javaType="String" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm03402" javaType="String" property="projectid" jdbcType="VARCHAR"></result>
+        <result column="pm03403" javaType="String" property="serialNumber" jdbcType="VARCHAR"></result>
+        <result column="pm03404" javaType="byte" property="audit" jdbcType="TINYINT"></result>
+        <result column="pm03406" property="prepareDate" jdbcType="VARCHAR"></result>
+        <result column="pm03408" property="state" jdbcType="INTEGER"></result>
+        <result column="pm03414" property="date" jdbcType="VARCHAR"></result>
+        <result column="pm03415" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="pm03416" property="pm03416" jdbcType="VARCHAR"></result>
+        <result column="pm03422" property="notifyDate" jdbcType="VARCHAR"></result>
+        <result column="pm03423" property="notifyStaffCoding" jdbcType="VARCHAR"></result>
+        <result column="pm03409" property="remark" jdbcType="VARCHAR"></result>
+        <association property="project" column="pm03402"
+                     select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+        <association property="staff" column="pm03407"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="section" column="pm03410"
+                     select="com.yuesheng.pm.mapper.SectionMapper.getSevtionByid"></association>
+        <association property="city" column="pm03417"
+                     select="com.yuesheng.pm.mapper.CityMapper.getCityById"></association>
+        <!--<collection property="applyMaterialList" column="id" select="com.yuesheng.pm.mapper.ApplyMaterialMapper.getApplyMaterials"></collection>-->
+    </resultMap>
+    <resultMap id="apply" type="com.yuesheng.pm.entity.Apply">
+        <id column="pm03401" javaType="String" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm03402" javaType="String" property="projectid" jdbcType="VARCHAR"></result>
+        <result column="pm03403" javaType="String" property="serialNumber" jdbcType="VARCHAR"></result>
+        <result column="pm03404" javaType="byte" property="audit" jdbcType="TINYINT"></result>
+        <result column="pm03406" property="prepareDate" jdbcType="VARCHAR"></result>
+        <result column="pm03408" property="state" jdbcType="INTEGER"></result>
+        <result column="pm03414" property="date" jdbcType="VARCHAR"></result>
+        <result column="pm03409" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pm03415" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="pm03416" property="pm03416" jdbcType="VARCHAR"></result>
+        <result column="pm03422" property="notifyDate" jdbcType="VARCHAR"></result>
+        <result column="pm03423" property="notifyStaffCoding" jdbcType="VARCHAR"></result>
+        <association property="project" column="pm03402"
+                     select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+        <association property="staff" column="pm03407"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="section" column="pm03410"
+                     select="com.yuesheng.pm.mapper.SectionMapper.getSevtionByid"></association>
+        <association property="applyUnit" column="pm03411"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="city" column="pm03417"
+                     select="com.yuesheng.pm.mapper.CityMapper.getCityById"></association>
+    </resultMap>
+    <resultMap id="ap" type="com.yuesheng.pm.entity.Apply">
+        <id column="pm03401" javaType="String" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm03402" javaType="String" property="projectid" jdbcType="VARCHAR"></result>
+        <result column="pm03403" javaType="String" property="serialNumber" jdbcType="VARCHAR"></result>
+        <result column="pm03404" javaType="byte" property="audit" jdbcType="TINYINT"></result>
+        <result column="pm03406" property="prepareDate" jdbcType="VARCHAR"></result>
+        <result column="pm03408" property="state" jdbcType="INTEGER"></result>
+        <result column="pm03414" property="date" jdbcType="VARCHAR"></result>
+        <result column="pm03409" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pm03415" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="pm03416" property="pm03416" jdbcType="VARCHAR"></result>
+        <association property="staff" column="pm03407"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+    </resultMap>
+
+    <select id="getApplyByProject" resultMap="ap">
+        SELECT * FROM sdpm034 WHERE pm03402=#{projectId}
+    </select>
+
+    <select id="getApplyList" resultMap="apply">
+        SELECT * FROM sdpm034 WHERE pm03404 = 1 AND (pm03408 = 0 or pm03408 = 1) ORDER BY pm03406 DESC
+    </select>
+
+    <select id="getApplysByDate" resultMap="applyJanl" parameterType="java.util.Map">
+        SELECT * FROM sdpm034 WHERE pm03404=1 AND pm03406 BETWEEN #{map.start} and #{map.end}
+    </select>
+    <select id="getApplyListByParams" resultMap="apply">
+        select distinct pm1.* from sdpm034 as pm1
+        LEFT JOIN sdpa001 AS a ON pm1.pm03402=a.pa00101
+        LEFT JOIN sdpj004 AS b ON b.pj00421=pm1.pm03407
+        LEFT JOIN sdpm035 AS c ON c.pm03501=pm1.pm03401
+        LEFT JOIN sdpm002 AS c2 ON c2.pm00201=c.pm03503
+        WHERE pm03404 in(${approve})
+        <if test="str != null">
+            AND pm1.pm03403+pm1.pm03409+pm1.pm03414+pm1.pm03417+c.pm03503+c2.pm00202+c2.pm00205+
+            c2.pm00221+a.pa00102+b.pj00402 LIKE '%'+#{str}+'%'
+        </if>
+        <if test="state != null">
+            and pm03408 in(${state})
+        </if>
+        <if test="staffId != null">
+            AND pm03407=#{staffId}
+        </if>
+        <if test="projectId != null">
+            AND pm1.pm03402=#{projectId}
+        </if>
+        <if test="otherSql != null">
+            ${otherSql}
+        </if>
+
+        ${order}
+    </select>
+    <select id="getApplyListByParams" resultMap="apply" databaseId="mysql">
+        select distinct pm1.* from sdpm034 as pm1
+        LEFT JOIN sdpa001 AS a ON pm1.pm03402=a.pa00101
+        LEFT JOIN sdpj004 AS b ON b.pj00421=pm1.pm03407
+        LEFT JOIN sdpm035 AS c ON c.pm03501=pm1.pm03401
+        LEFT JOIN sdpm002 AS c2 ON c2.pm00201=c.pm03503
+        WHERE pm03404 in(${approve})
+        <if test="str != null">
+            AND concat(pm1.pm03403,pm1.pm03409,pm1.pm03414,pm1.pm03417,c.pm03503,c2.pm00202,c2.pm00205,
+            c2.pm00221,a.pa00102,b.pj00402) LIKE concat('%',#{str},'%')
+        </if>
+        <if test="state != null">
+            and pm03408 in(${state})
+        </if>
+        <if test="staffId != null">
+            AND pm03407=#{staffId}
+        </if>
+        <if test="projectId != null">
+            AND pm1.pm03402=#{projectId}
+        </if>
+        <if test="otherSql != null">
+            ${otherSql}
+        </if>
+
+        ${order}
+    </select>
+    <select id="getApplyListByParamsV2" resultMap="apply">
+        select distinct pm1.* from sdpm034 as pm1
+        LEFT JOIN sdpa001 AS a ON pm1.pm03402=a.pa00101
+        LEFT JOIN sdpj004 AS b ON b.pj00421=pm1.pm03407
+        LEFT JOIN sdpm035 AS c ON c.pm03501=pm1.pm03401
+        LEFT JOIN sdpm002 AS c2 ON c2.pm00201=c.pm03503
+        <if test="projectAuth != null">
+            left join project_auth on a.pa00101=project_id
+        </if>
+        WHERE pm03404 in(${approve})
+        <if test="str != null">
+            AND pm1.pm03403+pm1.pm03409+pm1.pm03414+pm1.pm03417+c.pm03503+c2.pm00202+c2.pm00205+
+            c2.pm00221+a.pa00102+b.pj00402 LIKE '%'+#{str}+'%'
+        </if>
+        <if test="state != null">
+            and pm03408 in(${state})
+        </if>
+        <if test="staffId != null">
+            AND pm03407=#{staffId}
+        </if>
+        <if test="projectId != null">
+            AND pm1.pm03402=#{projectId}
+        </if>
+        <if test="start != null">
+            AND pm1.pm03415 between #{start} and #{end}
+        </if>
+        <if test="projectAuth != null">
+            and staff_id=#{projectAuth}
+        </if>
+        <if test="otherSql != null">
+            ${otherSql}
+        </if>
+
+    </select>
+    <select id="getApplyListByParamsV2" resultMap="apply" databaseId="mysql">
+        select distinct pm1.* from sdpm034 as pm1
+        LEFT JOIN sdpa001 AS a ON pm1.pm03402=a.pa00101
+        LEFT JOIN sdpj004 AS b ON b.pj00421=pm1.pm03407
+        LEFT JOIN sdpm035 AS c ON c.pm03501=pm1.pm03401
+        LEFT JOIN sdpm002 AS c2 ON c2.pm00201=c.pm03503
+        <if test="projectAuth != null">
+            left join project_auth on a.pa00101=project_id
+        </if>
+        WHERE pm03404 in(${approve})
+        <if test="str != null">
+            AND concat(pm1.pm03403,pm1.pm03409,pm1.pm03414,pm1.pm03417,c.pm03503,c2.pm00202,c2.pm00205,
+            c2.pm00221,a.pa00102,b.pj00402) LIKE concat('%',#{str},'%')
+        </if>
+        <if test="state != null">
+            and pm03408 in(${state})
+        </if>
+        <if test="staffId != null">
+            AND pm03407=#{staffId}
+        </if>
+        <if test="projectId != null">
+            AND pm1.pm03402=#{projectId}
+        </if>
+        <if test="start != null">
+            AND pm1.pm03415 between #{start} and #{end}
+        </if>
+        <if test="projectAuth != null">
+            and staff_id=#{projectAuth}
+        </if>
+        <if test="otherSql != null">
+            ${otherSql}
+        </if>
+    </select>
+    <select id="getApplyCount" resultType="java.lang.Integer">
+        select COUNT(distinct pm1.pm03401) from sdpm034 as pm1
+        LEFT JOIN sdpa001 AS a ON pm1.pm03402=a.pa00101
+        LEFT JOIN sdpj004 AS b ON b.pj00421=pm1.pm03407
+        LEFT JOIN sdpm035 AS c ON c.pm03501=pm1.pm03401
+        LEFT JOIN sdpm002 AS c2 ON c2.pm00201=c.pm03503
+        WHERE pm03404 in(${approve})
+        <if test="str != null">
+            AND pm1.pm03403+pm1.pm03409+pm1.pm03414+pm1.pm03417+c.pm03503+c2.pm00202+c2.pm00205+
+            c2.pm00221+a.pa00102+b.pj00402 LIKE '%'+#{str}+'%'
+        </if>
+        <if test="state != null">
+            and pm03408 in(${state})
+        </if>
+        <if test="staffId != null">
+            AND pm03407=#{staffId}
+        </if>
+        <if test="projectId != null">
+            AND pm1.pm03402=#{projectId}
+        </if>
+        <if test="otherSql != null">
+            ${otherSql}
+        </if>
+    </select>
+    <select id="getApplyCount" resultType="java.lang.Integer" databaseId="mysql">
+        select COUNT(distinct pm1.pm03401) from sdpm034 as pm1
+        LEFT JOIN sdpa001 AS a ON pm1.pm03402=a.pa00101
+        LEFT JOIN sdpj004 AS b ON b.pj00421=pm1.pm03407
+        LEFT JOIN sdpm035 AS c ON c.pm03501=pm1.pm03401
+        LEFT JOIN sdpm002 AS c2 ON c2.pm00201=c.pm03503
+        WHERE pm03404 in(${approve})
+        <if test="str != null">
+            AND concat(pm1.pm03403,pm1.pm03409,pm1.pm03414,pm1.pm03417,c.pm03503,c2.pm00202,c2.pm00205,
+            c2.pm00221,a.pa00102,b.pj00402) LIKE concat('%',#{str},'%')
+        </if>
+        <if test="state != null">
+            and pm03408 in(${state})
+        </if>
+        <if test="staffId != null">
+            AND pm03407=#{staffId}
+        </if>
+        <if test="projectId != null">
+            AND pm1.pm03402=#{projectId}
+        </if>
+        <if test="otherSql != null">
+            ${otherSql}
+        </if>
+    </select>
+    <update id="updateState" parameterType="map">
+        UPDATE sdpm034 SET pm03408=#{state} WHERE pm03401=#{appId}
+    </update>
+    <select id="getApplyById" resultMap="applyJanl" parameterType="String">
+        SELECT * FROM sdpm034 WHERE pm03401=#{applyId}
+    </select>
+
+    <select id="addApply" resultType="String">
+        insert into sdpm034 values(#{id},#{project.id},#{serialNumber},0,'',#{prepareDate},#{staff.coding},0,#{remark},
+        #{staff.section.id},#{unitid},0,'',#{date},'','',#{address},0,'',0,'','','')
+    </select>
+    <select id="verifySeries" resultType="java.lang.String">
+        SELECT pm03403 FROM sdpm034 WHERE pm03403=#{seriesNumber}
+    </select>
+    <select id="getBySeries" resultMap="applyJanl">
+        SELECT * FROM sdpm034 WHERE pm03403=#{seriesNumber}
+    </select>
+    <delete id="delete">
+        delete
+        from sdpm034
+        where pm03401 = #{id}
+    </delete>
+    <update id="approve">
+        update sdpm034 set
+        pm03405=#{coding},
+        pm03404=#{state},
+        pm03415=#{date},
+        pm03416=#{approveTime}
+        where pm03401=#{id}
+    </update>
+    <update id="updateApproveTime">
+        update sdpm034 set pm03416=#{approveDate} where pm03401=#{id}
+    </update>
+    <update id="updateNotify">
+        update sdpm034 set pm03422=#{notifyDate},pm03423=#{staffCoding}
+        where pm03401=#{id}
+    </update>
+
+    <select id="queryByNotify">
+        select * from sdpm034 where pm03422=#{notifyDate}
+    </select>
+</mapper>

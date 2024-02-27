@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.SalesContractMapper">
+
+    <resultMap id="SalesContract" type="com.yuesheng.pm.entity.SalesContract">
+        <result property="contractId" column="contract_id"></result>
+        <result property="agreementID" column="agreement_id"></result>
+        <result property="agreementName" column="agreement_name"></result>
+        <result property="agreementMoney" column="agreement_money"></result>
+        <result property="signDate" column="sign_date"></result>
+        <result property="companyName" column="company_name"></result>
+        <result property="bankName" column="bank_name"></result>
+        <result property="bankAccount" column="bank_account"></result>
+        <result property="companyAddress" column="company_address"></result>
+        <result property="contactMan" column="contact_man"></result>
+        <result property="phone" column="phone"></result>
+        <result property="jurisdiction" column="jurisdiction"></result>
+        <result property="street" column="street"></result>
+        <result property="remark" column="remark"></result>
+        <result property="registrant" column="registrant"></result>
+        <result property="registrantId" column="registrant_id"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="invoicedMoney" column="invoiced_money"></result>
+        <result property="collectedMoney" column="collected_money"></result>
+        <result property="paymentDays" column="paymentDays"></result>
+        <result property="projectBase" column="projectBase"></result>
+        <result property="pDate" column="pDate"></result>
+        <result property="actualDate" column="actualDate"></result>
+        <result property="retentionMoney" column="retention_money"></result>
+        <result property="retentionPercent" column="retention_percent"></result>
+        <result property="tax" column="tax"></result>
+        <result property="notifyType" column="notify_type"></result>
+        <result property="modifierId" column="modifier_id"></result>
+        <result property="taxID" column="tax_id"></result>
+        <result property="performanceBond" column="performance_bond"></result>
+        <result property="performanceBondPercent" column="performance_bond_percent"></result>
+        <result property="finalAccounts" column="final_accounts"></result>
+        <result property="state" column="state"></result>
+        <result property="invoiceCompany" column="invoice_company"></result>
+        <result property="lat" column="lat"></result>
+        <result property="lng" column="lng"></result>
+        <association property="city" column="city_id"
+                     select="com.yuesheng.pm.mapper.RegionMapper.getCityById"></association>
+        <association property="taxList" column="contract_id"
+                     select="com.yuesheng.pm.mapper.SalesContractTaxMapper.selectByAgreementID"></association>
+    </resultMap>
+
+    <resultMap id="Marker" type="com.yuesheng.pm.model.Marker">
+        <result property="projectBase" column="projectBase"></result>
+        <result property="lat" column="lat"></result>
+        <result property="lng" column="lng"></result>
+        <result property="id" column="contract_id"></result>
+        <result property="agreementName" column="agreement_name"></result>
+    </resultMap>
+
+    <select id="selectByID" parameterType="String" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where contract_id = #{agreementID}
+        order by create_time desc
+    </select>
+
+    <select id="selectByName" parameterType="String" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where agreement_name = #{agreementName}
+        order by create_time desc
+    </select>
+
+    <select id="selectByCompany" parameterType="String" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where company_name = #{companyName}
+        order by create_time desc
+    </select>
+
+    <select id="selectByRegistrant" parameterType="String" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where registrant = #{registrant}
+        order by create_time desc
+    </select>
+
+    <select id="selectAll" resultMap="SalesContract">
+        select * from sales_contract_registration
+        order by create_time desc
+    </select>
+
+    <select id="selectForPage" resultMap="SalesContract">
+        select * from sales_contract_registration
+        order by create_time desc
+    </select>
+
+    <select id="selectByDate" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where sign_date between #{startTime} and #{endTime}
+        order by create_time desc
+    </select>
+
+    <select id="selectByDateYear" parameterType="String" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where convert(varchar (4),[sign_date],120) = #{dateSearch}
+        order by create_time desc
+    </select>
+
+    <select id="selectByDateYear" parameterType="String" resultMap="SalesContract" databaseId="mysql">
+        select * from sales_contract_registration
+        where DATE_FORMAT(sign_date, '%Y') = #{dateSearch}
+        order by create_time desc
+    </select>
+
+    <select id="selectCounts" resultType="java.lang.Integer">
+        select count(*) from sales_contract_registration
+    </select>
+
+    <select id="selectBySearch" parameterType="String" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where
+        isnull(projectBase,'') +
+        isnull(agreement_id,'') +
+        isnull(agreement_name,'') +
+        isnull(convert(varchar(100),agreement_money),'') +
+        isnull(convert(varchar(100),sign_date),'') +
+        isnull(company_name,'') +
+        isnull(convert(varchar(100),pDate),'') +
+        isnull(convert(varchar(100),actualDate),'') +
+        isnull(remark,'') +
+        isnull(registrant,'') +
+        isnull(convert(varchar(100),invoiced_money),'') +
+        isnull(convert(varchar(100),collected_money),'')
+        like '%' + #{search} + '%'
+        order by create_time desc
+    </select>
+
+    <select id="selectBySearch" parameterType="String" resultMap="SalesContract" databaseId="mysql">
+        select * from sales_contract_registration
+        where concat(projectBase,agreement_id,agreement_name,company_name,remark,registrant)
+        like concat('%',#{search},'%')
+        order by create_time desc
+    </select>
+
+    <insert id="insertContract" parameterType="com.yuesheng.pm.entity.SalesContract">
+        insert into sales_contract_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractId != null">contract_id,
+            </if>
+            <if test="agreementID != null ">agreement_id,
+            </if>
+            <if test="agreementName != null ">agreement_name,
+            </if>
+            <if test="agreementMoney != null ">agreement_money,
+            </if>
+            <if test="signDate != null ">sign_date,
+            </if>
+            <if test="companyName != null ">company_name,
+            </if>
+            <if test="bankName != null ">bank_name,
+            </if>
+            <if test="bankAccount != null ">bank_account,
+            </if>
+            <if test="companyAddress != null">company_address,
+            </if>
+            <if test="contactMan != null">contact_man,
+            </if>
+            <if test="phone != null">phone,
+            </if>
+            <if test="jurisdiction != null">jurisdiction,
+            </if>
+            <if test="street != null">street,
+            </if>
+            <if test="remark != null">remark,
+            </if>
+            <if test="registrant != null">registrant,
+            </if>
+            <if test="registrantId != null">registrant_id,
+            </if>
+            <if test="createTime != null">create_time,
+            </if>
+            <if test="invoicedMoney != null">invoiced_money,
+            </if>
+            <if test="collectedMoney != null">collected_money,
+            </if>
+            <if test="paymentDays != null">paymentDays,
+            </if>
+            <if test="projectBase != null">projectBase,
+            </if>
+            <if test="pDate != null">pDate,
+            </if>
+            <if test="actualDate != null">actualDate,
+            </if>
+            <if test="retentionMoney != null">retention_money,
+            </if>
+            <if test="retentionPercent != null">retention_percent,
+            </if>
+            <if test="tax != null">tax,
+            </if>
+            <if test="notifyType != null">notify_type,
+            </if>
+            <if test="modifierId != null">modifier_id,
+            </if>
+            <if test="taxID != null">tax_id,
+            </if>
+            <if test="performanceBond != null">performance_bond,
+            </if>
+            <if test="performanceBondPercent != null">performance_bond_percent,
+            </if>
+            <if test="finalAccounts != null">final_accounts,
+            </if>
+            <if test="state != null">state,
+            </if>
+            <if test="invoiceCompany != null">invoice_company,</if>
+            <if test="city != null">city_id,</if>
+            <if test="lat != null">lat,</if>
+            <if test="lng != null">lng,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractId != null">#{contractId},
+            </if>
+            <if test="agreementID != null ">#{agreementID},
+            </if>
+            <if test="agreementName != null ">#{agreementName},
+            </if>
+            <if test="agreementMoney != null">#{agreementMoney},
+            </if>
+            <if test="signDate != null ">#{signDate},
+            </if>
+            <if test="companyName != null ">#{companyName},
+            </if>
+            <if test="bankName != null ">#{bankName},
+            </if>
+            <if test="bankAccount != null ">#{bankAccount},
+            </if>
+            <if test="companyAddress != null">#{companyAddress},
+            </if>
+            <if test="contactMan != null">#{contactMan},
+            </if>
+            <if test="phone != null">#{phone},
+            </if>
+            <if test="jurisdiction != null">#{jurisdiction},
+            </if>
+            <if test="street != null">#{street},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+            <if test="registrant != null">#{registrant},
+            </if>
+            <if test="registrantId != null">#{registrantId},
+            </if>
+            <if test="createTime != null">#{createTime},
+            </if>
+            <if test="invoicedMoney != null">#{invoicedMoney},
+            </if>
+            <if test="collectedMoney != null">#{collectedMoney},
+            </if>
+            <if test="paymentDays != null">#{paymentDays},
+            </if>
+            <if test="projectBase != null">#{projectBase},
+            </if>
+            <if test="pDate != null">#{pDate},
+            </if>
+            <if test="actualDate != null">#{actualDate},
+            </if>
+            <if test="retentionMoney != null">#{retentionMoney},
+            </if>
+            <if test="retentionPercent != null">#{retentionPercent},
+            </if>
+            <if test="tax != null">#{tax},
+            </if>
+            <if test="notifyType != null">#{notifyType},
+            </if>
+            <if test="modifierId != null">#{modifierId},
+            </if>
+            <if test="taxID != null">#{taxID},
+            </if>
+            <if test="performanceBond != null">#{performanceBond},
+            </if>
+            <if test="performanceBondPercent != null">#{performanceBondPercent},
+            </if>
+            <if test="finalAccounts != null">#{finalAccounts},
+            </if>
+            <if test="state != null">#{state},
+            </if>
+            <if test="invoiceCompany != null">#{invoiceCompany},</if>
+            <if test="city != null">#{city.id},</if>
+            <if test="lat != null">#{lat},</if>
+            <if test="lng != null">#{lng},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteContract" parameterType="String">
+        delete from sales_contract_registration where contract_id = #{agreementID};
+    </delete>
+
+    <update id="updateContract" parameterType="com.yuesheng.pm.entity.SalesContract">
+        update sales_contract_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="agreementID != null">agreement_id = #{agreementID},
+            </if>
+            <if test="agreementName != null ">agreement_name = #{agreementName},
+            </if>
+            <if test="agreementMoney != null ">agreement_money = #{agreementMoney},
+            </if>
+            <if test="signDate != null">sign_date = #{signDate},
+            </if>
+            <if test="companyName != null ">company_name = #{companyName},
+            </if>
+            <if test="bankName != null ">bank_name = #{bankName},
+            </if>
+            <if test="bankAccount != null ">bank_account = #{bankAccount},
+            </if>
+            <if test="companyAddress != null ">company_address = #{companyAddress},
+            </if>
+            <if test="contactMan != null">contact_man = #{contactMan},
+            </if>
+            <if test="phone != null">phone = #{phone},
+            </if>
+            <if test="jurisdiction != null">jurisdiction = #{jurisdiction},
+            </if>
+            <if test="street != null">street = #{street},
+            </if>
+            <if test="remark != null ">remark = #{remark},
+            </if>
+            <if test="registrant != null ">registrant = #{registrant},
+            </if>
+            <if test="registrantId != null">registrant_id = #{registrantId},
+            </if>
+            <if test="invoicedMoney != null ">invoiced_money = #{invoicedMoney},
+            </if>
+            <if test="collectedMoney != null ">collected_money = #{collectedMoney},
+            </if>
+            <if test="paymentDays != null ">paymentDays = #{paymentDays},
+            </if>
+            <if test="projectBase != null">projectBase = #{projectBase},
+            </if>
+            <if test="pDate != null">pDate = #{pDate},
+            </if>
+            <if test="actualDate != null">actualDate = #{actualDate},
+            </if>
+            <if test="retentionMoney != null">retention_money = #{retentionMoney},
+            </if>
+            <if test="retentionPercent != null">retention_percent = #{retentionPercent},
+            </if>
+            <if test="tax != null">tax = #{tax},
+            </if>
+            <if test="notifyType != null">notify_type = #{notifyType},
+            </if>
+            <if test="modifierId != null">modifier_id = #{modifierId},
+            </if>
+            <if test="taxID != null">tax_id = #{taxID},
+            </if>
+            <if test="performanceBond != null">performance_bond = #{performanceBond},
+            </if>
+            <if test="performanceBondPercent != null">performance_bond_percent = #{performanceBondPercent},
+            </if>
+            <if test="finalAccounts != null">final_accounts = #{finalAccounts},
+            </if>
+            <if test="state != null">state = #{state},
+            </if>
+            <if test="invoiceCompany != null">invoice_company = #{invoiceCompany},</if>
+            <if test="city != null">city_id = #{city.id},</if>
+            <if test="lat != null">lat = #{lat},</if>
+            <if test="lng != null">lng = #{lng},</if>
+        </trim>
+        where contract_id = #{contractId}
+    </update>
+
+    <select id="selectByDuty" parameterType="list" resultMap="SalesContract">
+        select *
+        from sales_contract_registration
+        where registrant_id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by create_time desc
+    </select>
+
+    <select id="selectByDutyCounts" parameterType="list" resultType="integer">
+        select count(*)
+        from sales_contract_registration
+        where registrant_id
+        in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectByDateAndStaffId" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where sign_date between #{startTime} and #{endTime}
+        and registrant_id = #{staffId}
+        order by create_time desc
+    </select>
+
+    <select id="selectByDateAndStaffIdCounts" resultType="int">
+        select count(*) from sales_contract_registration
+        where sign_date between #{startTime} and #{endTime}
+        and registrant_id = #{staffId}
+    </select>
+
+    <select id="selectByDateForPage" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where sign_date between #{startTime} and #{endTime}
+        and registrant_id in
+        <foreach item="item" index="index" collection="staffId" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by create_time desc
+    </select>
+
+    <select id="selectByDateForPageCounts" resultType="int">
+        select count(*) from sales_contract_registration
+        where sign_date between #{startTime} and #{endTime}
+        and registrant_id in
+        <foreach item="item" index="index" collection="staffId" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectByStaffId" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where registrant_id = #{staffId}
+        order by create_time desc
+    </select>
+    <select id="selectByStaffIdCounts" resultType="java.lang.Integer">
+        select count(*) from sales_contract_registration
+        where registrant_id = #{staffId}
+    </select>
+    <select id="selectByDate2" resultMap="SalesContract">
+        select * from sales_contract_registration
+        where sign_date between #{startTime} and #{endTime}
+        order by create_time desc
+    </select>
+    <select id="selectByDateCounts" resultType="java.lang.Integer">
+        select count(*) from sales_contract_registration
+        where sign_date between #{startTime} and #{endTime}
+    </select>
+
+    <update id="updateState">
+        update sales_contract_registration
+        set state = #{state}
+        where contract_id = #{contractId}
+    </update>
+
+    <select id="getProjectMap" resultMap="Marker">
+        select contract_id,projectBase,lat,lng,agreement_name from sales_contract_registration
+    </select>
+</mapper>

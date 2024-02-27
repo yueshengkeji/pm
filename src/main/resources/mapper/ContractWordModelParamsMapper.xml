@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ContractWordModelParamsMapper">
+    <resultMap id="ContractWordModelParams" type="com.yuesheng.pm.entity.ContractWordModelParams">
+        <result property="name" column="name"></result>
+        <result property="markName" column="mark_name"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.ContractWordModelParams">
+        insert into contract_word_model_params
+        (name,mark_name)values (#{name},#{markName})
+    </insert>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.ContractWordModelParams">
+        update contract_word_model_params
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name != null">name = #{name }</if>
+            <if test="markName != null">mark_name = #{markName}</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <select id="list" resultMap="ContractWordModelParams">
+        select * from contract_word_model_params
+    </select>
+
+    <delete id="delete">
+        delete from contract_word_model_params
+        where id = #{id}
+    </delete>
+
+    <select id="listByIds" parameterType="list" resultMap="ContractWordModelParams">
+        select * from contract_word_model_params
+        <where>
+            <if test="list != null">
+                id in
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+
+    </select>
+</mapper>

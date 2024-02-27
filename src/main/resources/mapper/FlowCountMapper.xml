@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.FlowCountMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.FlowCount" id="FlowCountMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="carCount" column="car_count" jdbcType="INTEGER"/>
+        <result property="personCount" column="person_count" jdbcType="INTEGER"/>
+        <result property="countDate" column="count_date" jdbcType="VARCHAR"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="date" column="date" jdbcType="VARCHAR"/>
+        <result property="weather" column="weather" jdbcType="VARCHAR"/>
+        <result property="week" column="week" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="FlowCountMap">
+        select
+          *
+        from flow_count
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="FlowCountMap">
+        select
+          *
+        from flow_count
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="carCount != null">
+                and car_count = #{carCount}
+            </if>
+            <if test="personCount != null">
+                and person_count = #{personCount}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="date != null and date != ''">
+                and count_date between #{date} and #{countDate}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from flow_count
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="carCount != null">
+                and car_count = #{carCount}
+            </if>
+            <if test="personCount != null">
+                and person_count = #{personCount}
+            </if>
+            <if test="countDate != null and countDate != ''">
+                and count_date = #{countDate}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="date != null and date != ''">
+                and date = #{date}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into flow_count(car_count, person_count, count_date, staff_id, date,weather,week)
+        values (#{carCount}, #{personCount}, #{countDate}, #{staffId}, #{date},#{weather}, #{week})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into flow_count(car_count, person_count, count_date, staff_id, date,weather,week)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.carCount}, #{entity.personCount}, #{entity.countDate}, #{entity.staffId}, #{entity.date},#{weather},#{week})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into flow_count(car_count, person_count, count_date, staff_id, date,weather,week)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.carCount}, #{entity.personCount}, #{entity.countDate}, #{entity.staffId}, #{entity.date},#{weather},#{week})
+        </foreach>
+        on duplicate key update
+        car_count = values(car_count),
+        person_count = values(person_count),
+        count_date = values(count_date),
+        staff_id = values(staff_id),
+        date = values(date)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update flow_count
+        <set>
+            <if test="carCount != null">
+                car_count = #{carCount},
+            </if>
+            <if test="personCount != null">
+                person_count = #{personCount},
+            </if>
+            <if test="countDate != null and countDate != ''">
+                count_date = #{countDate},
+            </if>
+            <if test="staffId != null and staffId != ''">
+                staff_id = #{staffId},
+            </if>
+            <if test="date != null and date != ''">
+                date = #{date},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from flow_count where id = #{id}
+    </delete>
+
+    <select id="queryMoneyGroupFlowDate" resultType="com.yuesheng.pm.model.DateGroupModel">
+        select SUM(car_count) as money,
+               SUM(person_count) as money2,
+               count_date as date
+        from flow_count
+        where count_date between #{flowStartDate} and #{flowEndDate}
+        group by count_date order by count_date
+    </select>
+
+</mapper>
+

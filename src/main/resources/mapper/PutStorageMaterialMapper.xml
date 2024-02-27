@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PutStorageMaterialMapper">
+    <resultMap id="storageMaterial" type="com.yuesheng.pm.entity.StorageMaterial">
+        <id column="pm02702" jdbcType="VARCHAR" property="id"></id>
+        <result column="pm02701" jdbcType="VARCHAR" property="storageId"></result>
+        <result column="pm02705" jdbcType="DECIMAL" property="inSum"></result>
+        <result column="pm02706" jdbcType="DECIMAL" property="putSum"></result>
+        <result column="pm02707" jdbcType="DECIMAL" property="price"></result>
+        <result column="pm02708" jdbcType="DECIMAL" property="money"></result>
+        <result column="pm02709" jdbcType="DECIMAL" property="taxPrice"></result>
+        <result column="pm02710" jdbcType="DECIMAL" property="moneyTax"></result>
+        <result column="pm02711" jdbcType="DECIMAL" property="taxMoney"></result>
+        <result column="pm02712" jdbcType="VARCHAR" property="proMaterId"></result>
+        <result column="pm02713" jdbcType="VARCHAR" property="pm02713"></result>
+        <result column="pm02723" jdbcType="VARCHAR" property="projectId"></result>
+        <result column="pm02602" jdbcType="VARCHAR" property="putDate"></result>
+        <result column="pm02613" jdbcType="DECIMAL" property="tax"></result>
+        <result column="pm02719" jdbcType="INTEGER" property="pm02719"></result>
+        <association property="material" column="pm02703"
+                     select="com.yuesheng.pm.mapper.MaterialMapper.getMaterialByid"></association>
+        <association property="project" column="pm02723"
+                     select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+    </resultMap>
+
+    <resultMap id="storageMaterialV2" type="com.yuesheng.pm.entity.StorageMaterial">
+        <id column="pm02702" jdbcType="VARCHAR" property="id"></id>
+        <result column="pm02701" jdbcType="VARCHAR" property="storageId"></result>
+        <result column="pm02705" jdbcType="DECIMAL" property="inSum"></result>
+        <result column="pm02706" jdbcType="DECIMAL" property="putSum"></result>
+        <result column="pm02707" jdbcType="DECIMAL" property="price"></result>
+        <result column="pm02708" jdbcType="DECIMAL" property="money"></result>
+        <result column="pm02709" jdbcType="DECIMAL" property="taxPrice"></result>
+        <result column="pm02710" jdbcType="DECIMAL" property="moneyTax"></result>
+        <result column="pm02711" jdbcType="DECIMAL" property="taxMoney"></result>
+        <result column="pm02712" jdbcType="VARCHAR" property="proMaterId"></result>
+        <result column="pm02713" jdbcType="VARCHAR" property="pm02713"></result>
+        <result column="pm02723" jdbcType="VARCHAR" property="projectId"></result>
+        <result column="pm02602" jdbcType="VARCHAR" property="putDate"></result>
+        <result column="pm02613" jdbcType="DECIMAL" property="tax"></result>
+        <result column="pm02719" jdbcType="INTEGER" property="pm02719"></result>
+    </resultMap>
+
+    <resultMap id="storageMaterialSimple" type="com.yuesheng.pm.entity.StorageMaterial">
+        <id column="pm02702" jdbcType="VARCHAR" property="id"></id>
+        <result column="pm02701" jdbcType="VARCHAR" property="storageId"></result>
+        <result column="pm02705" jdbcType="DECIMAL" property="inSum"></result>
+        <result column="pm02706" jdbcType="DECIMAL" property="putSum"></result>
+        <result column="pm02707" jdbcType="DECIMAL" property="price"></result>
+        <result column="pm02708" jdbcType="DECIMAL" property="money"></result>
+        <result column="pm02709" jdbcType="DECIMAL" property="taxPrice"></result>
+        <result column="pm02710" jdbcType="DECIMAL" property="moneyTax"></result>
+        <result column="pm02711" jdbcType="DECIMAL" property="taxMoney"></result>
+        <result column="pm02713" jdbcType="DECIMAL" property="pm02713"></result>
+        <result column="pm02712" jdbcType="VARCHAR" property="proMaterId"></result>
+        <result column="pm02723" jdbcType="VARCHAR" property="projectId"></result>
+        <result column="pm02602" jdbcType="VARCHAR" property="putDate"></result>
+        <result column="pm02613" jdbcType="DECIMAL" property="tax"></result>
+        <result column="pm02603" jdbcType="VARCHAR" property="putNumber"></result>
+        <result column="pm02719" jdbcType="INTEGER" property="pm02719"></result>
+        <association property="material"
+                     javaType="com.yuesheng.pm.entity.Material">
+            <id column="pm00201" property="id" jdbcType="VARCHAR"></id>
+            <result column="pm00202" property="name" jdbcType="VARCHAR"></result>
+            <result column="pm00205" property="model" jdbcType="VARCHAR"></result>
+            <result column="pm00207" property="planPrice" jdbcType="DECIMAL"></result>
+            <result column="pm00221" property="brand" jdbcType="VARCHAR"></result>
+            <result column="pm00222" property="producingArea" jdbcType="VARCHAR"></result>
+            <result column="pm00209" property="storageSum" jdbcType="DECIMAL"></result>
+            <result column="pm00220" property="property" jdbcType="DECIMAL"></result>
+            <association property="unit"
+                         column="pm00201"
+                         select="com.yuesheng.pm.mapper.UnitMapper.getUnitByMater"></association>
+        </association>
+        <association property="company"
+                     column="pm02604"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+    </resultMap>
+
+    <select id="getPutDateByMaterId" resultMap="storageMaterialV2">
+        select a.*,b.pm02602,b.pm02613 from sdpm027 as a left join sdpm026 as b on b.pm02601=a.pm02701
+        where a.pm02703 = #{materId} and b.pm02617=1 order by b.pm02602
+    </select>
+    <select id="getPutDetailByMaterId" resultMap="storageMaterial">
+        select a.*,b.pm02602,b.pm02613 from sdpm027 as a left join sdpm026 as b on b.pm02601=a.pm02701
+        where a.pm02703 = #{materId} and b.pm02617=1 order by b.pm02602
+    </select>
+    <select id="getMaterByProMater" resultMap="storageMaterial">
+        select * from sdpm027 where pm02712=#{proMaterId}
+    </select>
+    <select id="getPutMoneyByStorageId" resultType="java.lang.Double">
+        select SUM(pm02710) from sdpm027 where pm02701=#{storageId};
+    </select>
+    <insert id="addMaterials" parameterType="java.util.List">
+        INSERT INTO sdpm027 (pm02701,pm02702,pm02703,pm02704,pm02705,pm02706,pm02707,pm02708,pm02709,
+        pm02710,pm02711,pm02712,pm02713,pm02720,pm02723,pm02719)
+        VALUES
+        <foreach collection="materials" item="item" index="index" separator=",">
+            (#{item.storageId},#{item.id},#{item.material.id},#{item.material.unit.id},#{item.inSum},#{item.putSum},#{item.price},
+            #{item.money},#{item.taxPrice},
+            #{item.moneyTax},#{item.taxMoney},#{item.proMaterId},#{item.pm02713},#{item.pm02720},
+            #{item.projectId},#{item.pm02719})
+        </foreach>
+    </insert>
+    <select id="getMaterialByPutId" parameterType="String" resultMap="storageMaterial">
+        SELECT a.* FROM sdpm027 AS a
+	      RIGHT JOIN sdpm002 AS b ON a.pm02703=b.pm00201 AND b.pm00209>0 WHERE
+	      pm02701=#{putId} order by pm02719 asc
+    </select>
+    <select id="getMaterAllByPutId" parameterType="String" resultMap="storageMaterial">
+        SELECT * FROM sdpm027 WHERE pm02701=#{putId}  order by pm02719 asc
+    </select>
+    <delete id="deleteMaterByPutId">
+        DELETE FROM sdpm027 WHERE pm02701=#{id}
+    </delete>
+    <delete id="deleteMaterById">
+        DELETE FROM sdpm027 WHERE pm02702=#{id}
+    </delete>
+    <update id="updateMaterMoney" parameterType="com.yuesheng.pm.entity.StorageMaterial">
+        UPDATE sdpm027 SET pm02707=#{price},pm02708=#{money},pm02711=#{taxMoney} WHERE pm02702=#{id}
+    </update>
+    <update id="updateMaterMoneyAll">
+        UPDATE sdpm027 SET pm02706=#{putSum},pm02709=#{taxPrice},pm02710=#{moneyTax},pm02707=#{price},pm02708=#{money},pm02711=#{taxMoney} WHERE pm02702=#{id}
+    </update>
+
+    <select id="getMaterialByCompany" resultMap="storageMaterialSimple">
+        SELECT a.*,b.pm02603,b.pm02604,b.pm02613,b.pm02614 as pm02602,c.* FROM sdpm027 AS a
+        LEFT JOIN sdpm026 AS b ON a.pm02701=b.pm02601
+        LEFT JOIN sdpm002 as c on c.pm00201=pm02703
+        WHERE b.pm02602 BETWEEN #{start} AND #{end} and b.pm02617=1
+        <if test="materialId != null">
+            AND pm02703=#{materialId}
+        </if>
+        <if test="company != null">
+            AND b.pm02604=#{company}
+        </if>
+        <if test="searchText != null">
+            AND c.pm00201+c.pm00202+c.pm00205+c.pm00221+b.pm02603 LIKE '%'+#{searchText}+'%'
+        </if>
+    </select>
+    <select id="getMaterialByCompany" resultMap="storageMaterialSimple" databaseId="mysql">
+        SELECT a.*,b.pm02603,b.pm02604,b.pm02613,b.pm02614 as pm02602,c.* FROM sdpm027 AS a
+        LEFT JOIN sdpm026 AS b ON a.pm02701=b.pm02601
+        LEFT JOIN sdpm002 as c on c.pm00201=pm02703
+        WHERE b.pm02602 BETWEEN #{start} AND #{end} and b.pm02617=1
+        <if test="materialId != null">
+            AND pm02703=#{materialId}
+        </if>
+        <if test="company != null">
+            AND b.pm02604=#{company}
+        </if>
+        <if test="searchText != null">
+            AND concat(c.pm00201,c.pm00202,c.pm00205,c.pm00221,b.pm02603) LIKE concat('%',#{searchText},'%')
+        </if>
+    </select>
+    <select id="getProjectByDetailId" resultType="java.lang.String">
+        SELECT pm02723 FROM sdpm027 WHERE pm02702=#{detailId}
+    </select>
+
+    <select id="getAvgByMaterId" resultType="java.util.Map">
+        SELECT SUM(pm02709) AS priceSum,COUNT(*) AS putCount FROM sdpm027 where pm02703=#{materId}
+    </select>
+    <select id="getMaterialByMaterId" resultMap="com.yuesheng.pm.mapper.MaterialMapper.material">
+        SELECT a.* FROM sdpm002 AS a
+        RIGHT JOIN sdpm027 AS b ON a.pm00201=b.pm02703
+        WHERE b.pm02703=#{id}
+    </select>
+    <select id="getMaterialMsgByMaterId" resultMap="storageMaterial">
+        SELECT a.*, b.pm02603 AS putNumber,b.pm02602 AS putDate FROM sdpm027 AS a
+        LEFT JOIN sdpm026 AS b ON b.pm02601=a.pm02701 WHERE pm02703=#{id}
+    </select>
+    <select id="getPutMoneyByProject" resultType="Double">
+        select SUM(pm02710) from sdpm027
+        right join sdpm026 on pm02701=pm02601
+        where pm02617=1 and pm02723=#{projectId}
+    </select>
+    <select id="getPutMoneyByDate" resultType="Double">
+        select SUM(pm02710) from sdpm027
+        right join sdpm026 on pm02701=pm02601
+        where pm02617=1 and pm02614 between #{startDate} and #{endDate}
+    </select>
+
+    <select id="getMaterListByProject" resultMap="storageMaterialSimple">
+        SELECT * FROM sdpm005 as a
+        LEFT JOIN sdpm002 as b on b.pm00201=a.pm00502 and b.pm00201 is not null
+        RIGHT JOIN sdpm027 as c on c.pm02703=b.pm00201
+        left join sdpm026 as d on c.pm02701=d.pm02601
+        WHERE a.pm00503 &gt; 0 and c.pm02723=#{projectId}
+        <if test="searchText != null">
+            and pm00201+pm00202+pm00205+pm00221+pm00222+cast(pm00503 as varchar)+cast(pm00504 as varchar)+cast(pm00505
+            as varchar) LIKE '%'+#{searchText}+'%'
+        </if>
+    </select>
+    <select id="getMaterListByProject" resultMap="storageMaterialSimple" databaseId="mysql">
+        SELECT * FROM sdpm005 as a
+        LEFT JOIN sdpm002 as b on b.pm00201=a.pm00502 and b.pm00201 is not null
+        RIGHT JOIN sdpm027 as c on c.pm02703=b.pm00201
+        left join sdpm026 as d on c.pm02701=d.pm02601
+        WHERE a.pm00503 &gt; 0 and c.pm02723=#{projectId}
+        <if test="searchText != null">
+            and concat(pm00201,pm00202,pm00205,pm00221,pm00222,pm00503,pm00504,pm00505) LIKE concat('%',#{searchText},'%')
+        </if>
+    </select>
+    <select id="getByProMaterId" resultMap="storageMaterial">
+        select * from sdpm027 where pm02712=#{proMaterId}
+    </select>
+
+    <select id="getProjectMaterial" resultMap="com.yuesheng.pm.mapper.ProjectMapper.projectMater">
+        SELECT pm02703 AS 'pm00201',sum(pm02706) AS 'pm02706','4' AS 'type'
+        FROM sdpm027 WHERE pm02723=#{projectId} GROUP BY pm02703
+    </select>
+    <select id="getPutSumByProId" resultType="Double">
+        Select Sum(ISNULL(pm02705*pm02706,0)) From sdpm027
+        Where pm02701 In (Select pm02601 from sdpm026  Where pm02620=0 and pm02617=1) and pm02712=#{proMaterId}
+    </select>
+    <select id="getPutSumByProId" resultType="Double" databaseId="mysql">
+        Select Sum(IFNULL(pm02705*pm02706,0)) From sdpm027
+        Where pm02701 In (Select pm02601 from sdpm026  Where pm02620=0 and pm02617=1) and pm02712=#{proMaterId}
+    </select>
+
+    <select id="getPutTotalMoney" resultType="double">
+        SELECT SUM(pm02710) FROM sdpm027 AS a
+        LEFT JOIN sdpm026 AS b ON a.pm02701=b.pm02601
+        LEFT JOIN sdpm002 as c on c.pm00201=pm02703
+        WHERE b.pm02602 BETWEEN #{start} AND #{end} and b.pm02617=1
+        <if test="materialId != null">
+            AND pm02703=#{materialId}
+        </if>
+        <if test="company != null">
+            AND b.pm02604=#{company}
+        </if>
+        <if test="searchText != null">
+            AND c.pm00201+c.pm00202+c.pm00205+c.pm00221+b.pm02603 LIKE '%'+#{searchText}+'%'
+        </if>
+    </select>
+    <select id="getPutTotalMoney" resultType="double" databaseId="mysql">
+        SELECT SUM(pm02710) FROM sdpm027 AS a
+        LEFT JOIN sdpm026 AS b ON a.pm02701=b.pm02601
+        LEFT JOIN sdpm002 as c on c.pm00201=pm02703
+        WHERE b.pm02602 BETWEEN #{start} AND #{end} and b.pm02617=1
+        <if test="materialId != null">
+            AND pm02703=#{materialId}
+        </if>
+        <if test="company != null">
+            AND b.pm02604=#{company}
+        </if>
+        <if test="searchText != null">
+            AND concat(c.pm00201,c.pm00202,c.pm00205,c.pm00221,b.pm02603) LIKE concat('%',#{searchText},'%')
+        </if>
+    </select>
+</mapper>

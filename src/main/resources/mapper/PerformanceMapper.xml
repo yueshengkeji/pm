@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PerformanceMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.Performance" id="PerformanceMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="logId" column="log_id" jdbcType="VARCHAR"/>
+        <result property="flag" column="flag" jdbcType="INTEGER"/>
+        <result property="weight" column="weight" jdbcType="NUMERIC"/>
+        <result property="score" column="score" jdbcType="DECIMAL"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="signStaffId" column="sign_staff_id" jdbcType="VARCHAR"/>
+        <result property="signImg" column="sign_img" jdbcType="VARCHAR"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="approveId" column="approve_id" jdbcType="VARCHAR"/>
+        <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+        <result property="month" column="month" jdbcType="VARCHAR"/>
+        <result property="note" column="note" jdbcType="VARCHAR"/>
+        <result property="scoreSum" column="score_sum" jdbcType="DECIMAL"/>
+        <result property="logScore" column="log_score" jdbcType="DECIMAL"/>
+        <association property="section" column="section_id" select="com.yuesheng.pm.mapper.SectionMapper.getSevtionByid"></association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="PerformanceMap">
+        select
+          *
+        from performance
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="PerformanceMap">
+        select
+          *
+        from performance
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="logId != null and logId != ''">
+                and log_id = #{logId}
+            </if>
+            <if test="flag != null">
+                and flag = #{flag}
+            </if>
+            <if test="weight != null">
+                and weight = #{weight}
+            </if>
+            <if test="score != null">
+                and score = #{score}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="signStaffId != null and signStaffId != ''">
+                and sign_staff_id = #{signStaffId}
+            </if>
+            <if test="signImg != null and signImg != ''">
+                and sign_img = #{signImg}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="section != null">
+                and section_id = #{section.id}
+            </if>
+            <if test="approveId != null and approveId != ''">
+                and approve_id = #{approveId}
+            </if>
+            <if test="month != null and month != ''">
+                and month = #{month}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from performance
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="logId != null and logId != ''">
+                and log_id = #{logId}
+            </if>
+            <if test="flag != null">
+                and flag = #{flag}
+            </if>
+            <if test="weight != null">
+                and weight = #{weight}
+            </if>
+            <if test="score != null">
+                and score = #{score}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="signStaffId != null and signStaffId != ''">
+                and sign_staff_id = #{signStaffId}
+            </if>
+            <if test="signImg != null and signImg != ''">
+                and sign_img = #{signImg}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="approveId != null and approveId != ''">
+                and approve_id = #{approveId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into performance(id,log_id, flag, weight, score, remark, sign_staff_id, staff_id, approve_id,datetime,month,section_id,note)
+        values (#{id},#{logId}, #{flag}, #{weight}, #{score}, #{remark}, #{signStaffId}, #{staffId}, #{approveId},#{datetime},#{month},#{section.id},#{note})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into performance(id,log_id, flag, weight, score, remark, sign_staff_id, sign_img, staff_id, approve_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.id},#{entity.logId}, #{entity.flag}, #{entity.weight}, #{entity.score}, #{entity.remark}, #{entity.signStaffId}, #{entity.signImg}, #{entity.staffId}, #{entity.approveId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into performance(id,log_id, flag, weight, score, remark, sign_staff_id, sign_img, staff_id, approve_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id},#{entity.logId}, #{entity.flag}, #{entity.weight}, #{entity.score}, #{entity.remark}, #{entity.signStaffId}, #{entity.signImg}, #{entity.staffId}, #{entity.approveId})
+        </foreach>
+        on duplicate key update
+        log_id = values(log_id),
+        flag = values(flag),
+        weight = values(weight),
+        score = values(score),
+        remark = values(remark),
+        sign_staff_id = values(sign_staff_id),
+        sign_img = values(sign_img),
+        staff_id = values(staff_id),
+        approve_id = values(approve_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update performance
+        <set>
+            <if test="logId != null and logId != ''">
+                log_id = #{logId},
+            </if>
+            <if test="flag != null">
+                flag = #{flag},
+            </if>
+            <if test="weight != null">
+                weight = #{weight},
+            </if>
+            <if test="score != null">
+                score = #{score},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="signStaffId != null and signStaffId != ''">
+                sign_staff_id = #{signStaffId},
+            </if>
+            <if test="signImg != null and signImg != ''">
+                sign_img = #{signImg},
+            </if>
+            <if test="staffId != null and staffId != ''">
+                staff_id = #{staffId},
+            </if>
+            <if test="approveId != null and approveId != ''">
+                approve_id = #{approveId},
+            </if>
+            <if test="note != null and note != ''">
+                note = #{note},
+            </if>
+            <if test="scoreSum != null and scoreSum != ''">
+                score_sum = #{scoreSum},
+            </if>
+            <if test="logScore != null and logScore != ''">
+                log_score = #{logScore},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from performance where id = #{id}
+    </delete>
+
+</mapper>
+

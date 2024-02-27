@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.TrajectoryDataMapper">
+    <resultMap id="td" type="com.yuesheng.pm.entity.TrajectoryData">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="departure_date" property="departureDate" jdbcType="VARCHAR"></result>
+        <result column="arrive_addr" property="arriveAddr" jdbcType="VARCHAR"></result>
+        <result column="tj_addr" property="tjAddr" jdbcType="VARCHAR"></result>
+        <result column="jt_tool" property="jtTool" jdbcType="VARCHAR"></result>
+        <result column="number" property="number" jdbcType="INTEGER"></result>
+        <result column="back_date" property="backDate" jdbcType="VARCHAR"></result>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"></result>
+        <result column="state" property="state" jdbcType="TINYINT"></result>
+    </resultMap>
+    <insert id="insert">
+        insert into pro_yq_data values(#{id},#{departureDate},#{arriveAddr},#{tjAddr},#{jtTool},#{number},#{backDate},#{staff.name},#{staff.id},#{state});
+    </insert>
+    <update id="updateState">
+        update pro_tq_data set state=#{state} where id=#{id}
+    </update>
+    <delete id="delete">
+        delete from pro_yq_data where id=#{id}
+    </delete>
+    <select id="query" resultMap="td">
+        select * from pro_yq_data
+        where 1=1
+        <if test="start != null">
+            and departure_date between #{start} and #{end}
+        </if>
+        <if test="str != null">
+            and departure_date+arrive_addr+tj_addr+jt_tool+back_date+user_name LIKE '%'+#{str}+'%'
+        </if>
+        order by departure_date desc
+    </select>
+    <select id="queryCount" resultType="Integer">
+        select COUNT(id) from pro_yq_data
+        where 1=1
+        <if test="start != null">
+            and departure_date between #{start} and #{end}
+        </if>
+        <if test="str != null">
+            and departure_date+arrive_addr+tj_addr+jt_tool+back_date+user_name LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="queryById" resultMap="td">
+        select * from pro_yq_data where id=#{id}
+    </select>
+</mapper>

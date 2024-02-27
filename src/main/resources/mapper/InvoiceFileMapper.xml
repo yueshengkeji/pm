@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.InvoiceFileMapper">
+    <resultMap id="InvoiceFile" type="com.yuesheng.pm.entity.InvoiceFile">
+        <result property="id" column="id"></result>
+        <result property="name" column="name"></result>
+        <result property="url" column="url"></result>
+        <result property="mark" column="mark"></result>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.InvoiceFile">
+        insert into contract_invoicing_registrationFJ
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="url != null">url,</if>
+            <if test="mark != null">mark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="url != null">#{url},</if>
+            <if test="mark != null">#{mark},</if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="string">
+        delete from contract_invoicing_registrationFJ
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByMark" parameterType="string">
+        delete from contract_invoicing_registrationFJ
+        where mark = #{mark}
+    </delete>
+
+    <select id="select" parameterType="string" resultMap="InvoiceFile">
+        select * from contract_invoicing_registrationFJ
+        where mark = #{mark}
+    </select>
+</mapper>

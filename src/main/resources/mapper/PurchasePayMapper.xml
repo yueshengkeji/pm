@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PurchasePayMapper">
+    <resultMap id="PurchasePay" type="com.yuesheng.pm.entity.PurchasePay">
+        <result property="payID" column="pay_id"></result>
+        <result property="payMoney" column="pay_money"></result>
+        <result property="percent" column="percent"></result>
+        <result property="remark" column="remark"></result>
+        <result property="payDate" column="pay_date"></result>
+        <result property="registrant" column="registrant"></result>
+        <result property="mark" column="mark"></result>
+        <result property="pMark" column="pMark"></result>
+        <result property="status" column="status"></result>
+        <result property="pDate" column="pDate"></result>
+    </resultMap>
+
+    <select id="selectByDay" resultMap="PurchasePay">
+        select * from purchase_pay_registration
+        where pay_date between #{startDate} and #{endDate}
+        and status = '已审核'
+    </select>
+
+    <select id="selectByDate" resultMap="PurchasePay">
+        select * from purchase_pay_registration
+        where pay_date between #{startDate} and #{endDate}
+        and status = '已审核'
+    </select>
+
+    <select id="selectByID" parameterType="Integer" resultMap="PurchasePay">
+        select * from purchase_pay_registration
+        where mark = #{id}
+        order by pay_date desc
+    </select>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.PurchasePay">
+        insert into purchase_pay_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="payID != null ">pay_id,
+            </if>
+            <if test="payMoney != null ">pay_money,
+            </if>
+            <if test="percent != null ">[percent],
+            </if>
+            <if test="remark != null ">remark,
+            </if>
+            <if test="payDate != null ">pay_date,
+            </if>
+            <if test="registrant != null ">registrant,
+            </if>
+            <if test="mark != null ">mark,
+            </if>
+            <if test="pMark != null ">pMark,
+            </if>
+            <if test="status != null">status,
+            </if>
+            <if test="pDate != null">pDate,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="payID != null ">#{payID},
+            </if>
+            <if test="payMoney != null ">#{payMoney},
+            </if>
+            <if test="percent != null">#{percent},
+            </if>
+            <if test="remark != null ">#{remark},
+            </if>
+            <if test="payDate != null ">#{payDate},
+            </if>
+            <if test="registrant != null ">#{registrant},
+            </if>
+            <if test="mark != null ">#{mark},
+            </if>
+            <if test="pMark != null">#{pMark},
+            </if>
+            <if test="status != null">#{status},
+            </if>
+            <if test="pDate != null">#{pDate},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete" parameterType="Integer">
+        delete from purchase_pay_registration
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByID" parameterType="Integer">
+        delete from purchase_pay_registration
+        where mark = #{id}
+    </delete>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.PurchasePay">
+        update purchase_pay_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="payID != null ">pay_id = #{payID},
+            </if>
+            <if test="payMoney != null ">pay_money = #{payMoney},
+            </if>
+            <if test="percent != null">[percent] = #{percent},
+            </if>
+            <if test="remark != null ">remark = #{remark},
+            </if>
+            <if test="payDate != null ">pay_date = #{payDate},
+            </if>
+            <if test="registrant != null ">registrant = #{registrant},
+            </if>
+            <if test="mark != null ">mark = #{mark},
+            </if>
+            <if test="pMark != null">pMark = #{pMark},
+            </if>
+            <if test="status != null">status = #{status},
+            </if>
+            <if test="pDate != null">pDate = #{pDate},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <select id="selectByPMark" parameterType="String" resultMap="PurchasePay">
+        select * from purchase_pay_registration
+        where pMark = #{pMark}
+    </select>
+
+    <delete id="deleteByPMark" parameterType="String">
+        delete from purchase_pay_registration
+        where pMark = #{pMark}
+    </delete>
+</mapper>

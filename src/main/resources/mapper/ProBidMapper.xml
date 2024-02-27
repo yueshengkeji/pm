@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProBidMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProBid" id="ProBidMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="projectId" column="project_id" jdbcType="VARCHAR"/>
+        <result property="biddingDlCo" column="bidding_dl_co" jdbcType="VARCHAR"/>
+        <result property="projectSource" column="project_source" jdbcType="VARCHAR"/>
+        <result property="feeNote" column="fee_note" jdbcType="VARCHAR"/>
+        <result property="self" column="self" jdbcType="TINYINT"/>
+        <result property="cooperate" column="cooperate" jdbcType="VARCHAR"/>
+        <result property="coordinateName" column="coordinate_name" jdbcType="VARCHAR"/>
+        <result property="bidMoney" column="bid_money" jdbcType="NUMERIC"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="date" column="date" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="TINYINT"/>
+        <result property="bzjDate" column="bzj_date" jdbcType="VARCHAR"/>
+        <result property="bzjMoney" column="bzj_money" jdbcType="DECIMAL"/>
+        <result property="beforeMoney" column="before_money" jdbcType="DECIMAL"/>
+        <result property="inDate" column="in_date" jdbcType="VARCHAR"/>
+        <result property="bzjState" column="bzj_state" jdbcType="TINYINT"/>
+        <result property="cost" column="cost" jdbcType="VARCHAR"/>
+        <association property="busPerson" javaType="com.yuesheng.pm.entity.Staff">
+            <result column="bus_person_id" property="id" jdbcType="VARCHAR"></result>
+            <result column="bus_person" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <result column="staff_id" property="id" jdbcType="VARCHAR"></result>
+            <result column="staff_name" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="company" javaType="com.yuesheng.pm.entity.Company">
+            <result property="name" column="company_name" jdbcType="VARCHAR"/>
+            <result property="id" column="company_id" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="bidCount" type="com.yuesheng.pm.model.ProBidCount">
+        <result property="biddingCount" column="bidding_count" jdbcType="INTEGER"/>
+        <result property="biddingMoney" column="bidding_money" jdbcType="DECIMAL"/>
+        <result property="bzjMoney" column="bzjMoney" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProBidMap">
+        select
+          *
+        from pro_bid
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProBidMap">
+        select
+          *
+        from pro_bid
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="queryCountInfo" resultMap="bidCount">
+        select
+        COUNT(id) as biddingCount,SUM(bid_money) as biddingMoney,
+        SUM(isnull(bzj_money,0)) as bzjMoney
+        from pro_bid
+        <where>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="startDate != null and endDate != null">
+                and datetime between #{startDate} and #{endDate}
+            </if>
+            <if test="bzjStartDate != null and bzjEndDate">
+                and bzj_date between #{bzjStartDate} and #{bzjEndDate}
+            </if>
+            <if test="bzjState != null">
+                and bzj_state = #{bzjState}
+            </if>
+        </where>
+    </select>
+    <select id="queryCountInfo" resultMap="bidCount" databaseId="mysql">
+        select
+        COUNT(id) as biddingCount,SUM(bid_money) as biddingMoney,
+        SUM(ifnull(bzj_money,0)) as bzjMoney
+        from pro_bid
+        <where>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="startDate != null and endDate != null">
+                and datetime between #{startDate} and #{endDate}
+            </if>
+            <if test="bzjStartDate != null and bzjEndDate">
+                and bzj_date between #{bzjStartDate} and #{bzjEndDate}
+            </if>
+            <if test="bzjState != null">
+                and bzj_state = #{bzjState}
+            </if>
+        </where>
+    </select>
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProBidMap">
+        select
+        *
+        from pro_bid
+        <where>
+            <if test="state != null and state != -1 and bzjState == null">
+                and state = #{state}
+            </if>
+            <if test="bzjState != null">
+                and state in(2,3) and bzj_state = #{bzjState}
+            </if>
+            <if test="projectName != null and projectName != ''">
+                and isnull(project_name,'')+isnull(company_name,'')+isnull(bidding_dl_co,'')
+                +isnull(project_source,'')+isnull(fee_note,'')+isnull(cooperate,'')
+                +isnull(coordinate_name,'')+isnull(cast(bid_money as varchar),'')
+                +isnull(date,'')+isnull(type,'')+isnull(remark,'') like '%'+ #{projectName}+'%'
+            </if>
+            <if test="company != null">
+                and company_name = #{company.name}
+            </if>
+            <if test="projectId != null and projectId != ''">
+                and project_id = #{projectId}
+            </if>
+            <if test="biddingDlCo != null and biddingDlCo != ''">
+                and bidding_dl_co = #{biddingDlCo}
+            </if>
+            <if test="projectSource != null and projectSource != ''">
+                and project_source = #{projectSource}
+            </if>
+            <if test="feeNote != null and feeNote != ''">
+                and fee_note = #{feeNote}
+            </if>
+            <if test="self != null">
+                and self = #{self}
+            </if>
+            <if test="cooperate != null and cooperate != ''">
+                and cooperate = #{cooperate}
+            </if>
+            <if test="coordinateName != null and coordinateName != ''">
+                and coordinate_name = #{coordinateName}
+            </if>
+            <if test="bidMoney != null">
+                and bid_money = #{bidMoney}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address}
+            </if>
+            <if test="date != null and date != ''">
+                and date = #{date}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="staff != null">
+                and staff_id = #{staff.id}
+            </if>
+            <if test="busPerson != null">
+                and bus_person_id = #{busPerson.id}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into pro_bid(id,project_name, company_name, company_id, project_id, bidding_dl_co, project_source, fee_note, bus_person, self, cooperate, coordinate_name, bid_money, address, date, type, remark, staff_name, staff_id, datetime,state,bus_person_id,cost)
+        values (#{id},#{projectName}, #{company.name}, #{company.id}, #{projectId}, #{biddingDlCo}, #{projectSource}, #{feeNote}, #{busPerson.name}, #{self}, #{cooperate}, #{coordinateName}, #{bidMoney}, #{address}, #{date}, #{type}, #{remark}, #{staff.name}, #{staff.id}, #{datetime},#{state},#{busPerson.id},#{cost})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_bid
+        <set>
+            <if test="bzjState != null">
+                bzj_State = #{bzjState},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="projectName != null and projectName != ''">
+                project_name = #{projectName},
+            </if>
+            <if test="company != null">
+                company_name = #{company.name},company_id = #{company.id},
+            </if>
+            <if test="projectId != null and projectId != ''">
+                project_id = #{projectId},
+            </if>
+            <if test="biddingDlCo != null and biddingDlCo != ''">
+                bidding_dl_co = #{biddingDlCo},
+            </if>
+            <if test="projectSource != null and projectSource != ''">
+                project_source = #{projectSource},
+            </if>
+            <if test="feeNote != null and feeNote != ''">
+                fee_note = #{feeNote},
+            </if>
+            <if test="busPerson != null">
+                bus_person = #{busPerson.name},
+                bus_person_id = #{busPerson.id},
+            </if>
+            <if test="self != null">
+                self = #{self},
+            </if>
+            <if test="cooperate != null and cooperate != ''">
+                cooperate = #{cooperate},
+            </if>
+            <if test="coordinateName != null and coordinateName != ''">
+                coordinate_name = #{coordinateName},
+            </if>
+            <if test="bidMoney != null">
+                bid_money = #{bidMoney},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="date != null and date != ''">
+                date = #{date},
+            </if>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="datetime != null and datetime != ''">
+                datetime = #{datetime},
+            </if>
+            <if test="bzjDate != null and bzjDate != ''">
+                bzj_date = #{bzjDate},
+            </if>
+            <if test="bzjMoney != null and bzjMoney != ''">
+                bzj_money = #{bzjMoney},
+            </if>
+            <if test="beforeMoney != null and beforeMoney != ''">
+                before_money = #{beforeMoney},
+            </if>
+            <if test="inDate != null and inDate != ''">
+                in_date = #{inDate},
+            </if>
+            <if test="cost != null">
+                cost = #{cost},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_bid where id = #{id}
+    </delete>
+
+</mapper>

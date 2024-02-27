@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.LeaveMapper">
+    <resultMap id="leave" type="com.yuesheng.pm.entity.Leave">
+        <id column="po05701" property="id" jdbcType="VARCHAR"></id>
+        <result column="po05702" property="series" jdbcType="VARCHAR"></result>
+        <result column="po05705" property="billsDate" jdbcType="VARCHAR"></result>
+        <result column="po05707" property="startDate" jdbcType="VARCHAR"></result>
+        <result column="po05708" property="endDate" jdbcType="VARCHAR"></result>
+        <result column="po05709" property="remark" jdbcType="VARCHAR"></result>
+        <result column="po05711" property="date" jdbcType="VARCHAR"></result>
+        <result column="po05714" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="po05706" property="type" jdbcType="INTEGER"></result>
+        <result column="po05712" property="approveStatus" jdbcType="TINYINT"></result>
+        <result column="po05715" property="leaveNumber" jdbcType="DECIMAL"></result>
+        <association property="staff" column="po05703" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+    <select id="getLeaveById" resultMap="leave">
+        SELECT * FROM sdpo057 WHERE po05701=#{id}
+    </select>
+    <select id="getLeaveByStaff" resultMap="leave">
+        SELECT * FROM sdpo057 WHERE po05703=#{staffId}
+    </select>
+    <select id="getLeaveSumByStaff" resultType="java.lang.Double">
+        SELECT sum(po05715) FROM sdpo057 WHERE po05703=#{staffId} AND po05711 BETWEEN #{startDate} AND #{endDate}
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpo057 VALUES(#{id},#{series},#{staff.id},#{staff.section.id},#{billsDate},#{type},#{startDate},
+        #{endDate},#{remark},#{staff.id},#{date},0,'','',#{leaveNumber},'')
+    </insert>
+    <update id="approve">
+        Update sdpo057 Set po05712=#{status},po05713=#{staffId},po05714=#{date}
+        Where po05701=#{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM sdpo057 WHERE po05701=#{id}
+    </delete>
+    <select id="getLeaveByParam" resultMap="leave">
+        SELECT a.* FROM sdpo057 AS a
+        LEFT JOIN sdpj004 AS b ON a.po05703=b.pj00401
+        WHERE a.po05707 BETWEEN #{start} AND #{end}
+        <if test="searchText != null">
+            AND a.po05702+cast(a.po05706 AS VARCHAR)+a.po05709+CAST (a.po05715 AS VARCHAR)+b.pj00402 LIKE '%'+#{searchText}+'%'
+        </if>
+        <if test="state != null">
+            AND a.po05712 IN(${state})
+        </if>
+    </select>
+    <select id="getLeaveByParam" resultMap="leave" databaseId="mysql">
+        SELECT a.* FROM sdpo057 AS a
+        LEFT JOIN sdpj004 AS b ON a.po05703=b.pj00401
+        WHERE a.po05707 BETWEEN #{start} AND #{end}
+        <if test="searchText != null">
+            AND concat(a.po05702,a.po05706,a.po05709,a.po05715,b.pj00402) LIKE concat('%',#{searchText},'%')
+        </if>
+        <if test="state != null">
+            AND a.po05712 IN(${state})
+        </if>
+    </select>
+
+    <select id="getApproveLeaveByParam" resultMap="leave">
+        SELECT a.* FROM sdpo057 AS a
+        LEFT JOIN sdpj004 AS b ON a.po05703=b.pj00401
+        WHERE a.po05714 BETWEEN #{start} AND #{end} AND a.po05712 = 1
+        <if test="searchText != null">
+            AND a.po05702+cast(a.po05706 AS VARCHAR)+a.po05709+CAST (a.po05715 AS VARCHAR)+b.pj00402 LIKE '%'+#{searchText}+'%'
+        </if>
+    </select>
+    <select id="getApproveLeaveByParam" resultMap="leave" databaseId="mysql">
+        SELECT a.* FROM sdpo057 AS a
+        LEFT JOIN sdpj004 AS b ON a.po05703=b.pj00401
+        WHERE a.po05714 BETWEEN #{start} AND #{end} AND a.po05712 = 1
+        <if test="searchText != null">
+            AND concat(a.po05702,a.po05706,a.po05709,a.po05715,b.pj00402) LIKE concat('%',#{searchText},'%')
+        </if>
+    </select>
+    <select id="getCountByParam" resultType="java.lang.Integer">
+        SELECT COUNT(a.po05701) FROM sdpo057 AS a
+        LEFT JOIN sdpj004 AS b ON a.po05703=b.pj00401
+        WHERE a.po05707 BETWEEN #{start} AND #{end}
+        <if test="searchText != null">
+            AND a.po05702+cast(a.po05706 AS VARCHAR)+a.po05709+CAST (a.po05715 AS VARCHAR)+b.pj00402 LIKE '%'+#{searchText}+'%'
+        </if>
+        <if test="state != null">
+            AND a.po05712 IN(${state})
+        </if>
+    </select>
+    <select id="getCountByParam" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT COUNT(a.po05701) FROM sdpo057 AS a
+        LEFT JOIN sdpj004 AS b ON a.po05703=b.pj00401
+        WHERE a.po05707 BETWEEN #{start} AND #{end}
+        <if test="searchText != null">
+            AND concat(a.po05702,a.po05706,a.po05709,a.po05715,b.pj00402) LIKE concat('%',#{searchText},'%')
+        </if>
+        <if test="state != null">
+            AND a.po05712 IN(${state})
+        </if>
+    </select>
+</mapper>

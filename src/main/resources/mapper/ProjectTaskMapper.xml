@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProjectTaskMapper">
+    <resultMap id="task" type="com.yuesheng.pm.entity.ProjectTask">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+        <result column="moneys" property="moneys" jdbcType="DECIMAL"></result>
+        <result column="datetime" property="datetime" jdbcType="VARCHAR"></result>
+        <result column="task_datetime" property="taskDatetime" jdbcType="VARCHAR"></result>
+        <result column="state" property="state" jdbcType="INTEGER"></result>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <id column="staff_id" property="id" jdbcType="VARCHAR"></id>
+            <result column="pj00402" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="project" javaType="com.yuesheng.pm.entity.Project">
+            <id column="project_id" property="id" jdbcType="VARCHAR"></id>
+            <result column="pa00102" property="name" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+    <sql id="tn">
+        project_task
+    </sql>
+    <insert id="insert">
+        insert into <include refid="tn"></include> (id,name,project_id,datetime,task_datetime,staff_id)
+        values (#{id},#{name},#{project.id},#{datetime},#{taskDatetime},#{staff.id})
+    </insert>
+    <update id="update">
+        update <include refid="tn"></include> set
+        name=#{name},project_id=#{project.id},datetime=#{datetime},staff_id=#{staff.id},task_datetime=#{taskDatetime},state=#{state}
+        where id=#{id}
+    </update>
+    <delete id="delete">
+        delete from <include refid="tn"></include> where id=#{id}
+    </delete>
+    <select id="queryById" resultMap="task">
+        select * from
+        <include refid="tn"></include>
+        left join sdpj004 on pj00401=staff_id
+        left join sdpa001 on pa00101=project_id where id=#{id}
+    </select>
+    <select id="queryByProject" resultMap="task">
+        select * from
+        <include refid="tn"></include>
+        left join sdpj004 on pj00401=staff_id
+        left join sdpa001 on pa00101=project_id where project_id=#{projectId}
+    </select>
+</mapper>

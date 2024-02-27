@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PaymentMapper">
+    <resultMap id="payment" type="com.yuesheng.pm.entity.Payment">
+        <id column="pd06401" property="id" jdbcType="VARCHAR"></id>
+        <result column="pd06402" property="series" jdbcType="VARCHAR"></result>
+        <result column="pd06406" property="date" jdbcType="VARCHAR"></result>
+        <result column="pd06407" property="payDate" jdbcType="VARCHAR"></result>
+        <result column="pd06408" property="approveStatus" jdbcType="TINYINT"></result>
+        <result column="pd06410" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="pd06411" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pd06415" property="rate" jdbcType="DECIMAL"></result>
+        <result column="pd06405" property="printDate" jdbcType="VARCHAR"></result>
+        <result column="pd06417" property="payBankNumber" jdbcType="VARCHAR"></result>
+        <result column="pd06418" property="payOpenAccount" jdbcType="VARCHAR"></result>
+
+        <association property="company" column="pd06403"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="staff" column="pd06404"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="approveStaff" column="pd06409"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="paymentType" column="pd06413" select="getPaymentType"></association>
+        <collection property="details" column="pd06401"
+                    select="com.yuesheng.pm.mapper.PaymentDetailMapper.getDetailByPayId"></collection>
+    </resultMap>
+
+    <resultMap id="paymentSimple" type="com.yuesheng.pm.entity.Payment">
+        <id column="pd06401" property="id" jdbcType="VARCHAR"></id>
+        <result column="pd06402" property="series" jdbcType="VARCHAR"></result>
+        <result column="pd06406" property="date" jdbcType="VARCHAR"></result>
+        <result column="pd06407" property="payDate" jdbcType="VARCHAR"></result>
+        <result column="pd06408" property="approveStatus" jdbcType="TINYINT"></result>
+        <result column="pd06410" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="pd06411" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pd06415" property="rate" jdbcType="DECIMAL"></result>
+        <result column="pd06405" property="printDate" jdbcType="VARCHAR"></result>
+        <result column="pd06417" property="payBankNumber" jdbcType="VARCHAR"></result>
+        <result column="pd06418" property="payOpenAccount" jdbcType="VARCHAR"></result>
+        <association property="moneys" column="pd06401" select="getMoneyByMain"></association>
+        <association property="staff" column="pd06404"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="paymentType" column="pd06413" select="getPaymentType"></association>
+        <association property="company" column="pd06403"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+    </resultMap>
+    <!--合同付款性质-->
+    <resultMap id="type" type="com.yuesheng.pm.entity.PaymentType">
+        <id column="pd05301" property="id" jdbcType="VARCHAR"></id>
+        <result column="pd05302" property="name" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <select id="getPaymentType" resultMap="type">
+        SELECT * FROM sdpd053 WHERE pd05301=#{typeId}
+    </select>
+
+    <select id="getDetailById" resultMap="payment">
+        SELECT * FROM sdpd064 WHERE pd06401=#{id}
+    </select>
+
+    <select id="getPaymentById" resultMap="paymentSimple">
+        SELECT * FROM sdpd064 WHERE pd06401=#{id}
+    </select>
+
+    <select id="getPaymentByCompany" resultMap="paymentSimple">
+        SELECT * FROM sdpd064 WHERE pd06403=#{company} AND pd06406 BETWEEN #{start} AND #{end} ORDER BY pd06406 DESC
+    </select>
+    <select id="getTypes" resultMap="type">
+        SELECT * FROM sdpd053 ORDER BY pd05303 ASC
+    </select>
+    <insert id="addRealityPay">
+        insert into sdpb053 values(#{realityId},#{series},#{payDate},'','','RMB',#{rate},#{id},#{date},#{staff.id},'',#{staff.id},#{staff.section.id},0,'','',
+        #{remark},#{company.id},'','','',#{date},#{paymentType.id})
+    </insert>
+    <update id="approve">
+        update sdpb020
+        set pb02023=#{staffId},
+            pb02022=#{state},
+            pb02024=#{date}
+        where pb02001 = #{realityId}
+    </update>
+    <insert id="addPayment">
+        insert into sdpd064 (pd06401,pd06402,pd06403,pd06404,pd06405,pd06406,pd06407,pd06408,pd06409,pd06410,
+            pd06411,pd06412,pd06413,pd06414,pd06415,pd06416,pd06417,pd06418)
+            values(#{id},#{series},#{company.id},#{staff.id},'',#{date},#{payDate},0,'','',#{remark},0.0,
+        #{paymentType.id},'RMB',#{rate},#{staff.section.id},#{payBankNumber},#{payOpenAccount})
+    </insert>
+    <select id="getPaymentBySeries" resultMap="paymentSimple">
+        select * from sdpd064 where pd06402=#{series}
+    </select>
+    <update id="updatePayment">
+        UPDATE sdpd064 SET pd06403=#{company.id},
+                           pd06407=#{payDate},
+                           pd06411=#{remark},
+                           pd06413=#{paymentType.id},
+                           pd06415=#{rate} WHERE pd06401=#{id};
+    </update>
+
+    <update id="updateApprove">
+        update sdpd064
+        set pd06408=#{approveStatus},
+            pd06409=#{approveStaff.id},
+            pd06410=#{approveDate}
+        where pd06401 = #{id}
+    </update>
+
+    <select id="getPaymentList" resultMap="paymentSimple">
+        SELECT DISTINCT main.* FROM sdpd064 AS main
+        LEFT JOIN sdpf003 AS b ON main.pd06403=b.pf00301
+        LEFT JOIN sdpd017 AS c ON c.pd01740=main.pd06401
+        LEFT JOIN sdpd004 AS c2 ON c.pd01701=c2.pd00401
+        LEFT JOIN sdpa001 AS c3 ON c3.pa00101=c.pd01733
+        LEFT JOIN sdpj004 AS d ON d.pj00401=main.pd06404
+        <where>
+            <if test="str != null">
+                and pd06402+pd06407+pd06411+b.pf00302+c2.pd00402+convert(varchar,c.pd01716)+c.pd01705+c3.pa00102+d.pj00402 LIKE
+                '%'+#{str}+'%'
+            </if>
+            <if test="isAll != null">
+                and main.pd06404 in(${isAll})
+            </if>
+            <if test="approveStatus != null">
+                and main.pd06408 = ${approveStatus}
+            </if>
+            <if test="company != null">
+                and main.pd06403 = #{company}
+            </if>
+        </where>
+    </select>
+    <select id="getPaymentList" resultMap="paymentSimple" databaseId="mysql">
+        SELECT DISTINCT main.* FROM sdpd064 AS main
+        LEFT JOIN sdpf003 AS b ON main.pd06403=b.pf00301
+        LEFT JOIN sdpd017 AS c ON c.pd01740=main.pd06401
+        LEFT JOIN sdpd004 AS c2 ON c.pd01701=c2.pd00401
+        LEFT JOIN sdpa001 AS c3 ON c3.pa00101=c.pd01733
+        LEFT JOIN sdpj004 AS d ON d.pj00401=main.pd06404
+        <where>
+            <if test="str != null">
+                and
+                concat(pd06402,pd06407,pd06411,b.pf00302,c2.pd00402,c.pd01716,c.pd01705,c3.pa00102,d.pj00402)
+                LIKE concat('%',#{str},'%')
+            </if>
+            <if test="isAll != null">
+                and main.pd06404 in(${isAll})
+            </if>
+            <if test="approveStatus != null">
+                and main.pd06408 = ${approveStatus}
+            </if>
+            <if test="company != null">
+                and main.pd06403 = #{company}
+            </if>
+        </where>
+    </select>
+    <select id="getMoneyByMain" resultType="java.lang.Double">
+        SELECT SUM(pd01716) FROM sdpd017 WHERE pd01740=#{mainId}
+    </select>
+    <select id="getPaymentTotal" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT main.pd06401) FROM sdpd064 AS main
+        LEFT JOIN sdpf003 AS b ON main.pd06403=b.pf00301
+        LEFT JOIN sdpd017 AS c ON c.pd01740=main.pd06401
+        LEFT JOIN sdpd004 AS c2 ON c.pd01701=c2.pd00401
+        LEFT JOIN sdpa001 AS c3 ON c3.pa00101=c.pd01733
+        LEFT JOIN sdpj004 AS d ON d.pj00401=main.pd06404
+        <where>
+            <if test="str != null">
+                and pd06402+pd06407+pd06411+b.pf00302+c2.pd00402+convert(varchar,c.pd01716)+c.pd01705+c3.pa00102+d.pj00402 LIKE
+                '%'+#{str}+'%'
+            </if>
+            <if test="isAll != null">
+                and main.pd06404 in(${isAll})
+            </if>
+            <if test="approveStatus != null">
+                and main.pd06408 = ${approveStatus}
+            </if>
+        </where>
+    </select>
+    <select id="getPaymentTotal" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT COUNT(DISTINCT main.pd06401) FROM sdpd064 AS main
+        LEFT JOIN sdpf003 AS b ON main.pd06403=b.pf00301
+        LEFT JOIN sdpd017 AS c ON c.pd01740=main.pd06401
+        LEFT JOIN sdpd004 AS c2 ON c.pd01701=c2.pd00401
+        LEFT JOIN sdpa001 AS c3 ON c3.pa00101=c.pd01733
+        LEFT JOIN sdpj004 AS d ON d.pj00401=main.pd06404
+        <where>
+            <if test="str != null">
+                and
+                concat(pd06402,pd06407,pd06411,b.pf00302,c2.pd00402,c.pd01716,c.pd01705,c3.pa00102,d.pj00402)
+                like concat('%',#{str},'%')
+            </if>
+            <if test="isAll != null">
+                and main.pd06404 in(${isAll})
+            </if>
+            <if test="approveStatus != null">
+                and main.pd06408 = ${approveStatus}
+            </if>
+        </where>
+    </select>
+    <select id="getPaymentByContract" resultMap="paymentSimple">
+        SELECT DISTINCT main.* FROM sdpd064 AS main
+        RIGHT JOIN sdpd017 AS b ON main.pd06401=b.pd01740
+        WHERE b.pd01701=#{contractId}
+    </select>
+    <delete id="delete">
+        delete from sdpd064 where pd06401=#{id}
+    </delete>
+    <update id="updatePrintDate">
+        update sdpd064 set pd06405=#{datetime} where pd06401=#{id}
+    </update>
+</mapper>

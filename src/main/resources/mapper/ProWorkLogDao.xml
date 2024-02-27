@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProWorkLogMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProWorkLog" id="ProWorkLogMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="datetime" column="datetime" jdbcType="TIMESTAMP"/>
+        <result property="workDate" column="work_date" jdbcType="TIMESTAMP"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="TINYINT"/>
+        <result property="note" column="note" jdbcType="VARCHAR"/>
+        <result property="weight" column="weight" jdbcType="DECIMAL"/>
+        <result property="score" column="score" jdbcType="DECIMAL"/>
+        <result property="perId" column="per_id" jdbcType="VARCHAR"/>
+        <result property="tag" column="tag" jdbcType="VARCHAR"/>
+        <result property="edit" column="edit" jdbcType="TINYINT"/>
+        <result property="iScore" column="i_score" jdbcType="DECIMAL"/>
+        <result property="scoreId" column="score_id" jdbcType="VARCHAR"></result>
+        <association property="staff" column="staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="section" column="section_id"
+                     select="com.yuesheng.pm.mapper.SectionMapper.getSevtionByid"></association>
+    </resultMap>
+    <select id="queryByPerId" resultMap="ProWorkLogMap">
+        select *
+        from pro_work_log
+        where per_id = #{perId}
+    </select>
+    <select id="queryByScoreId" resultMap="ProWorkLogMap">
+        select * from pro_work_log
+        where score_id = #{scoreId}
+    </select>
+    <update id="clearScore">
+        update pro_work_log set score_id=null where score_id=#{scoreId}
+    </update>
+    <update id="updateScore">
+        update pro_work_log
+        set score=#{score},
+            weight=#{weight}
+        where id = #{id}
+    </update>
+
+    <update id="updatePerId">
+        update pro_work_log
+        set per_id=#{perId}
+        where id = #{id}
+    </update>
+
+    <update id="clearPerId">
+        update pro_work_log
+        set per_id = NULL
+        where per_id = #{perId}
+    </update>
+
+    <update id="updateScoreId">
+        update pro_work_log
+        set score_id = #{scoreId}
+        where id = #{id}
+    </update>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProWorkLogMap">
+        select *
+        from pro_work_log
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProWorkLogMap">
+        select *
+        from pro_work_log limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProWorkLogMap">
+        select
+        *
+        from pro_work_log
+        LEFT JOIN sdpj004 on pj00401=staff_id
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="sectionId != null and sectionId != ''">
+                and section_id in (${sectionId})
+            </if>
+            <if test="startDate != null">
+                and work_date between #{startDate} and #{endDate}
+            </if>
+            <if test="searchText != null and searchText != ''">
+                and isnull(content,'')+pj00402+isnull(remark,'') LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+        </where>
+        order by work_date asc
+    </select>
+
+    <select id="queryAllCount" resultType="Integer">
+        select
+        COUNT(id)
+        from pro_work_log
+        LEFT JOIN sdpj004 on pj00401=staff_id
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="sectionId != null and sectionId != ''">
+                and section_id in (${sectionId})
+            </if>
+            <if test="startDate != null">
+                and work_date between #{startDate} and #{endDate}
+            </if>
+            <if test="searchText != null  and searchText != ''">
+                and isnull(content,'')+pj00402+isnull(remark,'') LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into pro_work_log(staff_id, section_id, datetime, work_date, content, state, remark, note, weight,
+                                     score, tag)
+        values (#{staff.id}, #{section.id}, #{datetime}, #{workDate}, #{content}, #{state}, #{remark}, #{note},
+                #{weight}, #{score}, #{tag})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_work_log
+        <set>
+            <if test="workDate != null">
+                work_date = #{workDate},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="weight != null">
+                weight = #{weight},
+            </if>
+            <if test="note != null">
+                note = #{note},
+            </if>
+            <if test="tag != null">
+                tag = #{tag},
+            </if>
+            <if test="iScore != null">
+                i_score = #{iScore},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from pro_work_log
+        where id = #{id}
+    </delete>
+
+    <update id="updateEditByPer">
+        update pro_work_log
+
+        <set>
+            <if test="type != null">
+                edit=#{type},
+            </if>
+            <if test="type == 0">
+                per_id=null
+            </if>
+        </set>
+
+        where per_id = #{perId}
+    </update>
+
+</mapper>

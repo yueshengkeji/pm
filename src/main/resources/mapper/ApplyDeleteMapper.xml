@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ApplyDeleteMapper">
+    <resultMap id="applyDelete" type="com.yuesheng.pm.entity.ApplyDelete">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="pro_id" property="proId" jdbcType="VARCHAR"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <result column="state" property="state" jdbcType="TINYINT"></result>
+        <result column="date" property="date" jdbcType="TINYINT"></result>
+    </resultMap>
+
+    <select id="queryByParam" resultMap="applyDelete">
+        select * from pro_apply_delete
+        <where>
+            <if test="proId != null">
+                and pro_id=#{proId}
+            </if>
+            <if test="date != null">
+                and date=#{date}
+            </if>
+        </where>
+    </select>
+
+    <delete id="delete">
+        delete from pro_apply_delete where pro_id=#{proId}
+    </delete>
+    <insert id="applyDelete">
+        INSERT INTO pro_apply_delete values(#{id},#{proId},#{remark},0,CONVERT(varchar(20),getDate(),120));
+    </insert>
+    <update id="updateState">
+        UPDATE pro_apply_delete SET state=#{state} where id=#{id};
+    </update>
+    <select id="queryAll" resultMap="applyDelete">
+        select * from pro_apply_delete WHERE state=0;
+    </select>
+</mapper>

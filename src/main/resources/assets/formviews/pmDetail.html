@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!--编码设置-->
+    <meta charset="utf-8"/>
+    <!--兼容移动端-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!--描述-->
+    <meta name="description" content="管理系统"/>
+    <!--兼容ie-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,,Chrome=1"/>
+    <style type="text/css">
+        body {
+            padding: 0px;
+            margin: 0px;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        * {
+            outline: none;
+        }
+
+        table tr > td:last-child {
+            overflow: inherit;
+        }
+
+        #approve-flag {
+            width: 194px;
+            height: 54px;
+            position: absolute;
+            right: 180px;
+            bottom: 30px;
+            text-align: center;
+            color: red;
+            font-size: 16px;
+            padding: 2px;
+            user-select: none;
+        }
+
+
+        .float {
+            float: left;
+        }
+
+        .col-md-1 {
+            width: 8.33333333%;
+        }
+
+        .col-md-2 {
+            width: 16.66666667%;
+        }
+
+        .col-md-3 {
+            width: 25%;
+        }
+
+        .font-14 {
+            font-size: 14px;
+            color: black;
+            margin: 0 0 10px;
+        }
+
+        .modal-header {
+            color: #fff;
+            border-radius: 0;
+            -webkit-border-radius: 0;
+            border: none;
+            padding: 15px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            WORD-BREAK: break-all;
+            table-layout: fixed;
+            font-weight: 400;
+        }
+
+        table thead > tr > th {
+            padding: 8px;
+            line-height: 24px;
+            vertical-align: top;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            box-sizing: border-box;
+            font-weight: 600;
+        }
+
+        table tbody > tr > th, table tfoot > tr > th {
+            font-weight: 400;
+        }
+
+
+        td, th {
+            padding: 8px;
+            border-bottom: 1px solid #DDD;
+            overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .color-red {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div>
+        <div>
+            <div class="modal-header" style="padding-bottom: 0px;">
+                <div class="modal-title text-center no-margin" style="overflow:hidden;">
+                    <div class="float col-md-1 color-hint dropdown">
+                        <p class="edit font-17 color-red font-14" style="font-weight: 600;" id="pro-company">采购单位</p>
+                    </div>
+                    <div class="float col-md-3 color-hint dropdown">
+                        <p class="edit font-17 font-14" id="company-msg">供应商</p>
+                    </div>
+                    <div class="float col-md-3 color-hint mainEdit">
+                        <p name="settleType-msg" class="edit font-17 font-14" id="settleType-msg">合同名称</p>
+                    </div>
+                    <div class="float col-md-1 color-hint mainEdit">
+                        <p name="tax-msg" class="edit font-17 font-14" id="tax-msg">税率</p>
+                    </div>
+                    <div class="float col-md-2 color-hint mainEdit">
+                        <p name="year-owe-msg" class="edit font-17 font-14" id="pro-data">采购日期</p>
+                    </div>
+                    <div class="float col-md-1 color-hint">
+                        <p class="edit font-17 font-14" id="detailStaff">采购人</p>
+                    </div>
+                    <div class="float col-md-1 color-hint">
+                        <p class="edit font-17 font-14" id="saleMoney">无优惠</p>
+                    </div>
+                </div>
+                <span class="title-chi text-left"></span>
+            </div>
+            <div class="modal-body" id="pmList-modal-body">
+                <table>
+                    <thead>
+                    <tr>
+                        <th style="width: 3%;">序号</th>
+                        <th style="width: 30%;">材料名称</th>
+                        <th style="width: 30%;">型号</th>
+                        <th style="width: 3%;">单位</th>
+                        <th style="width: 5%;">品牌</th>
+                        <th style="width: 10%;">采购数量</th>
+                        <th style="width: 7%;">单价</th>
+                        <th style="width: 7%;">金额</th>
+                        <th style="width: 5%;">税额</th>
+                    </tr>
+                    </thead>
+                    <tbody id="material">
+
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th colspan="1">合计：</th>
+                        <th colspan="6"></th>
+                        <th colspan="1" id="msg-count">0元</th>
+                        <th colspan="1" class="col-flag"></th>
+                    </tr>
+                    <tr>
+                        <th colspan="1">地址：</th>
+                        <th colspan="8" style="text-align: left;" id="detail-address">-</th>
+                    </tr>
+                    <tr>
+                        <th colspan="1">项目：</th>
+                        <th colspan="8" style="text-align: left;" id="project-remark">-</th>
+                    </tr>
+                    <tr>
+                        <th colspan="9" class="color-red" style="color:red;text-align: left;font-weight: 600">
+                            送货时请附带随货清单(不带采购金额)，并将物流信息发给采购员
+                        </th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

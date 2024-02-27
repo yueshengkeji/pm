@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.EquipmentToRepairMapper">
+    <resultMap id="EquipmentToRepair" type="com.yuesheng.pm.entity.EquipmentToRepair">
+        <result property="id" column="id"></result>
+        <result property="remark" column="remark"></result>
+        <result property="state" column="state"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="projectName" column="project_name"></result>
+        <result property="brand" column="brand"></result>
+        <result property="cause" column="cause"></result>
+        <result property="equipmentName" column="equipment_name"></result>
+        <result property="number" column="number"></result>
+        <result property="serialNumber" column="serial_number"></result>
+        <result property="trackingNumber" column="tracking_number"></result>
+        <result property="supplier" column="supplier"></result>
+        <result property="notifyFlag" column="notify_flag"></result>
+        <association property="staffApplicant" column="staff_applicant"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="staffPurchaser" column="staff_purchaser"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.EquipmentToRepair">
+        insert into equipment_to_repair
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="id != null">id,</if>
+            <if test="remark != null">remark,</if>
+            <if test="state != null">state,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="projectName != null">project_name,</if>
+            <if test="brand != null">brand,</if>
+            <if test="cause != null">cause,</if>
+            <if test="equipmentName != null">equipment_name,</if>
+            <if test="number != null">number,</if>
+            <if test="serialNumber != null">serial_number,</if>
+            <if test="trackingNumber != null">tracking_number,</if>
+            <if test="staffApplicant != null">staff_applicant,</if>
+            <if test="staffPurchaser != null">staff_purchaser,</if>
+            <if test="supplier != null">supplier,</if>
+        </trim>
+        <trim prefix="values (" suffixOverrides="," suffix=")">
+            <if test="id != null">#{id},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="state != null">#{state},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="projectName != null">#{projectName},</if>
+            <if test="brand != null">#{brand},</if>
+            <if test="cause != null">#{cause},</if>
+            <if test="equipmentName != null">#{equipmentName},</if>
+            <if test="number != null">#{number},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="trackingNumber != null">#{trackingNumber},</if>
+            <if test="staffApplicant != null">#{staffApplicant.id},</if>
+            <if test="staffPurchaser != null">#{staffPurchaser.id},</if>
+            <if test="supplier != null">#{supplier},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.EquipmentToRepair">
+        update equipment_to_repair
+        <trim prefix="set" suffixOverrides=",">
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+            <if test="brand != null">brand = #{brand},</if>
+            <if test="cause != null">cause = #{brand},</if>
+            <if test="equipmentName != null">equipment_name = #{equipmentName},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="serialNumber != null">serial_number = #{serialNumber},</if>
+            <if test="trackingNumber != null">tracking_number = #{trackingNumber},</if>
+            <if test="staffApplicant != null">staff_applicant = #{staffApplicant.id},</if>
+            <if test="staffPurchaser != null">staff_purchaser = #{staffPurchaser.id},</if>
+            <if test="supplier != null">supplier = #{supplier},</if>
+            <if test="notifyFlag != null">notify_flag = #{notifyFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <select id="list" resultMap="EquipmentToRepair">
+        select * from equipment_to_repair
+        <where>
+            <if test="searchProjectName != null">
+                AND project_name = #{searchProjectName}
+            </if>
+            <if test="str != null">
+                AND isnull(tracking_number,'') + isnull(equipment_name,'') + isnull(project_name,'') + isnull(remark,'') + isnull(supplier,'') LIKE '%'+#{str}+'%'
+            </if>
+            <if test="state != null">
+                AND state = #{state}
+            </if>
+            <if test="start != null and end != null">
+                AND create_time BETWEEN #{start} AND #{end}
+            </if>
+            <if test="staff != null">
+                AND staff_applicant = #{staff}
+            </if>
+            <if test="searchDate != null">
+                AND create_time LIKE '%'+#{searchDate}+'%'
+            </if>
+        </where>
+    </select>
+
+    <select id="list" resultMap="EquipmentToRepair" databaseId="mysql">
+        select * from equipment_to_repair
+        <where>
+            <if test="searchProjectName != null">
+                AND project_name = #{searchProjectName}
+            </if>
+            <if test="str != null">
+                AND concat(tracking_number,equipment_name,project_name,remark,supplier)
+                LIKE concat('%',#{str},'%')
+            </if>
+            <if test="state != null">
+                AND state = #{state}
+            </if>
+            <if test="start != null and end != null">
+                AND create_time BETWEEN #{start} AND #{end}
+            </if>
+            <if test="staff != null">
+                AND staff_applicant = #{staff}
+            </if>
+            <if test="searchDate != null">
+                AND create_time LIKE concat('%',#{searchDate},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectById" resultMap="EquipmentToRepair">
+        select * from equipment_to_repair
+        where id = #{id}
+    </select>
+
+    <update id="updateState">
+        update equipment_to_repair
+        set state = #{state}
+        where id = #{id}
+    </update>
+
+    <update id="updateNotify">
+        update equipment_to_repair
+        set notify_flag = #{notifyFlag}
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from equipment_to_repair
+        where id = #{id}
+    </delete>
+
+    <update id="updateNotifyTiming">
+        update equipment_to_repair
+        set notify_flag = 2
+        where (state = 2 or state = 3)
+        and (notify_time is null or notify_time &lt; #{start})
+    </update>
+</mapper>

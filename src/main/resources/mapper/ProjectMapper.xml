@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProjectMapper">
+    <resultMap id="project" type="com.yuesheng.pm.entity.Project">
+        <id column="pa00101" property="id" jdbcType="VARCHAR" javaType="String"></id>
+        <result column="pa00102" property="name" jdbcType="VARCHAR"></result>
+        <result column="pa00140" property="series" jdbcType="VARCHAR"></result>
+        <result column="pa00105" property="owner" jdbcType="VARCHAR"></result>
+        <result column="pa00158" property="construction" jdbcType="VARCHAR"></result>
+        <result column="pa00112" property="managerName" jdbcType="VARCHAR"></result>
+        <result column="pa00149" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pa00103" property="explain" jdbcType="VARCHAR"></result>
+        <result column="pa00145" property="paDate" jdbcType="VARCHAR"></result>
+        <result column="pa00108" property="date" jdbcType="VARCHAR"></result>
+        <result column="pa00119" property="folderId" jdbcType="VARCHAR"></result>
+        <result column="pa00121" property="money" jdbcType="DECIMAL"></result>
+        <result column="pa00151" property="state" jdbcType="TINYINT"></result>
+        <result column="pa00106" property="add" jdbcType="VARCHAR"></result>
+        <association property="staff" column="pa00113"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="city" column="pa00143"
+                     select="com.yuesheng.pm.mapper.RegionMapper.getCityById"></association>
+        <association property="oConstruction" column="pa00158"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+    </resultMap>
+
+    <resultMap id="projectMater" type="com.yuesheng.pm.model.ProjectMaterial">
+        <result column="pm07005" property="planSum" jdbcType="DECIMAL"></result>
+        <result column="pm03505" property="applySum" jdbcType="DECIMAL"></result>
+        <result column="pm01406" property="proSum" jdbcType="DECIMAL"></result>
+        <result column="pm02706" property="putSum" jdbcType="DECIMAL"></result>
+        <result column="pm02104" property="outSum" jdbcType="DECIMAL"></result>
+        <result column="type" property="type" jdbcType="INTEGER"></result>
+        <result column="pm00201" property="id" jdbcType="VARCHAR"></result>
+        <result column="pm00202" property="name" jdbcType="VARCHAR"></result>
+        <result column="pm00205" property="model" jdbcType="VARCHAR"></result>
+        <result column="pm00221" property="brand" jdbcType="VARCHAR"></result>
+        <result column="pm02106" property="money" jdbcType="DECIMAL"></result>
+        <result column="pm00222" property="producingArea" jdbcType="VARCHAR"></result>
+        <result column="pm01415" property="proMoney" jdbcType="DECIMAL"></result>
+        <result column="pm02710" property="putMoney" jdbcType="DECIMAL"></result>
+        <result column="pm07006" property="planMoney" jdbcType="DECIMAL"></result>
+        <result column="pm02506" property="backMoney" jdbcType="DECIMAL"></result>
+        <result column="pm02504" property="backSum" jdbcType="DECIMAL"></result>
+        <association property="unit" column="pm00201"
+                     select="com.yuesheng.pm.mapper.UnitMapper.getUnitByMater"></association>
+    </resultMap>
+
+    <resultMap id="folder" type="com.yuesheng.pm.entity.Folder">
+        <id column="pa00701" property="id" jdbcType="VARCHAR"></id>
+        <result column="pa00702" property="name" jdbcType="VARCHAR"></result>
+        <result column="pa00703" property="parent" jdbcType="VARCHAR"></result>
+        <result column="pa00704" property="rootId" jdbcType="VARCHAR"></result>
+        <result column="pa00705" property="code" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <delete id="delete">
+        DELETE
+        FROM sdpa001
+        WHERE pa00101 = #{id}
+    </delete>
+    <select id="getProjectByid" parameterType="String" resultMap="project">
+        SELECT *
+        FROM sdpa001
+        WHERE pa00101 = #{id}
+    </select>
+
+    <select id="getOutPrijectMax" resultMap="com.yuesheng.pm.mapper.CompanyMapper.count">
+        SELECT TOP 20 pm02004 AS id,COUNT(pm02004) AS myCount
+        FROM sdpm020
+        GROUP BY pm02004
+        ORDER BY COUNT(pm02004) DESC
+    </select>
+
+    <select id="getProjectByLately" parameterType="java.util.List" resultMap="project">
+        SELECT * FROM sdpa001 WHERE pa00101 IN
+        <foreach collection="list" item="co" open="(" close=");" separator=",">
+            #{co.id}
+        </foreach>
+    </select>
+
+    <select id="seek" parameterType="String" resultMap="project" databaseId="sqlserver">
+        SELECT * FROM sdpa001
+        <where>
+            <if test="str != null and str != ''">
+                and pa00102 LIKE '%'+#{str}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="seek" parameterType="String" resultMap="project" databaseId="mysql">
+        SELECT * FROM sdpa001
+        <where>
+            <if test="str != null and str != ''">
+                and pa00102 LIKE concat('%',#{str},'%')
+            </if>
+        </where>
+    </select>
+    <select id="seekByApprove" parameterType="String" resultMap="project" databaseId="sqlserver">
+        SELECT * FROM sdpa001
+        <where>
+            <if test="name != null and name != ''">
+                and pa00102 LIKE '%'+#{name}+'%'
+            </if>
+            and pa00151=1
+        </where>
+    </select>
+    <select id="seekByApprove" parameterType="String" resultMap="project" databaseId="mysql">
+        SELECT * FROM sdpa001
+        <where>
+            <if test="name != null and name != ''">
+                and pa00102 LIKE concat('%',#{name},'%')
+            </if>
+            and pa00151=1
+        </where>
+    </select>
+    <select id="getProjectByName" parameterType="String" resultMap="project">
+        SELECT *
+        FROM sdpa001
+        where pa00102 = #{name}
+    </select>
+    <select id="getProjectByCon" resultMap="project">
+        SELECT p.pa00101, p.pa00102
+        FROM sdpa001 AS p
+                 RIGHT JOIN sdpd018 AS r ON p.pa00101 = r.pd01802
+        WHERE r.pd01801 = #{contractId}
+    </select>
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.Project">
+        insert into sdpa001
+        values (#{id}, #{name}, #{explain}, 1, #{oOwner.id}, #{add}, 1, #{date}, #{paDate}, '',
+                #{date}, #{managerName}, #{staff.coding}, #{date}, #{date}, #{paDate}, #{paDate}, '', #{folder.id}, '',
+                #{money}, 0, 0, '', 0, '', '', '', 0, 1,
+                #{staff.coding}, #{date}, #{date}, '', 1, 0, 0, 0, 0, #{series},
+                '', '', #{city.id}, 0, #{date}, #{date}, 1, '', #{remark},
+                #{staff.section.id}, 0, '', '', 0, 0, 0, 0, #{oConstruction.id}, 1, 0, 0, '')
+    </insert>
+    <update id="update">
+        update sdpa001
+        set pa00102=#{name},
+            pa00103=#{explain},
+            pa00105=#{oOwner.id},
+            pa00106=#{add},
+            pa00112=#{managerName},
+            pa00119=#{folder.id},
+            pa00121=#{money},
+            pa00143=#{city.id},
+            pa00149=#{remark},
+            pa00158=#{oConstruction.id}
+        where pa00101 = #{id}
+    </update>
+    <insert id="insertFolder">
+        insert into sdpa007 (pa00701, pa00702, pa00703, pa00704, pa00705)
+        values (#{id}, #{name}, #{parent}, #{rootId}, #{code})
+    </insert>
+    <select id="getFolderById" resultMap="folder">
+        SELECT *
+        FROM sdpa007
+        WHERE pa00701 = #{folderId}
+    </select>
+    <select id="getFolderByName" resultMap="folder">
+        SELECT *
+        FROM sdpa007
+        where pa00702 = #{name}
+    </select>
+    <select id="queryFolder" resultMap="folder" databaseId="sqlserver">
+        SELECT * FROM sdpa007
+        <if test="str != null">
+            WHERE pa00702 LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="queryFolder" resultMap="folder" databaseId="mysql">
+        SELECT * FROM sdpa007
+        <if test="str != null">
+            WHERE pa00702 LIKE concat('%',#{str},'%')
+        </if>
+    </select>
+    <select id="getAllProjects" resultMap="project">
+        SELECT *
+        FROM sdpa001
+    </select>
+
+    <select id="getProjects" resultMap="project" databaseId="sqlserver">
+        SELECT DISTINCT a.* FROM sdpa001 as a
+        LEFT JOIN sdpj004 as b on a.pa00113 = b.pj00421
+        <if test="staffId != null">
+            right join project_auth on a.pa00101=project_id
+        </if>
+        <where>
+            <if test="str != null">
+                and a.pa00102+b.pj00402 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="staffId != null">
+                and staff_id=#{staffId}
+            </if>
+        </where>
+        ${order}
+    </select>
+    <select id="getProjects" resultMap="project" databaseId="mysql">
+        SELECT DISTINCT a.* FROM sdpa001 as a
+        LEFT JOIN sdpj004 as b on a.pa00113 = b.pj00421
+        <if test="staffId != null">
+            right join project_auth on a.pa00101=project_id
+        </if>
+        <where>
+            <if test="str != null">
+                and concat(a.pa00102,b.pj00402) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="staffId != null">
+                and staff_id=#{staffId}
+            </if>
+        </where>
+        ${order}
+    </select>
+
+    <select id="getProjectsCount" resultType="Integer" databaseId="sqlserver">
+        SELECT COUNT(DISTINCT a.pa00102) FROM sdpa001 as a
+        LEFT JOIN sdpj004 as b on a.pa00113 = b.pj00421
+        <if test="staffId != null">
+            right join project_auth on a.pa00101=project_id
+        </if>
+        <where>
+            <if test="str != null">
+                and a.pa00102+b.pj00402 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="staffId != null">
+                and staff_id=#{staffId}
+            </if>
+        </where>
+    </select>
+    <select id="getProjectsCount" resultType="Integer" databaseId="mysql">
+        SELECT COUNT(DISTINCT a.pa00102) FROM sdpa001 as a
+        LEFT JOIN sdpj004 as b on a.pa00113 = b.pj00421
+        <if test="staffId != null">
+            right join project_auth on a.pa00101=project_id
+        </if>
+        <where>
+            <if test="str != null">
+                and concat(a.pa00102,b.pj00402) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="staffId != null">
+                and staff_id=#{staffId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getMaterialTopTen" resultType="java.util.Map">
+        SELECT out.pm02004  AS projectId,
+               out.pm02106  AS outMoney,
+               back.pm02406 AS backMoney,
+               out.pm02104  as outNumber,
+               back.pm02504 as backNumber
+        FROM (SELECT a.pm02004, SUM(b.pm02106) AS pm02106, SUM(b.pm02104) as pm02104
+              FROM sdpm020 AS a
+                       LEFT JOIN sdpm021 AS b ON a.pm02001 = b.pm02101
+              WHERE pm02002 BETWEEN #{beginDate} AND #{endDate}
+              GROUP BY a.pm02004) AS out
+                 LEFT JOIN (SELECT a.pm02404, SUM(b.pm02506) AS pm02406, SUM(pm02504) as pm02504
+                            FROM sdpm024 AS a
+                                     LEFT JOIN sdpm025 AS b ON a.pm02401 = b.pm02501
+                            WHERE pm02402 BETWEEN #{beginDate} AND #{endDate}
+                            GROUP BY a.pm02404) AS back
+                           ON out.pm02004 = back.pm02404
+        ORDER BY ISNULL(out.pm02104, 0) - ISNULL(back.pm02504, 0) DESC
+    </select>
+
+    <update id="updateApprove">
+        update sdpa001
+        set pa00151=#{state},
+            pa00152=#{datetime}
+        where pa00101 = #{id}
+    </update>
+
+    <resultMap id="projectAuth" type="com.yuesheng.pm.entity.ProjectAuth">
+        <id column="id" property="id" jdbcType="INTEGER"></id>
+        <association property="project" javaType="com.yuesheng.pm.entity.Project">
+            <id property="id" column="project_id"></id>
+        </association>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <id property="id" column="staff_id"></id>
+        </association>
+    </resultMap>
+    <insert id="insertProjectAuth">
+        insert into project_auth
+        values (#{id}, #{project.id}, #{staff.id})
+    </insert>
+    <delete id="deleteProjectAuth">
+        delete
+        from project_auth
+        where id = #{id}
+    </delete>
+    <select id="getProjectAuth" resultMap="projectAuth">
+        select *
+        from project_auth
+        where project_id = #{projectId}
+    </select>
+    <select id="getProjectAuthByStaff" resultMap="projectAuth">
+        select *
+        from project_auth
+        where staff_id = #{staffId}
+    </select>
+
+    <select id="seekByAuth" parameterType="String" resultMap="project" databaseId="sqlserver">
+        SELECT * FROM sdpa001
+        right join project_auth on pa00101=project_id
+        <where>
+            <if test="str != null and str != ''">
+                and pa00102 LIKE '%'+#{str}+'%'
+            </if>
+            <if test="staffId != null">
+                and staff_id=#{staffId}
+            </if>
+        </where>
+    </select>
+    <select id="seekByAuth" parameterType="String" resultMap="project" databaseId="mysql">
+        SELECT * FROM sdpa001
+        right join project_auth on pa00101=project_id
+        <where>
+            <if test="str != null and str != ''">
+                and pa00102 LIKE concat('%',#{str},'%')
+            </if>
+            <if test="staffId != null">
+                and staff_id=#{staffId}
+            </if>
+        </where>
+    </select>
+    <select id="getProjectAuthByPs" resultMap="projectAuth">
+        select *
+        from project_auth
+        where staff_id = #{staffId} and project_id = #{projectId}
+    </select>
+</mapper>

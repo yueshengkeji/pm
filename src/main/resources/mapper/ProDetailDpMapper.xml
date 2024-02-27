@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProDetailDpMapper">
+    <!--采购部-采购付款明细与到票情况登记信息-->
+    <resultMap id="detailDp" type="com.yuesheng.pm.entity.ProDetailDP">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="pro_detail_id" property="proDetailId" jdbcType="VARCHAR"></result>
+        <result column="pay_date" property="payDate" jdbcType="VARCHAR"></result>
+        <result column="dp_date" property="dpDate" jdbcType="VARCHAR"></result>
+        <result column="dp_money" property="dpMoney" jdbcType="DECIMAL"></result>
+        <result column="pay_money" property="payMoney" jdbcType="DECIMAL"></result>
+        <result column="remark" property="remark" jdbcType="VARCHAR"></result>
+        <result column="put_number" property="putNumber" jdbcType="VARCHAR"></result>
+        <result column="state" property="state" jdbcType="TINYINT"></result>
+        <result column="approve_date" property="approveDate" jdbcType="VARCHAR"></result>
+        <association property="company" javaType="com.yuesheng.pm.entity.Company">
+            <result column="company_id" property="id" jdbcType="VARCHAR"></result>
+            <result column="company_name" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="project" javaType="com.yuesheng.pm.entity.Project">
+            <result column="project_id" property="id" jdbcType="VARCHAR"></result>
+            <result column="project_name" property="name" jdbcType="VARCHAR"></result>
+        </association>
+        <association property="staff"
+                     column="staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="approveStaff"
+                     column="approve_staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+    <select id="getDpByParam" resultMap="detailDp">
+        select * from pro_detail_dp as dp
+        LEFT JOIN pro_detail_c as ppd on dp.pro_detail_id=ppd.id
+        LEFT JOIN pro_detail as pd on ppd.pro_detail_id=pd.id
+        <where>
+            <if test="date != null">
+                dp.dp_date LIKE #{date}+'%'
+            </if>
+            <if test="project != null">
+                and dp.project_name LIKE '%'+#{project}+'%'
+            </if>
+            <if test="companyName != null">
+                and dp.company_name LIKE '%'+#{companyName}+'%'
+            </if>
+            <if test="searchText != null">
+                and dp.company_name+dp.project_name+dp.dp_date+dp.put_number+CAST(dp.dp_money as varchar) LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="state != null">
+                and dp.state in(${state})
+            </if>
+        </where>
+        ${order}
+    </select>
+    <select id="getDpCount" resultType="Integer">
+        select COUNT(dp.id) from pro_detail_dp as dp
+        LEFT JOIN pro_detail_c as ppd on dp.pro_detail_id=ppd.id
+        LEFT JOIN pro_detail as pd on ppd.pro_detail_id=pd.id
+        <where>
+
+            <if test="date != null">
+                dp.dp_date LIKE #{date}+'%'
+            </if>
+            <if test="project != null">
+                and dp.project_name LIKE '%'+#{project}+'%'
+            </if>
+            <if test="companyName != null">
+                and dp.company_name LIKE '%'+#{companyName}+'%'
+            </if>
+            <if test="searchText != null">
+                and dp.company_name+dp.project_name+dp.dp_date+dp.put_number+CAST(dp.dp_money as varchar) LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="state != null">
+                and dp.state in(${state})
+            </if>
+        </where>
+    </select>
+    <insert id="insertProDetailDp">
+        insert into pro_detail_dp
+        (id,pro_detail_id,pay_money,pay_date,dp_money,dp_date,remark,company_id,company_name,project_id,project_name,put_number,state,staff_id)
+        values(#{id},#{proDetailId},#{payMoney},#{payDate},#{dpMoney},#{dpDate},#{remark},#{company.id},#{company.name},#{project.id},#{project.name},#{putNumber},#{state},#{staff.id});
+    </insert>
+    <update id="updateProDetailDp">
+        UPDATE pro_detail_dp SET pay_money=#{payMoney},
+            pay_date=#{payDate},
+            dp_date=#{dpDate},
+            dp_money=#{dpMoney},
+            remark=#{remark},
+            company_id=#{company.id},
+            company_name=#{company.name},
+            project_id=#{project.id},
+            state=#{state},
+            project_name=#{project.name} where id=#{id};
+    </update>
+    <select id="getDetailDp" resultMap="detailDp">
+        SELECT * FROM pro_detail_dp WHERE pro_detail_id=#{proDetailId};
+    </select>
+    <select id="getMoneyByPayAndDp" resultType="java.util.Map">
+        SELECT SUM(pay_money) as payMoneys,SUM(dp_money) as dpMoneys FROM
+        pro_detail_dp where pro_detail_id=#{proDetailId};
+    </select>
+    <select id="getProDetailDp" resultMap="detailDp">
+        SELECT * FROM pro_detail_dp where id=#{id};
+    </select>
+    <delete id="deleteByProId">
+        delete from pro_detail_c where pro_id=#{proId}
+    </delete>
+</mapper>

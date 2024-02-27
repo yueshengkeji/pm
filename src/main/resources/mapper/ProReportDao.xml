@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProReportMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProReport" id="ProReportMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="proId" column="pro_id" jdbcType="VARCHAR"/>
+        <result property="proMaterialId" column="pro_material_id" jdbcType="VARCHAR"/>
+        <result property="materialId" column="material_id" jdbcType="VARCHAR"/>
+        <result property="voucherDate" column="voucher_date" jdbcType="VARCHAR"/>
+        <result property="companyId" column="company_id" jdbcType="VARCHAR"/>
+        <result property="sum" column="sum" jdbcType="NUMERIC"/>
+        <result property="applyPrice" column="apply_price" jdbcType="NUMERIC"/>
+        <result property="proPrice" column="pro_price" jdbcType="NUMERIC"/>
+        <result property="proMoney" column="pro_money" jdbcType="NUMERIC"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="projectPersonName" column="project_person_name" jdbcType="VARCHAR"/>
+        <result property="projectId" column="project_id" jdbcType="VARCHAR"/>
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="dhRemark" column="dh_remark" jdbcType="VARCHAR"/>
+        <result property="acceptPersonName" column="accept_person_name" jdbcType="VARCHAR"/>
+        <result property="contractRemark" column="contract_remark" jdbcType="VARCHAR"/>
+        <result property="payDate" column="pay_date" jdbcType="VARCHAR"/>
+        <result property="companyName" column="company_name" jdbcType="VARCHAR"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="staffName" column="staff_name" jdbcType="VARCHAR"/>
+        <result property="series" column="series" jdbcType="VARCHAR"/>
+        <association property="material" column="material_id"
+                     select="com.yuesheng.pm.mapper.MaterialMapper.getMaterialByid"></association>
+    </resultMap>
+
+    <select id="queryByProGroup" resultMap="ProReportMap">
+        select pro_id from pro_report
+        left join sdpm013 on pm01301=pro_id
+        where voucher_date between #{startDate} and #{endDate}
+        <if test="isNull != null">
+            and pm01301 is null
+        </if>
+        group by pro_id;
+    </select>
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProReportMap">
+        select
+          id, pro_id, pro_material_id, material_id, voucher_date, company_id,series
+          sum, apply_price, pro_price, pro_money, remark, project_person_name, project_id, project_name, dh_remark, accept_person_name, contract_remark, pay_date, company_name,
+          staff_id,staff_name
+        from pro_report
+        where id = #{id}
+    </select>
+
+    <select id="queryByMaterId" resultMap="ProReportMap">
+        select * from pro_report where pro_material_id=#{proMaterRowId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProReportMap">
+        select
+          id, pro_id, pro_material_id, material_id, voucher_date, company_id, sum, apply_price, pro_price, pro_money, remark, project_person_name, project_id, project_name, dh_remark, accept_person_name, contract_remark, pay_date, company_name,
+          staff_id,staff_name,series
+        from pro_report
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProReportMap">
+        select
+        id, pro_id, pro_material_id, material_id, voucher_date, company_id, sum, apply_price, pro_price, pro_money,
+        remark, project_person_name, project_id, project_name, dh_remark, accept_person_name, contract_remark, pay_date,
+        company_name,staff_id,staff_name,series
+        from pro_report
+        left join sdpm002 on pm00201=material_id
+        <where>
+            <if test="proId != null and proId != ''">
+                and pro_id = #{proId}
+            </if>
+            <if test="proMaterialId != null and proMaterialId != ''">
+                and pro_material_id = #{proMaterialId}
+            </if>
+            <if test="materialId != null and materialId != ''">
+                and material_id = #{materialId}
+            </if>
+            <if test="startDate != null and voucherDate != ''">
+                and voucher_date between #{startDate} and #{endDate}
+            </if>
+            <if test="companyId != null and companyId != ''">
+                and company_id = #{companyId}
+            </if>
+            <if test="sum != null">
+                and sum = #{sum}
+            </if>
+            <if test="applyPrice != null">
+                and apply_price = #{applyPrice}
+            </if>
+            <if test="proPrice != null">
+                and pro_price = #{proPrice}
+            </if>
+            <if test="proMoney != null">
+                and pro_money = #{proMoney}
+            </if>
+            <if test="projectName != null and projectName != ''">
+                and project_name = #{projectName}
+            </if>
+            <if test="searchText != null and searchText != ''">
+                and
+                isNull(contract_remark,'')+isNull(accept_person_name,'')+isNull(project_person_name,'')
+                +isNull(remark,'')+isNull(series,'')+pm00202+pm00205+pm00221
+                LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="payDate != null and payDate != ''">
+                and pay_date = #{payDate}
+            </if>
+            <if test="companyName != null and companyName != ''">
+                and company_name LIKE '%'+#{companyName}+'%'
+            </if>
+            <if test="staffName != null">
+                and staff_name like '%'+#{staffName}+'%'
+            </if>
+            <if test="staffId != null">
+                and staff_id = #{staffId}
+            </if>
+            <if test="putState == 1">
+                and (dh_remark = '部分入库' or dh_remark = '完全入库')
+            </if>
+            <if test="putState == 0">
+                and dh_remark = '未入库'
+            </if>
+        </where>
+    </select>
+
+    <select id="queryAllCount" resultType="Integer">
+        select COUNT(id) from pro_report
+        <where>
+            <if test="proId != null and proId != ''">
+                and pro_id = #{proId}
+            </if>
+            <if test="proMaterialId != null and proMaterialId != ''">
+                and pro_material_id = #{proMaterialId}
+            </if>
+            <if test="materialId != null and materialId != ''">
+                and material_id = #{materialId}
+            </if>
+            <if test="voucherDate != null and voucherDate != ''">
+                and voucher_date = #{voucherDate}
+            </if>
+            <if test="companyId != null and companyId != ''">
+                and company_id = #{companyId}
+            </if>
+            <if test="sum != null">
+                and sum = #{sum}
+            </if>
+            <if test="applyPrice != null">
+                and apply_price = #{applyPrice}
+            </if>
+            <if test="proPrice != null">
+                and pro_price = #{proPrice}
+            </if>
+            <if test="proMoney != null">
+                and pro_money = #{proMoney}
+            </if>
+            <if test="projectName != null and projectName != ''">
+                and project_name = #{projectName}
+            </if>
+            <if test="searchText != null and searchText != ''">
+                and
+                isNull(contract_remark,'')+isNull(accept_person_name,'')+isNull(project_person_name,'')
+                +isNull(remark,'')+isNull(series,'')+pm00202+pm00205+pm00221
+                LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="payDate != null and payDate != ''">
+                and pay_date = #{payDate}
+            </if>
+            <if test="companyName != null and companyName != ''">
+                and company_name LIKE '%'+#{companyName}+'%'
+            </if>
+            <if test="staffName != null">
+                and staff_name like '%'+#{staffName}+'%'
+            </if>
+            <if test="staffId != null">
+                and staff_id = #{staffId}
+            </if>
+            <if test="putState == 1">
+                and (dh_remark = '部分入库' or dh_remark = '完全入库')
+            </if>
+            <if test="putState == 0">
+                and dh_remark = '未入库'
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into pro_report(pro_id, pro_material_id, material_id, voucher_date, company_id, sum, apply_price, pro_price, pro_money, remark, project_person_name, project_id, project_name, dh_remark, accept_person_name, contract_remark, pay_date, company_name,staff_id,staff_name,series)
+        values (#{proId}, #{proMaterialId}, #{materialId}, #{voucherDate}, #{companyId}, #{sum}, #{applyPrice}, #{proPrice}, #{proMoney}, #{remark}, #{projectPersonName}, #{projectId}, #{projectName}, #{dhRemark}, #{acceptPersonName}, #{contractRemark}, #{payDate}, #{companyName},#{staffId},#{staffName},#{series})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_report
+        <set>
+            <if test="proId != null and proId != ''">
+                pro_id = #{proId},
+            </if>
+            <if test="proMaterialId != null and proMaterialId != ''">
+                pro_material_id = #{proMaterialId},
+            </if>
+            <if test="materialId != null and materialId != ''">
+                material_id = #{materialId},
+            </if>
+            <if test="voucherDate != null and voucherDate != ''">
+                voucher_date = #{voucherDate},
+            </if>
+            <if test="companyId != null and companyId != ''">
+                company_id = #{companyId},
+            </if>
+            <if test="sum != null">
+                sum = #{sum},
+            </if>
+            <if test="applyPrice != null">
+                apply_price = #{applyPrice},
+            </if>
+            <if test="proPrice != null">
+                pro_price = #{proPrice},
+            </if>
+            <if test="proMoney != null">
+                pro_money = #{proMoney},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="projectPersonName != null">
+                project_person_name = #{projectPersonName},
+            </if>
+            <if test="projectId != null and projectId != ''">
+                project_id = #{projectId},
+            </if>
+            <if test="projectName != null">
+                project_name = #{projectName},
+            </if>
+            <if test="dhRemark != null">
+                dh_remark = #{dhRemark},
+            </if>
+            <if test="acceptPersonName != null">
+                accept_person_name = #{acceptPersonName},
+            </if>
+            <if test="contractRemark != null">
+                contract_remark = #{contractRemark},
+            </if>
+            <if test="payDate != null">
+                pay_date = #{payDate},
+            </if>
+            <if test="companyName != null">
+                company_name = #{companyName},
+            </if>
+            <if test="series != null ">
+                series = #{series},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_report where id = #{id}
+    </delete>
+
+    <delete id="deleteByProId">
+        delete from pro_report where pro_id = #{proId}
+    </delete>
+
+</mapper>

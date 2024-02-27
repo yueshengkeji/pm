@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.DutyMapper">
+    <resultMap id="duty" type="com.yuesheng.pm.entity.Duty">
+        <id column="po01401" jdbcType="VARCHAR" property="id"></id>
+        <result column="po01402" jdbcType="VARCHAR" property="name"></result>
+        <result column="po01404" jdbcType="VARCHAR" property="rootId"></result>
+        <result column="po01405" jdbcType="VARCHAR" property="coding"></result>
+        <result column="po01403" jdbcType="VARCHAR" property="parentId"></result>
+    </resultMap>
+    <select id="getDutyByStaff" resultMap="duty">
+        SELECT * FROM sdpo014 AS a RIGHT JOIN sdpo027 AS b ON a.po01401=b.po02702 WHERE b.po02701=#{staffId}
+    </select>
+    <select id="getStaffByDuty" resultType="com.yuesheng.pm.entity.Staff">
+        SELECT a.po02701 AS id ,b.po01402 AS dutyName,c.pj00402 AS name FROM
+        sdpo027 AS a LEFT JOIN sdpo014 AS b ON
+        a.po02702=b.po01401 LEFT JOIN sdpj004 AS c ON
+        c.pj00401=a.po02701 WHERE b.po01401=#{coding} and c.pj00426=0
+    </select>
+    <select id="getStaffCountByDuty" resultType="Integer">
+        SELECT distinct count(c.pj00401) FROM
+        sdpo027 AS a LEFT JOIN sdpo014 AS b ON
+        a.po02702=b.po01401 LEFT JOIN sdpj004 AS c ON
+        c.pj00401=a.po02701 WHERE b.po01401=#{id} and c.pj00426=0
+    </select>
+    <delete id="deletePerson">
+        DELETE FROM sdpo027 WHERE po02701=#{staffId} AND po02702=#{dutyId}
+    </delete>
+    <delete id="deletePersonAll">
+        DELETE FROM sdpo027 WHERE po02701=#{staffId}
+    </delete>
+    <!--研华工控机：-->
+    <select id="getDutyName" resultType="java.lang.String">
+        SELECT po01402 FROM sdpo014 WHERE  po01401=#{dutyId}
+    </select>
+    <select id="getByParent" resultMap="duty">
+        SELECT * FROM sdpo014 WHERE po01403=#{parent}
+    </select>
+    <select id="getBySeek" resultMap="duty" databaseId="sqlserver">
+        SELECT * FROM sdpo014 WHERE po01402 LIKE '%'+#{str}+'%'
+    </select>
+    <select id="getBySeek" resultMap="duty" databaseId="mysql">
+        SELECT * FROM sdpo014 WHERE po01402 LIKE concat('%',#{str},'%')
+    </select>
+    <select id="getById" resultMap="duty">
+        SELECT * FROM sdpo014 WHERE po01401=#{id}
+    </select>
+    <select id="getDutyByRoot" resultMap="duty" databaseId="sqlserver">
+        select * from sdpo014 where po01404 LIKE '%'+#{dutyId}+'%'
+    </select>
+    <select id="getDutyByRoot" resultMap="duty" databaseId="mysql">
+        select *
+        from sdpo014
+        where po01404 LIKE concat('%', #{dutyId}, '%')
+    </select>
+    <update id="update">
+        UPDATE sdpo014 SET po01402=#{name},po01403=#{parentId},po01404=#{rootId} WHERE po01401=#{id}
+    </update>
+    <insert id="insert">
+        INSERT INTO sdpo014 values(#{id},#{name},#{parentId},#{rootId},#{coding})
+    </insert>
+    <delete id="delete">
+        DELETE FROM sdpo014 WHERE po01401=#{id}
+    </delete>
+    <insert id="insertPerson">
+        INSERT INTO sdpo027 VALUES (#{staffId},#{dutyId})
+    </insert>
+</mapper>

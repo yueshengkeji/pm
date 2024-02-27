@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CourseJudgeMapper">
+    <resultMap id="judge" type="com.yuesheng.pm.entity.CourseJudge">
+        <id column="Po020_condition01" property="id" jdbcType="VARCHAR"></id>
+        <result column="Po020_condition02" property="courseId" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition03" property="fieldName" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition04" property="name" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition05" property="fixing" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition06" property="type" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition07" property="value" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition08" property="value2" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition09" property="suffix" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition10" property="relation" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition11" property="no11" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition12" property="no12" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition13" property="no13" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition14" property="no14" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition15" property="no15" jdbcType="INTEGER"></result>
+    </resultMap>
+    <resultMap id="judgeForMsg" type="com.yuesheng.pm.entity.CourseJudge">
+        <id column="Po020_condition01" property="id" jdbcType="VARCHAR"></id>
+        <result column="Po020_condition02" property="courseId" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition03" property="fieldName" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition04" property="name" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition05" property="fixing" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition06" property="type" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition07" property="value" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition08" property="value2" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition09" property="suffix" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition10" property="relation" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition11" property="no11" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition12" property="no12" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition13" property="no13" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition14" property="no14" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition15" property="historyId" jdbcType="VARCHAR"></result>
+        <result column="Po020_condition16" property="no15" jdbcType="INTEGER"></result>
+    </resultMap>
+    <select id="getByCourse" resultMap="judge">
+        SELECT * FROM sdpo020_condition WHERE po020_condition02=#{courseId}
+    </select>
+    <insert id="addCourseJudgeForMsg">
+        INSERT INTO sdpo020b_Condition VALUES(#{id},#{courseId},#{fieldName},#{name},#{fixing},#{type},#{value},
+        #{value2},#{suffix},#{relation},#{no11},#{no12},#{no13},#{no14},#{historyId},#{no15})
+    </insert>
+    <delete id="deleteCourseJudge">
+        delete from sdpo020b_Condition where Po020_condition15=#{historyId}
+    </delete>
+    <select id="getJudgeForMsg" resultMap="judge">
+        SELECT * FROM sdpo020b_Condition WHERE po020_condition02=#{courseId}
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpo020_Condition VALUES(#{id},#{courseId},#{fieldName},#{name},#{fixing},#{type},
+        #{value},#{value2},#{suffix},#{relation},#{no11},#{no12},#{no13},#{no14},#{no15})
+    </insert>
+    <insert id="update">
+        update sdpo020_Condition set
+        Po020_condition03=#{fieldName},Po020_condition04=#{name},Po020_condition05=#{fixing},
+        Po020_condition06=#{type},Po020_condition07=#{value},Po020_condition08=#{value2},
+        Po020_condition09=#{suffix},Po020_condition10=#{relation},Po020_condition11=#{no11},
+        Po020_condition12=#{no12},Po020_condition13=#{no13},Po020_condition14=#{no14},
+        Po020_condition15=#{no15} where Po020_condition01=#{id}
+    </insert>
+    <delete id="deleteByCourse">
+        delete from sdpo020_Condition where Po020_condition02=#{courseId}
+    </delete>
+    <delete id="deleteById">
+        delete from sdpo020_Condition where Po020_condition01=#{id}
+    </delete>
+</mapper>

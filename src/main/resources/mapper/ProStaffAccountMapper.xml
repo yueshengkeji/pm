@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProStaffAccountMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProStaffAccount" id="ProStaffAccountMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="balance" column="balance" jdbcType="DECIMAL"/>
+        <result property="lastDatetime" column="last_datetime" jdbcType="VARCHAR"/>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <result property="id" column="staff_id" jdbcType="VARCHAR"/>
+            <result property="name" column="staff_name" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProStaffAccountMap">
+        select
+          id, staff_id, balance, last_datetime, staff_name
+        from pro_staff_account
+        where id = #{id}
+    </select>
+    <select id="queryByStaffId" resultMap="ProStaffAccountMap">
+        select
+          id, staff_id, balance, last_datetime, staff_name
+        from pro_staff_account
+        where staff_id = #{staffId}
+    </select>
+    <select id="queryByIdForUpdate" resultMap="ProStaffAccountMap">
+        select
+          id, staff_id, balance, last_datetime, staff_name
+        from pro_staff_account
+        where staff_id = #{staffId} for update
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProStaffAccountMap">
+        select
+          id, staff_id, balance, last_datetime, staff_name
+        from pro_staff_account
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProStaffAccountMap">
+        select
+        id, staff_id, balance, last_datetime, staff_name
+        from pro_staff_account
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="staff != null">
+                and staff_id = #{staff.id}
+            </if>
+            <if test="balance != null">
+                and balance = #{balance}
+            </if>
+            <if test="lastDatetime != null and lastDatetime != ''">
+                and last_datetime = #{lastDatetime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into pro_staff_account(id,staff_id, balance, last_datetime, staff_name)
+        values (#{id},#{staff.id}, #{balance}, #{lastDatetime}, #{staff.name})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_staff_account
+        <set>
+            <if test="balance != null">
+                balance = #{balance},
+            </if>
+            <if test="lastDatetime != null and lastDatetime != ''">
+                last_datetime = #{lastDatetime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_staff_account where id = #{id}
+    </delete>
+
+</mapper>

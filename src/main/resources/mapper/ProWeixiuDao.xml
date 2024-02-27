@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProWeixiuMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProWeixiu" id="ProWeixiuMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="projectId" column="project_id" jdbcType="VARCHAR"/>
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="returnContent" column="return_content" jdbcType="VARCHAR"/>
+        <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+        <result property="isService" column="is_service" jdbcType="INTEGER"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="files" column="files" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="tel" column="tel" jdbcType="VARCHAR"/>
+        <result property="returnFile" column="return_file" jdbcType="VARCHAR"/>
+        <result property="returnTime" column="return_time" jdbcType="VARCHAR"/>
+        <association property="staff" column="staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="returnStaff" column="return_staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+    <resultMap type="com.yuesheng.pm.model.ProWeixiuGroup" id="weixiuGroup">
+        <result property="projectId" column="project_id" jdbcType="VARCHAR"/>
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="count" column="wx_count" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="queryWeiXiuCountByDate" resultType="Integer">
+        select count(id) from pro_weixiu
+        where datetime between #{start} and #{end}
+    </select>
+    <select id="queryByProjectGroup" resultMap="weixiuGroup">
+        select
+        project_name, count(project_name) as wx_count
+        from pro_weixiu where datetime between #{startDate} and #{endDate}
+         group by project_name
+    </select>
+    <select id="queryByParam" resultMap="ProWeixiuMap">
+        select
+        id, project_id, project_name, return_content, datetime, is_service,
+        staff_id,title,files,name,tel,return_time,return_file,return_staff_id
+        from pro_weixiu
+        <where>
+            <if test="searchText != null and searchText != ''">
+                and project_name+title+isnull(return_content,'') LIKE '%'+#{searchText}+'%'
+            </if>
+            <if test="noReturn == true">
+                and return_content is null
+            </if>
+            <if test="startDate != null">
+                and datetime between #{startDate} and #{endDate}
+            </if>
+        </where>
+    </select>
+    <select id="queryCountByParam" resultType="Integer">
+        select
+        COUNT(id)
+        from pro_weixiu
+        <where>
+            <if test="searchText != null and searchText != ''">
+                and project_name+title+isnull(return_content,'') LIKE '%'+#{searchText}+'%'
+            </if>
+
+            <if test="noReturn == true">
+                and return_content is null
+            </if>
+        </where>
+    </select>
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProWeixiuMap">
+        select
+          id, project_id, project_name, return_content, datetime, is_service, staff_id,title,files,name,tel,return_time,return_file,return_staff_id
+        from pro_weixiu
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProWeixiuMap">
+        select
+          id, project_id, project_name, return_content, datetime, is_service, staff_id,title,files,name,tel
+        from pro_weixiu
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProWeixiuMap">
+        select
+        id, project_id, project_name, return_content, datetime, is_service, staff_id,title,files,name,tel
+        from pro_weixiu
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="projectId != null and projectId != ''">
+                and project_id = #{projectId}
+            </if>
+            <if test="projectName != null and projectName != ''">
+                and project_name = #{projectName}
+            </if>
+            <if test="returnContent != null and returnContent != ''">
+                and return_content = #{returnContent}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="isService != null">
+                and is_service = #{isService}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="noReturn == true">
+                and return_content is null
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into pro_weixiu(id,project_id, project_name, return_content, datetime, is_service, staff_id,title,files,name,tel)
+        values (#{id},#{projectId}, #{projectName}, #{returnContent}, #{datetime}, #{isService}, #{staffId},#{title},#{files},#{name},#{tel})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_weixiu
+        <set>
+            <if test="projectId != null and projectId != ''">
+                project_id = #{projectId},
+            </if>
+            <if test="projectName != null and projectName != ''">
+                project_name = #{projectName},
+            </if>
+            <if test="returnContent != null and returnContent != ''">
+                return_content = #{returnContent},
+            </if>
+            <if test="datetime != null and datetime != ''">
+                datetime = #{datetime},
+            </if>
+            <if test="isService != null">
+                is_service = #{isService},
+            </if>
+            <if test="staffId != null and staffId != ''">
+                staff_id = #{staffId},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="returnTime != null and returnTime != ''">
+                return_time = #{returnTime},
+            </if>
+            <if test="returnStaff != null">
+                return_staff_id = #{returnStaff.id},
+            </if>
+            <if test="returnFile != null and returnFile != ''">
+                return_file = #{returnFile},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_weixiu where id = #{id}
+    </delete>
+
+    <select id="selectNoReturn" resultMap="ProWeixiuMap">
+        select id, project_id, project_name, return_content, datetime, is_service, staff_id,title,files,name,tel,return_time,return_file,return_staff_id from pro_weixiu
+        where return_content is null or return_content = ''
+    </select>
+    <select id="selectNoReturnCount" resultType="Integer">
+        select count(id) from pro_weixiu
+        where return_content is null or return_content = ''
+    </select>
+
+</mapper>

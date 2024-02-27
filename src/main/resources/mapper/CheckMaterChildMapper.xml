@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CheckMaterChildMapper">
+
+    <resultMap id="checkMater" type="com.yuesheng.pm.entity.CheckMaterChild">
+        <id column="pm01602" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm01601" property="mainId" jdbcType="VARCHAR"></result>
+        <result column="pm01604" property="sum" jdbcType="DECIMAL"></result>
+        <result column="pm01605" property="money" jdbcType="DECIMAL"></result>
+        <result column="pm01606" property="price" jdbcType="DECIMAL"></result>
+        <result column="pm01607" property="realitySum" jdbcType="DECIMAL"></result>
+        <association property="material" column="pm01603"
+                     select="com.yuesheng.pm.mapper.MaterialMapper.getMaterialByid"></association>
+        <association property="cm" javaType="com.yuesheng.pm.entity.CheckMater">
+            <id column="pm01501" property="id" jdbcType="VARCHAR"></id>
+            <result column="pm01502" property="checkDate" jdbcType="VARCHAR"></result>
+            <result column="pm01503" property="checkNumber" jdbcType="VARCHAR"></result>
+            <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+                <result column="pm01509" jdbcType="VARCHAR" property="coding"></result>
+            </association>
+        </association>
+    </resultMap>
+    <select id="listByParam" resultMap="checkMater">
+        SELECT DISTINCT b.*,a.pm01501,a.pm01502,a.pm01503,a.pm01509 FROM sdpm015 AS a
+        RIGHT JOIN sdpm016 AS b ON a.pm01501=b.pm01601
+        LEFT JOIN sdpm002 AS b2 ON b2.pm00201=b.pm01603
+        LEFT JOIN sdpm004 AS c ON c.pm00401=a.pm01504
+        <where>
+            <if test="startDate != null and endDate != null">
+                and a.pm01502 BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="searchText != null">
+                AND a.pm01503+a.pm01505+a.pm01502+b2.pm00201+b2.pm00202+b2.pm00205+b2.pm00221+c.pm00402 LIKE
+                '%'+#{searchText}+'%'
+            </if>
+            <if test="state != null">
+                AND a.pm01513=#{state}
+            </if>
+        </where>
+    </select>
+    <select id="listByParam" resultMap="checkMater" databaseId="mysql">
+        SELECT DISTINCT b.*,a.pm01501,a.pm01502,a.pm01503,a.pm01509 FROM sdpm015 AS a
+        RIGHT JOIN sdpm016 AS b ON a.pm01501=b.pm01601
+        LEFT JOIN sdpm002 AS b2 ON b2.pm00201=b.pm01603
+        LEFT JOIN sdpm004 AS c ON c.pm00401=a.pm01504
+        <where>
+            <if test="startDate != null and endDate != null">
+                and a.pm01502 BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="searchText != null">
+                AND concat(a.pm01503,a.pm01505,a.pm01502,b2.pm00201,b2.pm00202,b2.pm00205,b2.pm00221,c.pm00402) LIKE
+                concat('%',#{searchText},'%')
+            </if>
+            <if test="state != null">
+                AND a.pm01513=#{state}
+            </if>
+        </where>
+    </select>
+    <select id="getCheckTotalMoney" resultType="double">
+        SELECT SUM(pm01605) FROM sdpm015 AS a
+        RIGHT JOIN sdpm016 AS b ON a.pm01501=b.pm01601
+        LEFT JOIN sdpm002 AS b2 ON b2.pm00201=b.pm01603
+        LEFT JOIN sdpm004 AS c ON c.pm00401=a.pm01504
+        <where>
+            <if test="startDate != null and endDate != null">
+                and a.pm01502 BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="searchText != null">
+                AND a.pm01503+a.pm01505+a.pm01502+b2.pm00201+b2.pm00202+b2.pm00205+b2.pm00221+c.pm00402 LIKE
+                '%'+#{searchText}+'%'
+            </if>
+            <if test="state != null">
+                AND a.pm01513=#{state}
+            </if>
+        </where>
+    </select>
+    <select id="getCheckTotalMoney" resultType="double" databaseId="mysql">
+        SELECT SUM(pm01605) FROM sdpm015 AS a
+        RIGHT JOIN sdpm016 AS b ON a.pm01501=b.pm01601
+        LEFT JOIN sdpm002 AS b2 ON b2.pm00201=b.pm01603
+        LEFT JOIN sdpm004 AS c ON c.pm00401=a.pm01504
+        <where>
+            <if test="startDate != null and endDate != null">
+                and a.pm01502 BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="searchText != null">
+                AND concat(a.pm01503,a.pm01505,a.pm01502,b2.pm00201,b2.pm00202,b2.pm00205,b2.pm00221,c.pm00402) LIKE
+                concat('%',#{searchText},'%')
+            </if>
+            <if test="state != null">
+                AND a.pm01513=#{state}
+            </if>
+        </where>
+    </select>
+    <insert id="checkMater" parameterType="com.yuesheng.pm.entity.CheckMaterChild">
+        INSERT INTO sdpm016 VALUES(#{mainId},#{id},#{material.id},#{sum},#{money},#{price},#{realitySum})
+    </insert>
+    <update id="updateCheckMater">
+        UPDATE sdpm016 SET pm01607=#{realitySum},pm01606=#{price},pm01605=#{money}
+        <if test="sum != null">
+            ,pm01604=#{sum}
+        </if>
+        WHERE pm01602=#{id}
+    </update>
+    <delete id="deleteMaterByMain">
+        DELETE FROM sdpm016 WHERE pm01601=#{mainId}
+    </delete>
+    <delete id="deleteById">
+        DELETE FROM sdpm016 WHERE pm01602=#{id}
+    </delete>
+    <select id="getMaterList" resultMap="checkMater">
+        SELECT * FROM sdpm016 WHERE pm01601=#{mainId}
+    </select>
+    <select id="getMaterByMaterId" resultMap="com.yuesheng.pm.mapper.MaterialMapper.material">
+        SELECT a.* FROM sdpm002 AS a
+        RIGHT JOIN sdpm016 AS b ON a.pm00201=b.pm01603
+        WHERE b.pm01603=#{id}
+    </select>
+    <select id="getMaterUseByMaterId" resultMap="checkMater">
+        SELECT * FROM sdpm016 WHERE pm01603=#{id}
+    </select>
+</mapper>

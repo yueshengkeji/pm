@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.StaffAdditionInfoMapper">
+    <resultMap id="staffAdditionInfo" type="com.yuesheng.pm.entity.StaffAdditionInfo">
+        <id column="id" property="id" javaType="java.lang.String" jdbcType="VARCHAR"></id>
+        <result column="staff_id" property="staffId" javaType="java.lang.String" jdbcType="VARCHAR"></result>
+        <result column="system_id" property="systemId" javaType="java.lang.String" jdbcType="VARCHAR"></result>
+        <result column="system_name" property="systemName" javaType="java.lang.String" jdbcType="VARCHAR"></result>
+        <result column="wx_user_id" property="wxUserId" javaType="java.lang.String" jdbcType="VARCHAR"></result>
+        <result column="wx_open_id" property="wxOpenId" javaType="java.lang.String" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+
+    <!-- 插入信息 -->
+    <insert id="insert">
+        INSERT INTO staff_addition_info
+        ( id , staff_id , system_id , system_name , wx_user_id , wx_open_id )
+        VALUES ( #{id} , #{staffId} , #{systemId} , #{systemName} , #{wxUserId} , #{wxOpenId} )
+    </insert>
+
+    <!-- 根据staffId和systemId查询信息 -->
+    <select id="getStaffAdditionInfoByStaffIdAndSystemId" resultMap="staffAdditionInfo">
+        SELECT * FROM staff_addition_info
+        WHERE staff_id = #{staffId}
+        <if test="systemId != null and systemId != ''">
+            AND system_id = #{systemId}
+        </if>
+    </select>
+
+    <!-- 根据wxUserId获取Staff附加信息 -->
+    <select id="getStaffAdditionInfoByWxUserId" resultMap="staffAdditionInfo">
+        SELECT TOP 1 * FROM staff_addition_info
+        WHERE wx_user_id = #{wxUserId}
+    </select>
+
+    <delete id="deleteByWxUserId">
+        DELETE FROM staff_addition_info
+        WHERE wx_user_id = #{wxUserId}
+    </delete>
+
+    <!-- 根据微信OpenId获取Staff附加信息 -->
+    <select id="getStaffAdditionInfoByWxOpenId" resultMap="staffAdditionInfo">
+        SELECT TOP 1 * FROM staff_addition_info
+        WHERE wx_open_id = #{wxOpenId}
+    </select>
+    <select id="getAllWxUser" resultMap="staffAdditionInfo">
+        select * from staff_addition_info
+    </select>
+
+    <delete id="deleteByStaffId">
+        delete from staff_addition_info where staff_id = #{staffId}
+    </delete>
+</mapper>

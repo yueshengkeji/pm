@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CompanyMapper">
+
+    <resultMap id="company" type="com.yuesheng.pm.entity.Company">
+        <id column="pf00301" jdbcType="VARCHAR" property="id"></id>
+        <result column="pf00302" jdbcType="VARCHAR" property="name"></result>
+        <result column="pf00303" jdbcType="VARCHAR" property="folder"></result>
+        <result column="pf00316" jdbcType="TINYINT" property="isSupply" javaType="byte"></result>
+        <result column="pf00348" jdbcType="TINYINT" property="isClient" javaType="byte"></result>
+        <result column="pf00311" jdbcType="VARCHAR" property="logDate" javaType="String"></result>
+        <result column="pf00343" jdbcType="VARCHAR" property="unitNumber" javaType="String"></result>
+        <result column="pf00335" jdbcType="VARCHAR" property="relationP" javaType="String"></result>
+        <result column="pf00336" jdbcType="VARCHAR" property="telephoneP" javaType="String"></result>
+        <result column="pf00337" jdbcType="VARCHAR" property="emailP" javaType="String"></result>
+        <result column="pf00338" jdbcType="VARCHAR" property="tel" javaType="String"></result>
+        <result column="pf00340" jdbcType="VARCHAR" property="taxNumber" javaType="String"></result>
+        <result column="pf00342" jdbcType="VARCHAR" property="bankNumber" javaType="String"></result>
+        <result column="pf00341" jdbcType="VARCHAR" property="openAccount" javaType="String"></result>
+        <result column="pf00308" jdbcType="VARCHAR" property="address" javaType="String"></result>
+        <result column="pf00306" jdbcType="VARCHAR" property="bankNumber2" javaType="String"></result>
+        <result column="pf00305" jdbcType="VARCHAR" property="openAccount2" javaType="String"></result>
+        <result column="pf00307" jdbcType="VARCHAR" property="lineNum" javaType="String"></result>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <result column="pf00314" property="coding" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+    <resultMap id="companyJane" type="com.yuesheng.pm.entity.Company">
+        <id column="pf00301" jdbcType="VARCHAR" property="id"></id>
+        <result column="pf00302" jdbcType="VARCHAR" property="name"></result>
+        <result column="pf00342" jdbcType="VARCHAR" property="bankNumber" javaType="String"></result>
+        <result column="pf00341" jdbcType="VARCHAR" property="openAccount" javaType="String"></result>
+        <result column="pf00308" jdbcType="VARCHAR" property="address" javaType="String"></result>
+        <result column="jurisdiction" jdbcType="VARCHAR" property="jurisdiction"></result>
+        <result column="street" jdbcType="VARCHAR" property="street"></result>
+        <result column="phone" jdbcType="VARCHAR" property="phone"></result>
+        <result column="pf00335" jdbcType="VARCHAR" property="relationP" javaType="String"></result>
+        <result column="pf00336" jdbcType="VARCHAR" property="telephoneP" javaType="String"></result>
+        <result column="pf00337" jdbcType="VARCHAR" property="emailP" javaType="String"></result>
+        <result column="pf00306" jdbcType="VARCHAR" property="bankNumber2" javaType="String"></result>
+        <result column="pf00305" jdbcType="VARCHAR" property="openAccount2" javaType="String"></result>
+        <result column="pf00307" jdbcType="VARCHAR" property="lineNum" javaType="String"></result>
+    </resultMap>
+    <resultMap id="count" type="com.yuesheng.pm.entity.Count">
+        <id property="id" column="pf00301" jdbcType="VARCHAR"></id>
+        <result property="myCount" column="myCount" jdbcType="INTEGER"></result>
+    </resultMap>
+    <resultMap id="folder" type="com.yuesheng.pm.entity.Folder">
+        <id column="pf00101" property="id" jdbcType="VARCHAR"></id>
+        <result column="pf00102" property="name" jdbcType="VARCHAR"></result>
+        <result column="pf00103" property="parent" jdbcType="VARCHAR"></result>
+        <result column="pf00104" property="rootId" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getByMaterial" resultMap="company" >
+        select distinct a.* from sdpf003 as a
+        right join sdpm013 as b on a.pf00301=b.pm01304
+        right join sdpm014 as c on b.pm01301=c.pm01401
+        LEFT join sdpm002 as d on c.pm01403=d.pm00201
+        <where>
+            <if test="name != null">
+                AND d.pm00202 LIKE '%'+#{name}+'%'
+            </if>
+            <if test="model != null">
+                AND d.pm00205 LIKE '%'+#{model}+'%'
+            </if>
+            <if test="brand != null">
+                AND d.pm00221 LIKE '%'+#{brand}+'%'
+            </if>
+        </where>
+
+    </select>
+    <select id="getByMaterial" resultMap="company" databaseId="mysql">
+        select distinct a.* from sdpf003 as a
+        right join sdpm013 as b on a.pf00301=b.pm01304
+        right join sdpm014 as c on b.pm01301=c.pm01401
+        LEFT join sdpm002 as d on c.pm01403=d.pm00201
+        <where>
+            <if test="name != null">
+                AND d.pm00202 LIKE concat('%',#{name},'%')
+            </if>
+            <if test="model != null">
+                AND d.pm00205 LIKE concat('%',#{model},'%')
+            </if>
+            <if test="brand != null">
+                AND d.pm00221 LIKE concat('%',#{brand},'%')
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getByName" resultMap="company">
+        SELECT * FROM sdpf003 WHERE pf00302=#{name}
+    </select>
+    <select id="getCompanyById" parameterType="String" resultMap="company">
+        SELECT * FROM sdpf003 WHERE pf00301=#{id}
+    </select>
+    <select id="getCompanyBySupply" resultMap="companyJane">
+        SELECT pf00301,pf00302 FROM sdpf003 WHERE pf00316=1
+    </select>
+    <select id="count" parameterType="INTEGER" resultType="INTEGER">
+        SELECT count(pf00301) FROM sdpf003 WHERE pf00316=#{type}
+    </select>
+    <select id="seek" parameterType="String" resultMap="companyJane" >
+        SELECT pf00301,pf00302,pf00308,pf00341,pf00342 FROM sdpf003 WHERE pf00316=1 AND pf00302 LIKE '%'+#{name}+'%'
+    </select>
+    <select id="seek" parameterType="String" resultMap="companyJane" databaseId="mysql">
+        SELECT pf00301,pf00302,pf00308,pf00341,pf00342 FROM sdpf003 WHERE pf00316=1 AND pf00302 LIKE concat('%',#{name},'%')
+    </select>
+    <select id="getSumCount" resultMap="count">
+        SELECT pm01304 AS id,COUNT(pm01304) AS myCount from sdpm013
+        GROUP BY pm01304 ORDER BY count(pm01304) DESC
+    </select>
+    <select id="getCompanyByList" resultMap="companyJane" parameterType="java.util.List">
+        SELECT * FROM sdpf003
+        <where>
+            <if test="list != null">
+                and pf00301 in
+                <foreach collection="list" item="co" open="(" close=");" separator=",">
+                    #{co.id}
+                </foreach>
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getSumCountByOut" resultMap="count">
+        SELECT pm02008 AS id,COUNT(pm02008) AS myCount from sdpm020 GROUP BY pm02008 ORDER BY count(pm02008) DESC
+    </select>
+
+    <select id="seekAll" resultMap="companyJane" >
+        SELECT a.*,b.jurisdiction,b.phone,b.street FROM sdpf003
+        as a
+        left join company_to_sdpf003 as b on b.id = a.pf00301
+        <where>
+            <if test="name != null and name != ''">
+                and pf00302 LIKE '%'+#{name}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="seekAll" resultMap="companyJane" databaseId="mysql">
+        SELECT a.*,b.jurisdiction,b.phone,b.street FROM sdpf003
+        as a
+        left join company_to_sdpf003 as b on b.id = a.pf00301
+        <where>
+            <if test="name != null and name != ''">
+                and pf00302 LIKE concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getSupplyCount" resultType="java.lang.Integer">
+        SELECT count(pf00301) FROM sdpf003 WHERE pf00316=1
+    </select>
+    <select id="queryFolder" resultMap="folder" >
+        SELECT * FROM sdpf001
+        <if test="str != null">
+            WHERE pf00102 LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="queryFolder" resultMap="folder" databaseId="mysql">
+        SELECT * FROM sdpf001
+        <if test="str != null">
+            WHERE pf00102 LIKE concat('%',#{str},'%')
+        </if>
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpf003 values(#{id},#{name},#{folder},
+        '',#{openAccount2},#{bankNumber2},#{lineNum},#{address},'','',#{logDate},#{logDate},#{staff.coding},-- 13              35
+        #{staff.coding},0,#{isSupply},'','','','','','','','','','','','','','','','','','',#{relationP},#{telephoneP},#{emailP},#{tel},'',''  -- 40
+        ,#{openAccount},#{bankNumber},#{unitNumber},'',1,0,0,0,1)
+    </insert>
+    <select id="getCompanyByLast" resultMap="company">
+        SELECT * FROM sdpf003 WHERE pf00313=#{sc} ORDER BY pf00311 DESC
+    </select>
+    <select id="queryFolderById" resultMap="folder">
+        SELECT * FROM sdpf001 WHERE pf00101=#{folderId}
+    </select>
+    <resultMap id="cmm" type="com.yuesheng.pm.model.CompanyModel">
+        <result column="number" property="number" jdbcType="INTEGER"></result>
+        <result column="money" property="money" jdbcType="DECIMAL"></result>
+        <association property="company" column="companyId" select="getCompanyById"
+                     javaType="com.yuesheng.pm.entity.Company"></association>
+    </resultMap>
+    <select id="getCompanyByProMax" resultMap="cmm">
+        SELECT pm01304 AS companyId,COUNT(pm01304) AS number from sdpm013
+        <if test="start != null">
+            WHERE pm01302 BETWEEN #{start} AND #{end}
+        </if>
+        GROUP BY pm01304 ORDER BY count(pm01304) DESC
+    </select>
+    <select id="getCompanyByParam" resultMap="company" >
+        SELECT * FROM sdpf003
+        <if test="str != null">
+            WHERE pf00302+pf00311+pf00341+pf00342+pf00335 LIKE '%'+#{str}+'%'
+        </if>
+        ${order}
+    </select>
+    <select id="getCompanyByParam" resultMap="company" databaseId="mysql">
+        SELECT * FROM sdpf003
+        <if test="str != null">
+            WHERE concat(pf00302,pf00311,pf00341,pf00342,pf00335) LIKE concat('%',#{str},'%')
+        </if>
+        ${order}
+    </select>
+    <select id="getCompanyByParamCount" resultType="java.lang.Integer" >
+        SELECT COUNT(pf00301) FROM sdpf003
+        <if test="str != null">
+            WHERE pf00302+pf00311+pf00341+pf00342+pf00335 LIKE '%'+#{str}+'%'
+        </if>
+    </select>
+    <select id="getCompanyByParamCount" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT COUNT(pf00301) FROM sdpf003
+        <if test="str != null">
+            WHERE concat(pf00302,pf00311,pf00341,pf00342,pf00335) LIKE concat('%',#{str},'%')
+        </if>
+    </select>
+    <update id="updateCompany">
+        UPDATE sdpf003
+        <set>
+            <if test="name != null and name != ''">
+                pf00302=#{name},
+            </if>
+            <if test="folder != null and folder != ''">
+                pf00303=#{folder},
+            </if>
+            <if test="isSupply != null and isSupply != ''">
+                pf00316=#{isSupply},
+            </if>
+            <if test="isClient != null and isClient != ''">
+                pf00348=#{isClient},
+            </if>
+            <if test="relationP != null and relationP != ''">
+                pf00335=#{relationP},
+            </if>
+            <if test="telephoneP != null and telephoneP != ''">
+                pf00336=#{telephoneP},
+            </if>
+            <if test="emailP != null and emailP != ''">
+                pf00337=#{emailP},
+            </if>
+            <if test="tel != null and tel != ''">
+                pf00338=#{tel},
+            </if>
+            <if test="taxNumber != null and taxNumber != ''">
+                pf00340=#{taxNumber},
+            </if>
+            <if test="bankNumber != null and bankNumber != ''">
+                pf00342=#{bankNumber},
+            </if>
+            <if test="openAccount != null and openAccount != ''">
+                pf00341=#{openAccount},
+            </if>
+            <if test="address != null and address != ''">
+                pf00308=#{address},
+            </if>
+            <if test="bankNumber2 != null and bankNumber2 != ''">
+                pf00306=#{bankNumber2},
+            </if>
+            <if test="openAccount2 != null and openAccount2 != ''">
+                pf00305=#{openAccount2},
+            </if>
+            <if test="lineNum != null">
+                pf00307=#{lineNum},
+            </if>
+        </set>
+
+        where pf00301=#{id}
+    </update>
+</mapper>

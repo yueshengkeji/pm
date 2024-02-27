@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.OutCarExpenseMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.OutCarExpense" id="OutCarExpenseMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="startDate" column="start_date" jdbcType="VARCHAR"/>
+        <result property="endDate" column="end_date" jdbcType="VARCHAR"/>
+        <result property="systemKm" column="system_km" jdbcType="DECIMAL"/>
+        <result property="inputKm" column="input_km" jdbcType="DECIMAL"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="files" column="files" jdbcType="VARCHAR"/>
+        <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+        <result property="money" column="money" jdbcType="DECIMAL"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+            <result column="staff_id" property="id" jdbcType="VARCHAR"></result>
+            <result column="pj00402" property="name" jdbcType="VARCHAR"></result>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="OutCarExpenseMap">
+        select
+          *
+        from out_car_expense left join sdpj004 on pj00401=staff_id
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="OutCarExpenseMap">
+        select
+          id, staff_id, start_date, end_date, system_km, input_km, remark, files, datetime, money,pj00402,state
+        from out_car_expense left join sdpj004 on pj00401=staff_id
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and start_date = #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and end_date = #{endDate}
+            </if>
+            <if test="systemKm != null">
+                and system_km = #{systemKm}
+            </if>
+            <if test="inputKm != null">
+                and input_km = #{inputKm}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="files != null and files != ''">
+                and files = #{files}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+        </where>
+    </select>
+    <select id="queryMoneyCount" resultType="HashMap">
+        select
+        convert(varchar(20),sum(system_km)) as systemKm,
+        convert(varchar(20),sum(input_km)) as inputKm,
+        convert(varchar(20),sum(money)) as money
+        from out_car_expense
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and start_date = #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and end_date = #{endDate}
+            </if>
+            <if test="systemKm != null">
+                and system_km = #{systemKm}
+            </if>
+            <if test="inputKm != null">
+                and input_km = #{inputKm}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="files != null and files != ''">
+                and files = #{files}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from out_car_expense
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and start_date = #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and end_date = #{endDate}
+            </if>
+            <if test="systemKm != null">
+                and system_km = #{systemKm}
+            </if>
+            <if test="inputKm != null">
+                and input_km = #{inputKm}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="files != null and files != ''">
+                and files = #{files}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into out_car_expense(id,staff_id, start_date, end_date, system_km, input_km, remark, files, datetime, money)
+        values (#{id},#{staffId}, #{startDate}, #{endDate}, #{systemKm}, #{inputKm}, #{remark}, #{files}, #{datetime}, #{money})
+    </insert>
+
+    <insert id="insertBatch">
+        insert into out_car_expense(id,staff_id, start_date, end_date, system_km, input_km, remark, files, datetime, money)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (${id},#{entity.staffId}, #{entity.startDate}, #{entity.endDate}, #{entity.systemKm}, #{entity.inputKm}, #{entity.remark}, #{entity.files}, #{entity.datetime}, #{entity.money})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch">
+        insert into out_car_expense(id,staff_id, start_date, end_date, system_km, input_km, remark, files, datetime, money)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{id},#{entity.staffId}, #{entity.startDate}, #{entity.endDate}, #{entity.systemKm}, #{entity.inputKm}, #{entity.remark}, #{entity.files}, #{entity.datetime}, #{entity.money})
+        </foreach>
+        on duplicate key update
+        staff_id = values(staff_id),
+        start_date = values(start_date),
+        end_date = values(end_date),
+        system_km = values(system_km),
+        input_km = values(input_km),
+        remark = values(remark),
+        files = values(files),
+        datetime = values(datetime),
+        money = values(money)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update out_car_expense
+        <set>
+            <if test="staffId != null and staffId != ''">
+                staff_id = #{staffId},
+            </if>
+            <if test="startDate != null and startDate != ''">
+                start_date = #{startDate},
+            </if>
+            <if test="endDate != null and endDate != ''">
+                end_date = #{endDate},
+            </if>
+            <if test="systemKm != null">
+                system_km = #{systemKm},
+            </if>
+            <if test="inputKm != null">
+                input_km = #{inputKm},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="files != null and files != ''">
+                files = #{files},
+            </if>
+            <if test="datetime != null and datetime != ''">
+                datetime = #{datetime},
+            </if>
+            <if test="money != null">
+                money = #{money},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from out_car_expense where id = #{id}
+    </delete>
+
+    <update id="updateState">
+        update out_car_expense set state = #{state} where id=#{id}
+    </update>
+
+</mapper>
+

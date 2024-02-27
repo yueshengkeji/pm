@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ContractTypeMapper">
+    <resultMap id="conType" type="com.yuesheng.pm.entity.ContractType">
+        <id jdbcType="VARCHAR" column="pd00601" property="id"></id>
+        <result jdbcType="VARCHAR" column="pd00602" property="name"></result>
+        <result jdbcType="VARCHAR" column="pd00603" property="parentId"></result>
+        <result jdbcType="VARCHAR" column="pd00604" property="rootId"></result>
+        <result jdbcType="VARCHAR" column="pd00611" property="orderNumber"></result>
+    </resultMap>
+    <select id="getTypeByStr" resultMap="conType" parameterType="String">
+        SELECT pd00601,pd00602 FROM sdpd006 WHERE pd00602=#{str}
+    </select>
+    <select id="getTypeById" resultMap="conType" parameterType="String">
+        SELECT pd00601,pd00602 FROM sdpd006 WHERE pd00601=#{id}
+    </select>
+    <select id="getTypeByParent" resultMap="conType">
+        SELECT * FROM sdpd006 WHERE pd00603=#{parentId} ORDER BY pd00611 ASC
+    </select>
+    <select id="seek" resultMap="conType">
+        SELECT * FROM sdpd006 WHERE pd00602 LIKE '%'+#{str}+'%'
+    </select>
+    <select id="seek" resultMap="conType" databaseId="mysql">
+        SELECT * FROM sdpd006 WHERE pd00602 LIKE concat('%',#{str},'%')
+    </select>
+    <select id="getContractTypes" resultMap="conType">
+        SELECT * FROM sdpd006 ORDER BY pd00611 ASC
+    </select>
+    <insert id="insert">
+        insert into sdpd006 (pd00601,pd00602,pd00603,pd00604,pd00605,pd00606,pd00607,pd00608,
+        pd00609,pd00610,pd00611)
+        values (#{id},#{name},#{parentId},#{rootId},0,'','','','','',#{orderNumber})
+    </insert>
+    <update id="update">
+        update sdpd006
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">pd00602 = #{name},</if>
+            <if test="parentId != null">pd00603 = #{parentId},</if>
+            <if test="rootId != null">pd00604 = #{rooeId},</if>
+            <if test="orderNumber != null">pd00611 = #{orderNumber},</if>
+        </trim>
+        where pd00601 = #{id}
+    </update>
+    <delete id="delete">
+        delete from sdpd006
+        where pd00601 = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.BackMaterMapper">
+
+    <resultMap id="backMater" type="com.yuesheng.pm.entity.BackMater">
+        <id column="pm02401" property="id" jdbcType="VARCHAR"></id>
+        <result column="pm02402" property="backDate" jdbcType="VARCHAR"></result>
+        <result column="pm02403" property="backNumber" jdbcType="VARCHAR"></result>
+        <result column="pm02409" property="remark" jdbcType="VARCHAR"></result>
+        <result column="pm02411" property="date" jdbcType="VARCHAR"></result>
+        <result column="pm02416" property="approveDate" jdbcType="VARCHAR"></result>
+        <result column="pm02419" property="approveState" jdbcType="TINYINT"></result>
+        <result column="pm02417" property="approveStaff" jdbcType="VARCHAR"></result>
+        <association property="project" column="pm02404"
+                     select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+        <association property="storage" column="pm02406"
+                     select="com.yuesheng.pm.mapper.StorageMapper.getStorageById"></association>
+        <association property="company" column="pm02408"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="staff" column="pm02413"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffByCoding"></association>
+        <association property="backStaff" column="pm02405"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="section" column="pm02407"
+                     select="com.yuesheng.pm.mapper.SectionMapper.getSevtionByid"></association>
+        <association property="out" column="pm02415"
+                     select="com.yuesheng.pm.mapper.OutMaterMapper.getOutMaterById"></association>
+    </resultMap>
+
+    <update id="updateApprove">
+        update sdpm024 set pm02416=#{approveDate},pm02419=#{approveState},pm02417=#{approveStaff} where pm02401=#{id}
+    </update>
+
+    <insert id="addBackMater">
+        INSERT INTO sdpm024 (pm02401,pm02402,pm02403,pm02404,pm02405,pm02406,pm02407,pm02408,pm02409,pm02410,pm02411,pm02412,pm02413,pm02414,pm02415)
+        VALUES (#{id},#{backDate},#{backNumber},#{project.id},#{backStaff.id},#{storage.id},#{section.id},#{company.id},#{remark},'',#{date},'',#{staff.coding},'',#{out.id})
+    </insert>
+    <update id="updateBackMater">
+        UPDATE sdpm024 SET pm02402=#{backDate},pm02403=#{backNumber},pm02404=#{project.id},pm02406=#{storage.id},
+        pm02407=#{section.id},pm02409=#{remark} WHERE pm02401=#{id}
+    </update>
+    <delete id="deleteBack">
+        DELETE FROM sdpm024 WHERE pm02401=#{id}
+    </delete>
+    <select id="getBackMater" resultMap="backMater">
+        SELECT DISTINCT a.* FROM sdpm024 AS a
+        LEFT JOIN sdpa001 AS b ON a.pm02404=b.pa00101
+        LEFT JOIN sdpm025 AS c1 ON a.pm02401=c1.pm02501
+        LEFT JOIN sdpm002 AS c2 ON c2.pm00201=c1.pm02503
+        <where>
+            <if test="start != null and end != null">
+                and a.pm02411 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="str != null">
+                and a.pm02402+a.pm02403+a.pm02409+b.pa00102+c1.pm02503+c2.pm00202+c2.pm00205+c2.pm00221 LIKE '%'+#{str}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="getBackMater" resultMap="backMater" databaseId="mysql">
+        SELECT DISTINCT a.* FROM sdpm024 AS a
+        LEFT JOIN sdpa001 AS b ON a.pm02404=b.pa00101
+        LEFT JOIN sdpm025 AS c1 ON a.pm02401=c1.pm02501
+        LEFT JOIN sdpm002 AS c2 ON c2.pm00201=c1.pm02503
+        <where>
+            <if test="start != null and end != null">
+                and a.pm02411 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="str != null">
+                and concat(a.pm02402,a.pm02403,a.pm02409,b.pa00102,c1.pm02503,c2.pm00202,c2.pm00205,c2.pm00221)
+                LIKE concat('%',#{str},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getBackMaterCount" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT a.pm02401) FROM sdpm024 AS a
+        LEFT JOIN sdpa001 AS b ON a.pm02404=b.pa00101
+        LEFT JOIN sdpm025 AS c ON a.pm02401=c.pm02501
+        LEFT JOIN sdpm002 AS c2 ON c2.pm00201=c.pm02503
+        <where>
+            <if test="start != null and end != null">
+                and a.pm02411 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="str != null">
+                and a.pm02402+a.pm02403+a.pm02409+b.pa00102+c1.pm02503+c2.pm00202+c2.pm00205+c2.pm00221 LIKE '%'+#{str}+'%'
+            </if>
+        </where>
+    </select>
+    <select id="getBackMaterCount" resultType="java.lang.Integer" databaseId="mysql">
+        SELECT COUNT(DISTINCT a.pm02401) FROM sdpm024 AS a
+        LEFT JOIN sdpa001 AS b ON a.pm02404=b.pa00101
+        LEFT JOIN sdpm025 AS c ON a.pm02401=c.pm02501
+        LEFT JOIN sdpm002 AS c2 ON c2.pm00201=c.pm02503
+        <where>
+            <if test="start != null and end != null">
+                and a.pm02411 BETWEEN #{start} AND #{end}
+            </if>
+            <if test="str != null">
+                and concat(a.pm02402,a.pm02403,a.pm02409,b.pa00102,c1.pm02503,c2.pm00202,c2.pm00205,c2.pm00221)
+                        LIKE concat('%',#{str},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getBackNumber" resultType="String">
+        select pm02403 from sdpm024
+        where pm02402 = #{date} order by pm02403 desc
+    </select>
+
+    <select id="getMatersByParam" resultMap="backMater">
+        SELECT a.* FROM sdpm024 AS a
+        WHERE a.pm02402 BETWEEN #{start} AND #{end}
+        <if test="projects != null">
+            AND a.pm02404 in(${projects})
+        </if>
+        ORDER BY a.pm02402 DESC
+    </select>
+    <select id="getBackById" resultMap="backMater">
+        SELECT * FROM sdpm024 WHERE pm02401=#{id}
+    </select>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.FlowCourseRelationMapper">
+    <resultMap id="relation" type="com.yuesheng.pm.entity.FlowCourseRelation">
+        <id column="po020_Relation01" property="id" jdbcType="VARCHAR"></id>
+        <result column="po020_Relation02" property="nextCourseId" jdbcType="VARCHAR"></result>
+        <result column="po020_Relation03" property="currentId" jdbcType="VARCHAR"></result>
+        <result column="po020_Relation04" property="relation04" jdbcType="VARCHAR"></result>
+        <result column="po020_Relation05" property="relation05" jdbcType="INTEGER"></result>
+    </resultMap>
+    <resultMap id="relationChild" type="com.yuesheng.pm.entity.FlowCourseBRelation">
+        <id column="po020_Relation01" property="id" jdbcType="VARCHAR"></id>
+        <result column="po020_Relation02" property="nextCourseId" jdbcType="VARCHAR"></result>
+        <result column="po020_Relation03" property="currentId" jdbcType="VARCHAR"></result>
+        <result column="po020_Relation04" property="relation04" jdbcType="VARCHAR"></result>
+        <result column="po020_Relation05" property="relation05" jdbcType="INTEGER"></result>
+        <result column="po020_Relation06" property="flowHistoryId" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getNextRelationB" resultMap="relationChild">
+        Select po020_Relation02
+        From sdpo020b_Relation
+                 Inner Join sdpo020b On (po020_Relation02=po020b01 And po020_Relation06=po020b02)
+        Where po020_Relation03=#{courseId}
+          And po020_Relation06=#{flowHistoryId}
+        Order By po020b03 Asc
+    </select>
+    <select id="getRelationByCourseId" parameterType="String" resultMap="relationChild">
+        SELECT * FROM sdpo020_Relation WHERE po020_Relation03=#{courseId}
+    </select>
+    <update id="updateRelationBy03">
+        update sdpo020_Relation set po020_Relation03=#{parentId} where po020_Relation03=#{courseId}
+    </update>
+    <delete id="deleteRelationByCourseId" parameterType="String">
+        DELETE FROM sdpo020_Relation WHERE po020_Relation03=#{courseId}
+    </delete>
+    <delete id="deleteRelationByRelation02">
+        delete from sdpo020_Relation
+        where po020_Relation02=#{courseId}
+    </delete>
+    <insert id="addRelationB" parameterType="com.yuesheng.pm.entity.FlowCourseBRelation">
+        INSERT INTO sdpo020b_Relation
+        (po020_relation01,po020_relation02,po020_relation03,po020_relation04,po020_relation05,po020_relation06)
+        VALUES(#{id},#{nextCourseId},#{currentId},#{relation04},#{relation05},#{flowHistoryId})
+    </insert>
+    <update id="update">
+        UPDATE sdpo020_Relation SET po020_Relation02=#{nextCourseId},po020_Relation03=#{currentId} WHERE po020_Relation01=#{id}
+    </update>
+    <select id="getParent" resultMap="relation">
+        SELECT * FROM sdpo020_Relation WHERE po020_Relation02=#{courseId}
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpo020_Relation VALUES (#{id},#{nextCourseId},#{currentId},'',1)
+    </insert>
+    <delete id="deleteById">
+        delete from sdpo020_Relation
+        where po020_Relation01=#{relationId}
+    </delete>
+    <select id="getParentB" resultMap="relationChild">
+        SELECT * FROM sdpo020b_Relation WHERE po020_Relation02=#{courseId} and po020_Relation03=#{flowHistoryId}
+    </select>
+    <delete id="deleteRelationB">
+        delete from sdpo020b_Relation WHERE po020_Relation06=#{flowHistoryId}
+    </delete>
+    <insert id="insertRelationBHistory">
+        INSERT INTO sdpo020b_Relation_History
+        (po020_relation01,po020_relation02,po020_relation03,po020_relation04,po020_relation05,po020_relation06)
+        VALUES(#{id},#{nextCourseId},#{currentId},#{relation04},#{relation05},#{flowHistoryId})
+    </insert>
+    <delete id="deleteRelationBHistory">
+        delete from sdpo020b_Relation_History where po020_relation06=#{historyId}
+    </delete>
+    <select id="queryRelationByHistoryId" resultMap="relationChild">
+        select * from sdpo020b_Relation WHERE po020_Relation06=#{flowHistoryId}
+    </select>
+</mapper>

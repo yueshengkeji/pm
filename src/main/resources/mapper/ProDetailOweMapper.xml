@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProDetailOweMapper">
+    <resultMap id="owe" type="com.yuesheng.pm.entity.ProDetailOwe">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="pro_detail_id" property="mainId" jdbcType="VARCHAR"></result>
+        <result column="owe_money" property="oweMoney" jdbcType="DECIMAL"></result>
+        <result column="owe_date" property="oweDate" jdbcType="VARCHAR"></result>
+        <result column="type" property="type" jdbcType="INTEGER"></result>
+        <result column="date" property="date" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <insert id="addOwe">
+        INSERT INTO pro_detail_owe (id,pro_detail_id,owe_money,owe_date,type,date,staff)
+        VALUES (#{id},#{mainId},#{oweMoney},#{oweDate},#{type},#{date},#{staff.id});
+    </insert>
+    <select id="getOweByDate" resultMap="owe">
+        SELECT * FROM pro_detail_owe WHERE pro_detail_id=#{mainId} AND BETWEEN #{start} AND #{end};
+    </select>
+    <update id="updateMoney">
+        UPDATE pro_detail_owe SET owe_money=#{oweMoney},owe_date=#{oweDate} WHERE id=#{id};
+    </update>
+    <select id="getOweByDate2" resultMap="owe">
+        SELECT * FROM pro_detail_owe WHERE pro_detail_id=#{mainId} AND type=#{type} ORDER BY owe_date DESC
+    </select>
+    <select id="getListByDate" resultMap="owe">
+        SELECT * FROM pro_detail_owe WHERE pro_detail_id=#{mainId} AND type=#{type} ORDER BY owe_date DESC
+    </select>
+    <delete id="deleteByNotIn">
+        delete from pro_detail_owe WHERE pro_detail_id=#{mainId} and id not in(${ids}) and type=#{type}
+    </delete>
+</mapper>

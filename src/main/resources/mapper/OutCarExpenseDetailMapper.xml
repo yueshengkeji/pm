@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.OutCarExpenseDetailMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.OutCarExpenseDetail" id="OutCarExpenseDetailMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="outHistoryId" column="out_history_id" jdbcType="VARCHAR"/>
+        <result property="outCarExpenseId" column="out_car_expense_id" jdbcType="VARCHAR"/>
+        <association property="history" javaType="com.yuesheng.pm.entity.OutCarHistory">
+            <id property="id" column="history_id" jdbcType="VARCHAR"/>
+            <result property="startLatitude" column="start_latitude" jdbcType="VARCHAR"/>
+            <result property="startLongitude" column="start_longitude" jdbcType="VARCHAR"/>
+            <result property="startTime" column="start_time" jdbcType="VARCHAR"/>
+            <result property="startAddrName" column="start_addr_name" jdbcType="VARCHAR"/>
+            <result property="startImg" column="start_img" jdbcType="VARCHAR"/>
+            <result property="endLatitude" column="end_latitude" jdbcType="VARCHAR"/>
+            <result property="endLongitude" column="end_longitude" jdbcType="VARCHAR"/>
+            <result property="endTime" column="end_time" jdbcType="VARCHAR"/>
+            <result property="endAddrName" column="end_addr_name" jdbcType="VARCHAR"/>
+            <result property="endImg" column="end_img" jdbcType="VARCHAR"/>
+            <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+            <result property="systemKm" column="system_km" jdbcType="DECIMAL"/>
+            <result property="inputKm" column="input_km" jdbcType="DECIMAL"/>
+            <result property="isParkingCost" column="is_parking_cost" jdbcType="INTEGER"/>
+            <result property="parkingCostImg" column="parking_cost_img" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
+                <id column="staff_id" property="id" jdbcType="VARCHAR"></id>
+                <result column="staff_name" property="name" jdbcType="VARCHAR"></result>
+            </association>
+            <association property="section" javaType="com.yuesheng.pm.entity.Section">
+                <id column="section_id" property="id" jdbcType="VARCHAR"></id>
+                <result column="section_name" property="name" jdbcType="VARCHAR"></result>
+            </association>
+            <association property="project" javaType="com.yuesheng.pm.entity.Project">
+                <id column="project_id" property="id" jdbcType="VARCHAR"></id>
+                <result column="project_name" property="name" jdbcType="VARCHAR"></result>
+            </association>
+         </association>
+        <association property="expense" javaType="com.yuesheng.pm.entity.OutCarExpense">
+            <result property="id" column="expenseId" jdbcType="VARCHAR"/>
+            <result property="datetime" column="expense_datetime" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="expenseCountMap" type="com.yuesheng.pm.model.OutCarExpenseCount">
+        <result column="systemKm" property="systemKm" jdbcType="DECIMAL"></result>
+        <result column="inputKm" property="inputKm" jdbcType="DECIMAL"></result>
+    </resultMap>
+
+    <select id="queryMoney" resultType="com.yuesheng.pm.model.DateGroupModel">
+        select sum(b.system_km) as money,sum(b.input_km) as title
+        from out_car_expense_detail as a
+        left join out_car_expense expense on a.out_car_expense_id = expense.id
+        left join out_car_history as b on b.id = a.out_history_id
+        where expense.state=1
+        <if test="projectName != null">
+            and project_name like '%'+#{projectName}+'%'
+        </if>
+        <if test="startDate != null and endDate != null">
+            and expense.datetime between #{startDate} and #{endDate}
+        </if>
+        <if test="staffId != null">
+            and b.staff_id=#{staffId}
+        </if>
+        <if test="searchText != null">
+            and isnull(b.startAddrName,'')+isnull(b.endAddrName,'')+isnull(b.remark,'') like '%'+#{searchText}+'%'
+        </if>
+    </select>
+
+    <select id="queryByParam" resultMap="OutCarExpenseDetailMap">
+        select b.*,a.out_history_id,a.out_car_expense_id,
+        expense.datetime as expense_datetime,b.id as history_id
+        from out_car_expense_detail as a
+        left join out_car_expense expense on a.out_car_expense_id = expense.id
+        left join out_car_history as b on b.id = a.out_history_id
+        where expense.state=1
+        <if test="projectName != null">
+            and project_name like '%'+#{projectName}+'%'
+        </if>
+        <if test="startDate != null and endDate != null">
+            and expense.datetime between #{startDate} and #{endDate}
+        </if>
+        <if test="staffId != null">
+            and b.staff_id=#{staffId}
+        </if>
+        <if test="searchText != null">
+            and isnull(b.startAddrName,'')+isnull(b.endAddrName,'')+isnull(b.remark,'') like '%'+#{searchText}+'%'
+        </if>
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="OutCarExpenseDetailMap">
+        select
+          id, out_history_id, out_car_expense_id
+        from out_car_expense_detail
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="OutCarExpenseDetailMap">
+        select
+          id, out_history_id, out_car_expense_id
+        from out_car_expense_detail
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="outHistoryId != null and outHistoryId != ''">
+                and out_history_id = #{outHistoryId}
+            </if>
+            <if test="outCarExpenseId != null and outCarExpenseId != ''">
+                and out_car_expense_id = #{outCarExpenseId}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from out_car_expense_detail
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="outHistoryId != null and outHistoryId != ''">
+                and out_history_id = #{outHistoryId}
+            </if>
+            <if test="outCarExpenseId != null and outCarExpenseId != ''">
+                and out_car_expense_id = #{outCarExpenseId}
+            </if>
+        </where>
+    </select>
+    <!--统计项目总里程-->
+    <select id="queryMoneyByProject" resultMap="expenseCountMap">
+        select sum(b.input_km) as inputKm,
+               sum(b.system_km) as systemKm
+        from out_car_expense_detail as a
+        LEFT JOIN out_car_expense as c on c.id=a.out_car_expense_id and c.state=1
+        LEFT join out_car_history as b on a.out_history_id=b.id
+        <where>
+            <if test="projectId != null and projectId != ''">
+                and b.project_id = #{projectId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into out_car_expense_detail (id,out_history_id, out_car_expense_id)
+        values (#{id},#{outHistoryId}, #{outCarExpenseId})
+    </insert>
+
+    <insert id="insertBatch">
+        insert into out_car_expense_detail (id,out_history_id, out_car_expense_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.id},#{entity.outHistoryId}, #{entity.outCarExpenseId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into out_car_expense_detail(id,out_history_id, out_car_expense_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id},#{entity.outHistoryId}, #{entity.outCarExpenseId})
+        </foreach>
+        on duplicate key update
+        out_history_id = values(out_history_id),
+        out_car_expense_id = values(out_car_expense_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update out_car_expense_detail
+        <set>
+            <if test="outHistoryId != null and outHistoryId != ''">
+                out_history_id = #{outHistoryId},
+            </if>
+            <if test="outCarExpenseId != null and outCarExpenseId != ''">
+                out_car_expense_id = #{outCarExpenseId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from out_car_expense_detail where id = #{id}
+    </delete>
+    <!--通过报销单主键删除-->
+    <delete id="deleteByExpense">
+        delete from out_car_expense_detail where out_car_expense_id = #{expenseId}
+    </delete>
+
+</mapper>
+

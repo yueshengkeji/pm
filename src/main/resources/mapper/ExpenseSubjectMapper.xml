@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ExpenseSubjectMapper">
+    <resultMap id="ExpenseSubject" type="com.yuesheng.pm.entity.ExpenseSubject">
+        <result property="id" column="id"></result>
+        <result property="money" column="money"></result>
+        <result property="remark" column="remark"></result>
+        <result property="mark" column="mark"></result>
+        <association property="staff" column="staff"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="course" column="course"
+                     select="com.yuesheng.pm.mapper.CourseMapper.queryById"></association>
+    </resultMap>
+
+    <resultMap id="ExpenseSubModel" type="com.yuesheng.pm.entity.ExpenseSubModel">
+        <result property="id" column="id"></result>
+        <result property="totalMoney" column="money"></result>
+        <result property="remark" column="remark"></result>
+        <result property="mark" column="mark"></result>
+        <association property="course" column="course"
+                     select="com.yuesheng.pm.mapper.CourseMapper.queryById"></association>
+        <association property="staff" column="staff"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <update id="update">
+        update expense_subject
+        <set>
+            <if test="course != null">
+                course=#{course.id},
+            </if>
+            <if test="money != null">
+                money=#{money},
+            </if>
+            <if test="remark != null">
+                remark=#{remark},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.ExpenseSubject">
+        insert into expense_subject
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="id != null">id,</if>
+            <if test="course != null">course,</if>
+            <if test="money != null">money,</if>
+            <if test="remark != null">remark,</if>
+            <if test="mark != null">mark,</if>
+            <if test="staff != null">staff,</if>
+        </trim>
+        <trim prefix="values (" suffixOverrides="," suffix=")">
+            <if test="id != null">#{id},</if>
+            <if test="course != null">#{course.id},</if>
+            <if test="money != null">#{money},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="mark != null">#{mark},</if>
+            <if test="staff != null">#{staff.id},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteByMark">
+        delete from expense_subject
+        where mark = #{mark}
+    </delete>
+
+    <delete id="delete" parameterType="string">
+        delete from expense_subject where id = #{id}
+    </delete>
+
+    <select id="getByMark" resultMap="ExpenseSubject">
+        select * from expense_subject where mark = #{mark}
+    </select>
+
+    <select id="list" resultMap="ExpenseSubModel">
+        select a.id as id ,a.money as totalMoney,a.remark as remark,a.mark as mark,
+               a.staff as staff,a.course, b.project as project,b.apply_date as applyDate,
+        b.create_date as createDate, b.status as status from expense_subject as a
+        left join expense as b on b.id = a.mark
+        left join sdpb006 on a.course=pb00601
+        <where>
+            <if test="searchCourse != null">
+                AND a.course = #{searchCourse}
+            </if>
+            <if test="staff != null">
+                AND a.staff = #{staff}
+            </if>
+            <if test="str != null">
+                AND isnull(b.project,'') + isnull(a.remark,'') LIKE '%'+#{str}+'%'
+            </if>
+            <if test="searchProjectName != null">
+                AND b.project = #{searchProjectName}
+            </if>
+            <if test="start != null and end != null">
+                AND b.apply_date BETWEEN #{start} AND #{end}
+            </if>
+            <if test="status != null">
+                    AND b.status = #{status}
+            </if>
+            <if test="projectId != null">
+                    AND b.project_id = #{projectId}
+            </if>
+            <if test="projectName != null">
+                    AND b.project = #{projectName}
+            </if>
+            <if test="inCourse != null">
+                    AND a.course in (#{inCourse})
+            </if>
+            <if test="isProject != null">
+                and pb00612=#{isProject}
+            </if>
+        </where>
+
+    </select>
+</mapper>

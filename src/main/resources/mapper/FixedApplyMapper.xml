@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.FixedApplyMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.FixedApply" id="ProFixedApplyMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="datetime" column="datetime" jdbcType="TIMESTAMP"/>
+        <result property="state" column="state" jdbcType="TINYINT"/>
+        <result property="reason" column="reason" jdbcType="VARCHAR"/>
+        <association column="staff_id" property="staff"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProFixedApplyMap">
+        select
+          id, title, datetime, state, staff_id, section_id, reason
+        from pro_fixed_apply
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProFixedApplyMap">
+        select
+          id, title, datetime, state, staff_id, section_id, reason
+        from pro_fixed_apply
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProFixedApplyMap">
+        select
+        id, title, datetime, state, staff_id, section_id, reason
+        from pro_fixed_apply
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                and title+reason LIKE '%'+#{title}+'%'
+            </if>
+            <if test="datetime != null">
+                and datetime = #{datetime}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="staff != null">
+                and staff_id = #{staff.id}
+            </if>
+            <if test="section != null">
+                and section_id = #{section.id}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into pro_fixed_apply (id,title, datetime, state, staff_id, section_id, reason)
+        values (#{id},#{title}, #{datetime}, #{state}, #{staff.id}, #{section.id}, #{reason})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_fixed_apply
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="datetime != null">
+                datetime = #{datetime},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="staff != null">
+                staff_id = #{staff.id},
+            </if>
+            <if test="section != null">
+                section_id = #{section.id},
+            </if>
+            <if test="reason != null and reason != ''">
+                reason = #{reason},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_fixed_apply where id = #{id}
+    </delete>
+
+</mapper>

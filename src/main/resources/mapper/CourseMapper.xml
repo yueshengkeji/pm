@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.CourseMapper">
+    <resultMap id="course" type="com.yuesheng.pm.entity.Course">
+        <id column="pb00601" property="id" jdbcType="VARCHAR"></id>
+        <result column="pb00602" property="name" jdbcType="VARCHAR"></result>
+        <result column="pb00603" property="parentId" jdbcType="VARCHAR"></result>
+        <result column="pb00605" property="series" jdbcType="VARCHAR"></result>
+        <result column="pb00606" property="type" jdbcType="INTEGER"></result>
+        <result column="pb00609" property="isDetail" jdbcType="TINYINT"></result>
+        <result column="pb00611" property="isCompany" jdbcType="TINYINT"></result>
+        <result column="pb00612" property="isProject" jdbcType="TINYINT"></result>
+    </resultMap>
+    <select id="queryById" resultMap="course">
+        SELECT * FROM sdpb006 WHERE pb00601=#{id};
+    </select>
+    <select id="queryByParent" resultMap="course">
+        SELECT * FROM sdpb006 WHERE pb00603=#{parentId};
+    </select>
+    <select id="queryRoot" resultMap="course">
+        SELECT * FROM sdpb006 WHERE pb00603='';
+    </select>
+    <insert id="insert">
+        INSERT INTO sdpb006 VALUES (#{id},#{name},#{parentId},#{id}+#{parentId},#{series},#{type},0,'',#{isDetail},'',#{isCompany},#{isProject},'');
+    </insert>
+    <update id="update">
+        UPDATE sdpb006
+        <set>
+            <if test="name != null and name != ''">
+                pb00602=#{name},
+            </if>
+            <if test="isProject != null">
+                pb00612=#{isProject},
+            </if>
+        </set>
+        WHERE pb00601=#{id}
+    </update>
+    <select id="queryAll" resultMap="course">
+        SELECT * FROM sdpb006;
+    </select>
+    <select id="queryByName" resultMap="course">
+        select top 1 * from sdpb006 where pb00602=#{name};
+    </select>
+</mapper>

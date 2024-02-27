@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProDetailPayMapper">
+    <resultMap id="detailPay" type="com.yuesheng.pm.entity.ProDetailPay">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="pay_money" property="payMoney" jdbcType="DECIMAL"></result>
+        <result column="pay_date" property="payDate" jdbcType="VARCHAR"></result>
+        <result column="bill_money" property="billMoney" jdbcType="DECIMAL"></result>
+        <result column="bill_date" property="billDate" jdbcType="VARCHAR"></result>
+        <result column="date" property="date" jdbcType="VARCHAR"></result>
+        <result column="last_date" property="lastDate" jdbcType="VARCHAR"></result>
+        <result column="detail_id" property="detailId" jdbcType="VARCHAR"></result>
+    </resultMap>
+    <select id="getBySeries" resultMap="detailPay">
+        select * from pro_detail_pay where bill_date=#{billDate}
+        and pro_detail_id=#{mainId}
+    </select>
+    <delete id="deleteBySeries">
+        delete from pro_detail_pay where bill_date=#{billDate}
+        and pro_detail_id=#{mainId}
+    </delete>
+    <insert id="addPay">
+        INSERT INTO pro_detail_pay (id,pro_detail_id,pay_money,pay_date,bill_money,bill_date,date,staff,detail_id)
+        VALUES (#{id},#{mainId},#{payMoney},#{payDate},#{billMoney},#{billDate},#{date},#{staff.id},#{detailId})
+    </insert>
+    <update id="updatePayMoney">
+        UPDATE pro_detail_pay SET pay_money=#{payMoney},pay_date=#{payDate} WHERE id=#{id}
+    </update>
+    <update id="updateBillMoney">
+        UPDATE pro_detail_pay SET bill_money=#{billMoney},bill_date=#{billDate} WHERE id=#{id}
+    </update>
+    <update id="updatePayAndBillMoney">
+        UPDATE pro_detail_pay
+        <set>
+            <if test="billMoney != null">
+                bill_money=#{billMoney},
+            </if>
+            <if test="billDate != null">
+                bill_date=#{billDate},
+            </if>
+            <if test="payMoney != null">
+                pay_money=#{payMoney},
+            </if>
+            <if test="payDate != null">
+                pay_date=#{payDate},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+    <update id="updateLastMsg">
+        UPDATE pro_detail_pay SET last_date=#{date},last_staff=#{staff.id} WHERE id=#{id}
+    </update>
+    <delete id="deletePay">
+        DELETE FROM pro_detail_pay WHERE id=#{id}
+    </delete>
+    <delete id="deletePayByMainId">
+        DELETE FROM pro_detail_pay WHERE pro_detail_id=#{mainId}
+    </delete>
+
+    <select id="getPayDetails" resultMap="detailPay">
+        SELECT * FROM pro_detail_pay WHERE pro_detail_id=#{mainId} ORDER BY pay_date ASC
+    </select>
+    <select id="getPayDetailById" resultMap="detailPay">
+        SELECT * FROM pro_detail_pay WHERE id=#{id}
+    </select>
+    <select id="getMoneySumByMain" resultType="java.util.Map">
+        SELECT SUM(pay_money) AS 'pay_money',SUM(bill_money) AS 'bill_money' FROM pro_detail_pay WHERE pro_detail_id=#{mainId}
+    </select>
+    <select id="getPayMoneyByMain" resultType="java.lang.Double">
+        SELECT SUM(pay_money) FROM pro_detail_pay WHERE pro_detail_id=#{mainId}
+    </select>
+    <select id="getBillMoneyByMain" resultType="java.lang.Double">
+        SELECT SUM(bill_money) FROM pro_detail_pay WHERE pro_detail_id=#{mainId}
+    </select>
+    <select id="getByContractDetailId" resultMap="detailPay">
+        SELECT * FROM pro_detail_pay WHERE pro_detail_id=#{contractId} and detail_id=#{detailId}
+    </select>
+    <delete id="deleteByContractDetailId">
+        delete FROM pro_detail_pay WHERE pro_detail_id=#{contractId} and detail_id=#{detailId}
+    </delete>
+    <select id="getPayMoney" resultType="Double">
+        select sum(pay_money) from pro_detail_pay where pay_date like #{year}+'%'
+    </select>
+    <select id="getPayMoney" resultType="Double" databaseId="mysql">
+        select sum(pay_money) from pro_detail_pay where pay_date like concat(#{year},'%')
+    </select>
+    <select id="getBillMoney" resultType="Double">
+        select sum(bill_money) from pro_detail_pay where bill_date like #{year}+'%'
+    </select>
+    <select id="getBillMoney" resultType="Double" databaseId="mysql">
+        select sum(bill_money) from pro_detail_pay where bill_date like concat(#{year},'%')
+    </select>
+</mapper>

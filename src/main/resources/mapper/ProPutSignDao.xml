@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProPutSignMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProPutSign" id="ProPutSignMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="putDate" column="put_date" jdbcType="VARCHAR"/>
+        <result property="signDate" column="sign_date" jdbcType="VARCHAR"/>
+        <result property="signStaffId" column="sign_staff_id" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="putobj" column="putObj" jdbcType="VARCHAR"/>
+        <result property="signImg" column="sign_img" jdbcType="VARCHAR"/>
+        <result property="putId" column="put_id" jdbcType="VARCHAR"/>
+        <result property="pastDate" column="past_date" jdbcType="VARCHAR"/>
+        <result property="proId" column="pro_id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProPutSignMap">
+        select
+          *
+        from pro_put_sign
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProPutSignMap">
+        select
+          *
+        from pro_put_sign
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProPutSignMap">
+        select
+        a.id,a.staff_id,a.put_date,a.sign_date,a.sign_staff_id,a.type,a.put_id,a.past_date,a.pro_id
+        from pro_put_sign as a left join sdpm013 on pm01301=a.pro_id and a.pro_id is not null
+
+        <where>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="putDate != null and putDate != ''">
+                and put_date = #{putDate}
+            </if>
+            <if test="signDate != null and signDate != ''">
+                and sign_date = #{signDate}
+            </if>
+            <if test="signStaffId != null and signStaffId != ''">
+                and sign_staff_id = #{signStaffId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="putobj != null and putobj != ''">
+                and putObj = #{putobj}
+            </if>
+            <if test="signImg != null and signImg != ''">
+                and sign_img = #{signImg}
+            </if>
+            <if test="putId != null and putId != ''">
+                and put_id = #{putId}
+            </if>
+            <if test="pastDate != null and pastDate != ''">
+                and past_date = #{pastDate}
+            </if>
+            <if test="proId != null and proId != ''">
+                and pro_id = #{proId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="" useGeneratedKeys="true">
+        insert into pro_put_sign(id, staff_id, put_date, sign_date, sign_staff_id, type, putObj, sign_img,past_date,pro_id)
+        values (#{id}, #{staffId}, #{putDate}, #{signDate}, #{signStaffId}, #{type}, #{putobj}, #{signImg},#{pastDate},#{proId})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_put_sign
+        <set>
+            <if test="staffId != null and staffId != ''">
+                staff_id = #{staffId},
+            </if>
+            <if test="putDate != null and putDate != ''">
+                put_date = #{putDate},
+            </if>
+            <if test="signDate != null and signDate != ''">
+                sign_date = #{signDate},
+            </if>
+            <if test="signStaffId != null and signStaffId != ''">
+                sign_staff_id = #{signStaffId},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="signImg != null and signImg != ''">
+                sign_img = #{signImg},
+            </if>
+            <if test="putId != null and putId != ''">
+                put_id = #{putId},
+            </if>
+            <if test="pastDate != null and pastDate != ''">
+                past_date = #{pastDate},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_put_sign where id = #{id}
+    </delete>
+
+</mapper>

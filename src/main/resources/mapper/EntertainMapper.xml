@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.EntertainMapper">
+    <resultMap id="Entertain" type="com.yuesheng.pm.entity.Entertain">
+        <result property="id" column="id"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="updateTime" column="update_time"></result>
+        <result property="remark" column="remark"></result>
+        <result property="accompanyingNumber" column="accompanying_number"></result>
+        <result property="costActual" column="cost_actual"></result>
+        <result property="costPlan" column="cost_plan"></result>
+        <result property="entertainCar" column="entertain_car"></result>
+        <result property="entertainCategory" column="entertain_category"></result>
+        <result property="entertainDiningOther" column="entertain_dining_other"></result>
+        <result property="entertainDiningStandard" column="entertain_dining_standard"></result>
+        <result property="entertainNumber" column="entertain_number"></result>
+        <result property="entertainObject" column="entertain_object"></result>
+        <result property="entertainReason" column="entertain_reason"></result>
+        <result property="entertainTime" column="entertain_time"></result>
+        <result property="entertainTobaccoAlcohol" column="entertain_tobacco_alcohol"></result>
+        <result property="entertainTypeOther" column="entertain_type_other"></result>
+        <result property="entertainTypes" column="entertain_types"></result>
+        <result property="entertainWay" column="entertain_way"></result>
+        <association property="staff" column="staff" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="section" column="section" select="com.yuesheng.pm.mapper.SectionMapper.getSevtionByid"></association>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.Entertain">
+        insert into entertain
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="id != null">id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="accompanyingNumber != null">accompanying_number,</if>
+            <if test="costActual != null">cost_actual,</if>
+            <if test="costPlan != null">cost_plan,</if>
+            <if test="entertainCar != null">entertain_car,</if>
+            <if test="entertainCategory != null">entertain_category,</if>
+            <if test="entertainDiningOther != null">entertain_dining_other,</if>
+            <if test="entertainDiningStandard != null">entertain_dining_standard,</if>
+            <if test="entertainNumber != null">entertain_number,</if>
+            <if test="entertainObject != null">entertain_object,</if>
+            <if test="entertainReason != null">entertain_reason,</if>
+            <if test="entertainTobaccoAlcohol != null">entertain_tobacco_alcohol,</if>
+            <if test="entertainTypeOther != null">entertain_type_other,</if>
+            <if test="entertainTypes != null">entertain_types,</if>
+            <if test="entertainWay != null">entertain_way,</if>
+            <if test="entertainTime != null">entertain_time,</if>
+            <if test="staff != null">staff,</if>
+            <if test="section != null">section</if>
+        </trim>
+        <trim prefix="values (" suffixOverrides="," suffix=")">
+            <if test="id != null">#{id},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="accompanyingNumber != null">#{accompanyingNumber},</if>
+            <if test="costActual != null">#{costActual},</if>
+            <if test="costPlan != null">#{costPlan},</if>
+            <if test="entertainCar != null">#{entertainCar},</if>
+            <if test="entertainCategory != null">#{entertainCategory},</if>
+            <if test="entertainDiningOther != null">#{entertainDiningOther},</if>
+            <if test="entertainDiningStandard != null">#{entertainDiningStandard},</if>
+            <if test="entertainNumber != null">#{entertainNumber},</if>
+            <if test="entertainObject != null">#{entertainObject},</if>
+            <if test="entertainReason != null">#{entertainReason},</if>
+            <if test="entertainTobaccoAlcohol != null">#{entertainTobaccoAlcohol},</if>
+            <if test="entertainTypeOther != null">#{entertainTypeOther},</if>
+            <if test="entertainTypes != null">#{entertainTypes},</if>
+            <if test="entertainWay != null">#{entertainWay},</if>
+            <if test="entertainTime != null">#{entertainTime},</if>
+            <if test="staff != null">#{staff.id},</if>
+            <if test="section != null">#{section.id}</if>
+        </trim>
+    </insert>
+
+    <update id="update">
+        update entertain
+        <trim prefix="set" suffixOverrides=",">
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="accompanyingNumber != null">accompanying_number = #{accompanyingNumber},</if>
+            <if test="costActual != null">cost_actual = #{costActual},</if>
+            <if test="costPlan != null">cost_plan = #{costPlan},</if>
+            <if test="entertainCar != null">entertain_car = #{entertainCar},</if>
+            <if test="entertainCategory != null">entertain_category = #{entertainCategory},</if>
+            <if test="entertainDiningOther != null">entertain_dining_other = #{entertainDiningOther},</if>
+            <if test="entertainDiningStandard != null">entertain_dining_standard = #{entertainDiningStandard},</if>
+            <if test="entertainNumber != null">entertain_number = #{entertainNumber},</if>
+            <if test="entertainObject != null">entertain_object = #{entertainObject},</if>
+            <if test="entertainReason != null">entertain_reason = #{entertainReason},</if>
+            <if test="entertainTobaccoAlcohol != null">entertain_tobacco_alcohol = #{entertainTobaccoAlcohol},</if>
+            <if test="entertainTypeOther != null">entertain_type_other = #{entertainTypeOther},</if>
+            <if test="entertainTypes != null">entertain_types = #{entertainTypes},</if>
+            <if test="entertainWay != null">entertain_way = #{entertainWay},</if>
+            <if test="entertainTime != null">entertain_time = #{entertainTime},</if>
+            <if test="staff != null">staff = #{staff.id},</if>
+            <if test="section != null">section = #{section.id},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from entertain
+        where id = #{id}
+    </delete>
+
+    <select id="list" resultMap="Entertain">
+        select * from entertain
+        <where>
+            <if test="str != null">
+                AND isnull(entertain_object,'') + isnull(remark,'') + isnull(entertain_reason,'') LIKE '%'+#{str}+'%'
+            </if>
+            <if test="start != null and end != null">
+                AND create_time BETWEEN #{start} AND #{end}
+            </if>
+            <if test="staff != null">
+                AND staff = #{staff}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateState">
+        update entertain
+        set state = #{state}
+        where id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="Entertain">
+        select * from entertain
+        where id = #{id}
+    </select>
+</mapper>
