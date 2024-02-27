@@ -35,7 +35,7 @@
 
 #### 开放所有源代码，支持个人/企业二次开发，也可以联系作者定制功能
 
-![image text](https://github.com/yueshengkeji/pm/blob/main/src/main/resources/assets/img/img.png "DBSCAN Performance Comparison")
+![image text](https://github.com/yueshengkeji/pm/blob/main/src/main/resources/assets/img/img.png "扫码加作者微信")
 
 
 
