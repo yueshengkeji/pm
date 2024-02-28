@@ -167,7 +167,8 @@
         0,'','',#{tax},#{price},#{money},#{cnfStr},#{id},#{serial})
     </insert>
     <select id="getMaterialByOk" resultMap="planMaterOk">
-        SELECT * FROM sdpm006 WHERE pm00623=#{id}
+        SELECT *,(SELECT ISNULL(SUM(pm03505),0) FROM sdpm035 WHERE pm03520=pm00623) AS pm03505
+        FROM sdpm006 WHERE pm00623=#{id}
     </select>
     <select id="getMaterByMaterId" resultMap="com.yuesheng.pm.mapper.MaterialMapper.material">
         select a.* from sdpm002 AS a

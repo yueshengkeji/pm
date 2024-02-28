@@ -118,7 +118,7 @@ public class PutStorageServiceImpl implements PutStorageService {
     public PutStorage getStorageById(String id) {
         PutStorage ps = putStorageMapper.getStorageById(id);
         if (!Objects.isNull(ps)) {
-            PageHelper.startPage(1,1);
+            PageHelper.startPage(1, 1);
             ps.setProject(putStorageMapper.getProjectIdByMater(id));
         }
         return ps;
@@ -132,7 +132,7 @@ public class PutStorageServiceImpl implements PutStorageService {
     @Override
     public List<PutStorage> getPutStorages(Map<String, Object> params) {
         PageHelper.startPage(1, Constant.PAGESIZE);
-        return putStorageMapper.getPutStorages( params);
+        return putStorageMapper.getPutStorages(params);
     }
 
     @Override
@@ -186,13 +186,13 @@ public class PutStorageServiceImpl implements PutStorageService {
 
     @Override
     public String isOut(String id) {
-        PageHelper.startPage(1,1);
+        PageHelper.startPage(1, 1);
         return putStorageMapper.isOut(id);
     }
 
     @Override
     public String getNowPutSerial(String date) {
-        PageHelper.startPage(1,1);
+        PageHelper.startPage(1, 1);
         return putStorageMapper.getNowPutSerial(date);
     }
 
@@ -202,8 +202,8 @@ public class PutStorageServiceImpl implements PutStorageService {
     }
 
     @Override
-    public List<PutStorage> getPutStorageList( Map<String, Object> params) {
-        return putStorageMapper.getPutStorageList( params);
+    public List<PutStorage> getPutStorageList(Map<String, Object> params) {
+        return putStorageMapper.getPutStorageList(params);
     }
 
     @Override
@@ -311,11 +311,9 @@ public class PutStorageServiceImpl implements PutStorageService {
             return -3;
         }
         Procurement pro = procurementService.getProcurementById(putStorage.getProId());
-        if (pro == null) {        //采购订单不存在
+        if (Objects.isNull(pro)) {
             return -1;
-        } /*else if (pro.getPutState() == 4) {
-            return -4;
-        }*/
+        }
         Staff psStaff = pro.getStaff();
         if (!staff.getId().equals(psStaff.getId())) {
             return -2;
@@ -350,7 +348,6 @@ public class PutStorageServiceImpl implements PutStorageService {
         StorageMaterial putMaterial;
 
         //初始化订单对象，以便后续的状态更新
-        Procurement procurement = procurementService.getProcurementById(putStorage.getProId());
         List<ProMaterial> proMaterials = new ArrayList<>();
         double putSums = 0.0;
         for (int i = 0; i < materials.size(); i++) {
@@ -361,9 +358,7 @@ public class PutStorageServiceImpl implements PutStorageService {
             ProMaterial material = procurementMaterService.getMatersById(putMaterial.getProMaterId());     //获取订单材料对象
             putMaterial.setId(UUID.randomUUID().toString());        //生成该入库材料的id
             putMaterial.setStorageId(putStorage.getId());           //设置入库单id
-            if (material == null) {
-
-            } else {
+            if (material != null) {
                 proMaterials.add(material);
                 material.setInDate(DateFormat.getDate());       //设置订单材料的入库时间
                 materialList.add(material);     //添加订单材料到集合中
@@ -372,7 +367,6 @@ public class PutStorageServiceImpl implements PutStorageService {
                 } else {
                     material.setInSum(putMaterial.getPutSum());       //设置已入库数量,便于后面更新
                 }
-
                 //记录此次入库总数
                 putSums += putMaterial.getPutSum();
             }
@@ -384,21 +378,21 @@ public class PutStorageServiceImpl implements PutStorageService {
             return -3;
         }
         if (StringUtils.isNotBlank(putStorage.getSaleMoney()) && Double.valueOf(putStorage.getSaleMoney()) > 0) {
-            procurement.setSaleMoney(putStorage.getSaleMoney());
+            pro.setSaleMoney(putStorage.getSaleMoney());
         }
         //添加对账单数据
-        procurementService.genProDetailByPut(procurement, materials, true, putStorage.getId());
+        procurementService.genProDetailByPut(pro, materials, true, putStorage.getId());
 //        更新采购订单状态
-        return updateProState(materialList, procurement, state, putSums);
+        return updateProState(materialList, pro, state, putSums);
     }
 
     @Override
     public int updateProState(List<ProMaterial> materialList, Procurement procurement, Integer state, double putSum) {
         if (state > 0) {
             byte putState = Constant.STATE_4;
-            HashMap<String,String> materMap = new HashMap<>();
+            HashMap<String, String> materMap = new HashMap<>();
             for (ProMaterial pm : materialList) {
-                materMap.put(pm.getId(),"1");
+                materMap.put(pm.getId(), "1");
                 if (pm.getInSum() < pm.getSum()) {
                     //部分入库
                     putState = Constant.STATE_3;
@@ -406,13 +400,13 @@ public class PutStorageServiceImpl implements PutStorageService {
                 }
             }
 
-            if(putState == Constant.STATE_4){
+            if (putState == Constant.STATE_4) {
                 //查询该订单的所有材料，遍历查询是否全部入库
                 List<ProMaterial> pmList = procurementMaterService.getProMatersByProId(procurement.getId());
                 for (ProMaterial pm : pmList) {
-                    if(!materMap.containsKey(pm.getId())){
+                    if (!materMap.containsKey(pm.getId())) {
                         //未比较过的材料，并且有入库数小于采购数的，设置未部分入库，否则设置订单未完全入库
-                        if(pm.getInSum() < pm.getSum()){
+                        if (pm.getInSum() < pm.getSum()) {
                             putState = Constant.STATE_3;
                             break;
                         }
@@ -456,7 +450,7 @@ public class PutStorageServiceImpl implements PutStorageService {
 
     @Override
     public PutStorage getPutBySerial(String putSerial) {
-        PageHelper.startPage(1,1);
+        PageHelper.startPage(1, 1);
         PutStorage ps = putStorageMapper.getPutStorageBySerial(putSerial);
         if (ps != null) {
             ps.setMaterialList(putStorageMaterialService.getMaterAllByPutId(ps.getId()));
@@ -633,7 +627,7 @@ public class PutStorageServiceImpl implements PutStorageService {
                     detail = proPutDetailService.getProDetailBYProId(procurement.getId(), pd.getId());
                     if (detail != null) {
                         if (Objects.isNull(storage.getProject())) {
-                            PageHelper.startPage(1,1);
+                            PageHelper.startPage(1, 1);
                             storage.setProject(putStorageMapper.getProjectIdByMater(storage.getId()));
                         }
                         for (int i = 0; i < detail.size(); i++) {

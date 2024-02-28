@@ -1,12 +1,17 @@
-package com.yuesheng.pm.util;
+package com.yuesheng.pm.listener;
 
 import com.yuesheng.pm.entity.Staff;
 import com.yuesheng.pm.entity.SystemLog;
 import com.yuesheng.pm.service.SystemLogService;
+import com.yuesheng.pm.util.Constant;
+import com.yuesheng.pm.util.DateUtil;
+import com.yuesheng.pm.util.LogInterceptor;
+import com.yuesheng.pm.util.RequestWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
@@ -20,6 +25,7 @@ import java.util.Objects;
  * @author XiaoSong
  * @date 2017/03/15
  */
+@ControllerAdvice
 public class MyExceptionHandler implements HandlerExceptionResolver {
 
     @Autowired

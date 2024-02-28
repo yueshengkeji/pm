@@ -15,7 +15,7 @@ public class MybatisConfig {
         Properties properties = new Properties();
         properties.setProperty("Oracle1","oracle");
         properties.setProperty("MySQL","mysql");
-        properties.setProperty("SqlServer","sqlserver");
+        properties.setProperty("SQL Server","sqlserver");
         databaseIdProvider.setProperties(properties);
         return databaseIdProvider;
     }
