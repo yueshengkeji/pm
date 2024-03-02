@@ -5,7 +5,6 @@
     <resultMap type="com.yuesheng.pm.entity.ProZujin" id="ProZujinMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="series" column="series" jdbcType="VARCHAR"/>
-        <result property="company" column="company" jdbcType="VARCHAR"/>
         <result property="brand" column="brand" jdbcType="VARCHAR"/>
         <result property="payType" column="pay_type" jdbcType="INTEGER"/>
         <result property="zlType" column="zl_type" jdbcType="INTEGER"/>
@@ -36,6 +35,14 @@
         <result property="returnBzjMoney" column="return_money" jdbcType="DECIMAL"/>
         <result property="type" column="type" jdbcType="TINYINT"/>
         <result property="files" column="files" jdbcType="VARCHAR"/>
+        <result property="planDate" column="plan_date" jdbcType="VARCHAR"/>
+        <result property="openDate" column="open_date" jdbcType="VARCHAR"/>
+        <result property="dayNum" column="day_num" jdbcType="VARCHAR"/>
+        <result property="company" column="company" jdbcType="VARCHAR"/>
+
+        <association property="brandCompany" column="company" select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+        <association property="receivedCompany" column="received_company" select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+
         <association property="yt" javaType="com.yuesheng.pm.entity.ProZujinYt">
             <id column="company_type_id" property="id" jdbcType="VARCHAR"></id>
             <result column="yt_name" property="name" jdbcType="VARCHAR"></result>
@@ -102,6 +109,7 @@
     <select id="queryByParam" resultMap="ProZujinMap">
         select distinct zj.*,yt.name as yt_name from pro_zujin as zj
         LEFT JOIN pro_zujin_yt as yt on company_type_id=yt.id
+        left join sdpf003 on pf00301=company
         <if test="searchText != null">
             LEFT JOIN pro_zujin_house_r as r on zj.id=r.zj_id
             left join pro_zujin_house pzh on r.house_id=pzh.id
@@ -134,12 +142,66 @@
             </if>
             <if test="searchText != null">
                 and
-                isNull(series,'')+isNull(company,'')+isNull(brand,'')+isNull(convert(varchar(20),zj.acreage),'')+isNull(zl_person,'')+
+                pf00302+isNull(series,'')+isNull(company,'')+isNull(brand,'')+isNull(convert(varchar(20),zj.acreage),'')+isNull(zl_person,'')+
                 isNull(zl_person_tel,'')+isNull(staff_name,'')+isNull(convert(varchar(20),ys_money),'')+isNull(convert(varchar(20),sj_money),'')+isNull(convert(varchar(20),kp_money),'')+
                 isNull(zj.remark,'')+isNull(pzh.pw_number,'') LIKE '%'+#{searchText}+'%'
             </if>
             <if test="bzj == 1">
                 and isNull(bzj_money,0) &gt; 0
+            </if>
+            <if test="zlType != null">
+                and zl_type in (${zlType})
+            </if>
+            <if test="ytId != null">
+                and company_type_id = #{ytId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+        </where>
+    </select>
+    <select id="queryByParam" resultMap="ProZujinMap" databaseId="mysql">
+        select distinct zj.*,yt.name as yt_name from pro_zujin as zj
+        LEFT JOIN pro_zujin_yt as yt on company_type_id=yt.id
+            left join sdpf003 on company=pf00301
+        <if test="searchText != null">
+            LEFT JOIN pro_zujin_house_r as r on zj.id=r.zj_id
+            left join pro_zujin_house pzh on r.house_id=pzh.id
+        </if>
+        <if test="early != null">
+            LEFT JOIN (SELECT SUM(pro_money) as 'proMoney' , pro_detail_id FROM pro_detail_c where pro_date &lt;= #{endDatetime} group by pro_detail_id) as moneys
+            on zj.id=pro_detail_id
+        </if>
+        <where>
+            <if test="series != null">
+                and series = #{series}
+            </if>
+            <if test="isSh != null">
+                and is_sh = #{isSh}
+            </if>
+            <if test="early != null">
+                and moneys.proMoney &gt; zj.cw_money
+            </if>
+            <if test="endDatetime != null and expire == 1">
+                and end_datetime &gt;= #{endDatetime}
+            </if>
+            <if test="endDatetime != null and expire == 0">
+                and end_datetime &lt;= #{endDatetime}
+            </if>
+            <if test="endDatetime != null and expire == 2">
+                and end_datetime between  #{startDateTime} and #{endDatetime}
+            </if>
+            <if test="rage == 1">
+                and ys_money &gt; cw_money
+            </if>
+            <if test="searchText != null">
+                and
+                concat(pf00302,ifnull(series,''),ifnull(company,''),ifnull(brand,''),ifnull(zj.acreage,''),ifnull(zl_person,''),
+                ifnull(zl_person_tel,''),ifnull(staff_name,''),ifnull(ys_money,''),ifnull(sj_money,''),ifnull(kp_money,''),
+                ifnull(zj.remark,''),ifnull(pzh.pw_number,'')) LIKE concat('%',#{searchText},'%')
+            </if>
+            <if test="bzj == 1">
+                and ifnull(bzj_money,0) &gt; 0
             </if>
             <if test="zlType != null">
                 and zl_type in (${zlType})
@@ -204,8 +266,8 @@
             <if test="series != null and series != ''">
                 and series = #{series}
             </if>
-            <if test="company != null and company != ''">
-                and company = #{company}
+            <if test="company != null">
+                and company = #{company.id}
             </if>
             <if test="brand != null and brand != ''">
                 and brand = #{brand}
@@ -272,8 +334,8 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into pro_zujin(series, company, brand, pay_type, zl_type, acreage, zl_person, zl_person_tel, company_type_id, staff_name, is_dz, is_sh, ys_money, sj_money, kp_money, cw_money, remark, staff_id, date_time, last_staff_id, last_date_time,dz_number,year_rental,end_datetime,bzj_money,type,start_datetime,files)
-        values (#{series}, #{company}, #{brand}, #{payType}, #{zlType}, #{acreage}, #{zlPerson}, #{zlPersonTel}, #{companyTypeId}, #{staffName}, #{isDz}, #{isSh}, #{ysMoney}, #{sjMoney}, #{kpMoney}, #{cwMoney}, #{remark}, #{staffId}, #{dateTime}, #{lastStaffId}, #{lastDateTime},#{dzNumber},#{yearRental},#{endDatetime},#{bzjMoney},#{type},#{startDatetime},#{files})
+        insert into pro_zujin(series, company, brand, pay_type, zl_type, acreage, zl_person, zl_person_tel, company_type_id, staff_name, is_dz, is_sh, ys_money, sj_money, kp_money, cw_money, remark, staff_id, date_time, last_staff_id, last_date_time,dz_number,year_rental,end_datetime,bzj_money,type,start_datetime,files,plan_date,open_date,day_num,received_company)
+        values (#{series}, #{company}, #{brand}, #{payType}, #{zlType}, #{acreage}, #{zlPerson}, #{zlPersonTel}, #{companyTypeId}, #{staffName}, #{isDz}, #{isSh}, #{ysMoney}, #{sjMoney}, #{kpMoney}, #{cwMoney}, #{remark}, #{staffId}, #{dateTime}, #{lastStaffId}, #{lastDateTime},#{dzNumber},#{yearRental},#{endDatetime},#{bzjMoney},#{type},#{startDatetime},#{files},#{planDate},#{openDate},#{dayNum},#{receivedCompany.id})
     </insert>
 
     <update id="updateMoneyCount">
@@ -400,6 +462,18 @@
             </if>
             <if test="type != null">
                 type = #{type},
+            </if>
+            <if test="planDate != null">
+                plan_date = #{planDate},
+            </if>
+            <if test="openDate != null">
+                open_date = #{openDate},
+            </if>
+            <if test="dayNum != null">
+                day_num = #{dayNum},
+            </if>
+            <if test="receivedCompany != null">
+                received_company = #{receivedCompany.id},
             </if>
         </set>
         where id = #{id}

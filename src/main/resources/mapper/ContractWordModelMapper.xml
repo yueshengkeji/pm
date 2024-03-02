@@ -46,7 +46,7 @@
     </delete>
 
     <select id="selectByType" resultMap="ContractWordModel">
-        select TOP 1 * from contract_word_model
+        select * from contract_word_model
         where type = #{type}
     </select>
 </mapper>

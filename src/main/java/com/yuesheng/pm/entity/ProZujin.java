@@ -94,6 +94,75 @@ public class ProZujin implements Serializable {
     private Byte type = 0;
     @Schema(name="合同附件路径")
     private String files;
+    @Schema(name = "计划进场日期")
+    private String planDate;
+    @Schema(name = "计划开业日期")
+    private String openDate;
+    @Schema(name = "装修天数")
+    private String dayNum;
+    @Schema(name = "费用条款")
+    private List<Term> termList;
+    @Schema(name = "品牌单位")
+    private Company brandCompany;
+    @Schema(name = "保证金列表")
+    private List<ProBzj> bzjList;
+    @Schema(name = "收款单位")
+    private Company receivedCompany;
+
+    public Company getReceivedCompany() {
+        return receivedCompany;
+    }
+
+    public void setReceivedCompany(Company receivedCompany) {
+        this.receivedCompany = receivedCompany;
+    }
+
+    public List<ProBzj> getBzjList() {
+        return bzjList;
+    }
+
+    public void setBzjList(List<ProBzj> bzjList) {
+        this.bzjList = bzjList;
+    }
+
+    public Company getBrandCompany() {
+        return brandCompany;
+    }
+
+    public void setBrandCompany(Company brandCompany) {
+        this.brandCompany = brandCompany;
+    }
+
+    public List<Term> getTermList() {
+        return termList;
+    }
+
+    public void setTermList(List<Term> termList) {
+        this.termList = termList;
+    }
+    public String getPlanDate() {
+        return planDate;
+    }
+
+    public void setPlanDate(String planDate) {
+        this.planDate = planDate;
+    }
+
+    public String getOpenDate() {
+        return openDate;
+    }
+
+    public void setOpenDate(String openDate) {
+        this.openDate = openDate;
+    }
+
+    public String getDayNum() {
+        return dayNum;
+    }
+
+    public void setDayNum(String dayNum) {
+        this.dayNum = dayNum;
+    }
 
     public String getFiles() {
         return files;

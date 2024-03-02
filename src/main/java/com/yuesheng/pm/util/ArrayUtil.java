@@ -1,5 +1,7 @@
 package com.yuesheng.pm.util;
 
+import java.util.Objects;
+
 /**
  * Created by 96339 on 2017/3/8.
  * @author XiaoSong
@@ -21,5 +23,23 @@ public class ArrayUtil {
             return false;
         }
         return false;
+    }
+
+    public static String join(String[] str,String seq,String sep){
+        if(Objects.isNull(str)){
+            return null;
+        }
+        StringBuffer sb = new StringBuffer();
+        for (String s : str){
+            sb.append(sep);
+            sb.append(s);
+            sb.append(sep);
+            sb.append(seq);
+        }
+        if(sb.length() > 0){
+            return sb.substring(0,sb.length() - 1).toString();
+        }else{
+            return null;
+        }
     }
 }

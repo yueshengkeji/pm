@@ -238,9 +238,9 @@ public class AESEncrypt {
 //            ep = StringUtils.replaceChars(ep,"\n","");
 //        }
 //        System.out.println(ep);
-        String test = "123";
-        test = org.apache.commons.lang3.StringUtils.substring(test,test.length(),test.length());
-        System.out.println();
+//        String test = "123";
+//        test = org.apache.commons.lang3.StringUtils.substring(test,test.length(),test.length());
+//        System.out.println();
 //        System.out.println(new String(decode("QDEyM0AxMjM=")));
 //        Double s = 45271.52957175926;
 //        Date t = convertNumericToTimestamp(s);
@@ -265,6 +265,8 @@ public class AESEncrypt {
 //                         32060256521218001102
 //        String deviceId = "32060256521328001102";
 //        System.out.println(deviceId.substring(0,10)+"121"+deviceId.substring(13));
+
+        System.out.println(DateUtil.getOffsetDays(DateUtil.parse("2024-02-29","yyyy-MM-dd"),new Date()));
     }
 
     private static Date convertNumericToTimestamp(double numericDate) {

@@ -1,5 +1,6 @@
 package com.yuesheng.pm.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.yuesheng.pm.entity.ContractWordModel;
 import com.yuesheng.pm.mapper.ContractWordModelMapper;
 import com.yuesheng.pm.service.ContractWordModelService;
@@ -41,6 +42,7 @@ public class ContractWordModelServiceImpl implements ContractWordModelService {
 
     @Override
     public ContractWordModel selectByType(int type) {
+        PageHelper.startPage(1,1);
         return contractWordModelMapper.selectByType(type);
     }
 }

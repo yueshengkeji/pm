@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ConcatBillMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ConcatBill" id="ConcatBillMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="concatId" column="concat_id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="startDate" column="start_date" jdbcType="TIMESTAMP"/>
+        <result property="endDate" column="end_date" jdbcType="TIMESTAMP"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="unit" column="unit" jdbcType="VARCHAR"/>
+        <result property="payCycle" column="pay_cycle" jdbcType="VARCHAR"/>
+        <result property="monthBill" column="month_bill" jdbcType="INTEGER"/>
+        <result property="payType" column="pay_type" jdbcType="VARCHAR"/>
+        <result property="payEndDate" column="pay_end_date" jdbcType="TIMESTAMP"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+        <result property="arrearageDay" column="arrearage_day" jdbcType="INTEGER"/>
+        <result property="room" column="room" jdbcType="VARCHAR"/>
+        <result property="floor" column="floor" jdbcType="VARCHAR"/>
+        <result property="brand" column="brand" jdbcType="VARCHAR"/>
+        <result property="money" column="money" jdbcType="NUMERIC"/>
+        <result property="sjMoney" column="sj_money" jdbcType="NUMERIC"/>
+        <result property="payMoney" column="pay_money" jdbcType="NUMERIC"/>
+        <result property="arrearage" column="arrearage" jdbcType="NUMERIC"/>
+        <result property="concatType" column="concat_type" jdbcType="VARCHAR"/>
+        <result property="approveState" column="approve_state" jdbcType="INTEGER"/>
+        <result property="invoiceState" column="invoice_state" jdbcType="INTEGER"/>
+        <result property="datetime" column="datetime" jdbcType="TIMESTAMP"/>
+        <result property="staffId" column="staff_id" jdbcType="VARCHAR"/>
+        <result property="sourceId" column="source_id" jdbcType="VARCHAR"/>
+        <result property="backMoney" column="back_money" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <select id="queryByParam" resultMap="ConcatBillMap">
+        select cb.* from concat_bill as cb
+        left join pro_zujin as zj on cb.concat_id=zj.id
+        left join sdpf003 on pf00301=zj.company
+        left join pro_zujin_house_r on zj_id=zj.id
+        left join pro_zujin_house as h on house_id=h.id
+        <where>
+            <if test="type != null and type != ''">
+                and cb.type = #{type}
+            </if>
+            <if test="companyName != null and companyName != ''">
+                and pf00302 like '%'+#{companyName}+'%'
+            </if>
+            <if test="brand != null and brand != ''">
+                and zj.brand=#{brand}
+            </if>
+            <if test="concatType != null and concatType != ''">
+                and zj.company_type_id=#{concatType}
+            </if>
+            <if test="room != null and room != ''">
+                and h.pw_number=#{room}
+            </if>
+            <if test="name != null and name != ''">
+                and cb.name=#{room}
+            </if>
+            <if test="state != null and state != ''">
+                and cb.state in(${state})
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and cb.pay_end_date between #{startDate} and #{endDate}
+            </if>
+        </where>
+    </select>
+    <select id="queryByParam" resultMap="ConcatBillMap" databaseId="mysql">
+        select cb.* from concat_bill as cb
+        left join pro_zujin as zj on cb.concat_id=zj.id
+        left join sdpf003 on pf00301=zj.company
+        left join pro_zujin_house_r on zj_id=zj.id
+        left join pro_zujin_house as h on house_id=h.id
+        <where>
+            <if test="type != null and type != ''">
+                and cb.type = #{type}
+            </if>
+            <if test="companyName != null and companyName != ''">
+                and pf00302 like concat('%',#{companyName},'%')
+            </if>
+            <if test="brand != null and brand != ''">
+                and zj.brand=#{brand}
+            </if>
+            <if test="concatType != null and concatType != ''">
+                and zj.company_type_id=#{concatType}
+            </if>
+            <if test="room != null and room != ''">
+                and h.pw_number=#{room}
+            </if>
+            <if test="name != null and name != ''">
+                and cb.name=#{room}
+            </if>
+            <if test="state != null and state != ''">
+                and cb.state in(${state})
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and cb.pay_end_date between #{startDate} and #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ConcatBillMap">
+        select
+          *
+        from concat_bill
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ConcatBillMap">
+        select
+          *
+        from concat_bill
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="concatId != null and concatId != ''">
+                and concat_id = #{concatId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="startDate != null">
+                and start_date = #{startDate}
+            </if>
+            <if test="endDate != null">
+                and end_date = #{endDate}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="unit != null and unit != ''">
+                and unit = #{unit}
+            </if>
+            <if test="payCycle != null and payCycle != ''">
+                and pay_cycle = #{payCycle}
+            </if>
+            <if test="monthBill != null">
+                and month_bill = #{monthBill}
+            </if>
+            <if test="payType != null and payType != ''">
+                and pay_type = #{payType}
+            </if>
+            <if test="payEndDate != null">
+                and pay_end_date = #{payEndDate}
+            </if>
+            <if test="state != null and state != ''">
+                and state = #{state}
+            </if>
+            <if test="arrearageDay != null">
+                and arrearage_day = #{arrearageDay}
+            </if>
+            <if test="room != null and room != ''">
+                and room = #{room}
+            </if>
+            <if test="floor != null and floor != ''">
+                and floor = #{floor}
+            </if>
+            <if test="brand != null and brand != ''">
+                and brand = #{brand}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="sjMoney != null">
+                and sj_money = #{sjMoney}
+            </if>
+            <if test="payMoney != null">
+                and pay_money = #{payMoney}
+            </if>
+            <if test="arrearage != null">
+                and arrearage = #{arrearage}
+            </if>
+            <if test="concatType != null and concatType != ''">
+                and concat_type = #{concatType}
+            </if>
+            <if test="approveState != null">
+                and approve_state = #{approveState}
+            </if>
+            <if test="invoiceState != null">
+                and invoice_state = #{invoiceState}
+            </if>
+            <if test="datetime != null">
+                and datetime = #{datetime}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+            <if test="sourceId != null and sourceId != ''">
+                and source_id = #{sourceId}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from concat_bill
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="concatId != null and concatId != ''">
+                and concat_id = #{concatId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="startDate != null">
+                and start_date = #{startDate}
+            </if>
+            <if test="endDate != null">
+                and end_date = #{endDate}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="unit != null and unit != ''">
+                and unit = #{unit}
+            </if>
+            <if test="payCycle != null and payCycle != ''">
+                and pay_cycle = #{payCycle}
+            </if>
+            <if test="monthBill != null">
+                and month_bill = #{monthBill}
+            </if>
+            <if test="payType != null and payType != ''">
+                and pay_type = #{payType}
+            </if>
+            <if test="payEndDate != null">
+                and pay_end_date = #{payEndDate}
+            </if>
+            <if test="state != null and state != ''">
+                and state = #{state}
+            </if>
+            <if test="arrearageDay != null">
+                and arrearage_day = #{arrearageDay}
+            </if>
+            <if test="room != null and room != ''">
+                and room = #{room}
+            </if>
+            <if test="floor != null and floor != ''">
+                and floor = #{floor}
+            </if>
+            <if test="brand != null and brand != ''">
+                and brand = #{brand}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="sjMoney != null">
+                and sj_money = #{sjMoney}
+            </if>
+            <if test="payMoney != null">
+                and pay_money = #{payMoney}
+            </if>
+            <if test="arrearage != null">
+                and arrearage = #{arrearage}
+            </if>
+            <if test="concatType != null and concatType != ''">
+                and concat_type = #{concatType}
+            </if>
+            <if test="approveState != null">
+                and approve_state = #{approveState}
+            </if>
+            <if test="invoiceState != null">
+                and invoice_state = #{invoiceState}
+            </if>
+            <if test="datetime != null">
+                and datetime = #{datetime}
+            </if>
+            <if test="staffId != null and staffId != ''">
+                and staff_id = #{staffId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into concat_bill(id,concat_id, name, start_date, end_date, type, unit, pay_cycle, month_bill, pay_type, pay_end_date, state, arrearage_day, room, floor, brand, money, sj_money, pay_money, arrearage, concat_type, approve_state, invoice_state, datetime, staff_id,source_id)
+        values (#{id},#{concatId}, #{name}, #{startDate}, #{endDate}, #{type}, #{unit}, #{payCycle}, #{monthBill}, #{payType}, #{payEndDate}, #{state}, #{arrearageDay}, #{room}, #{floor}, #{brand}, #{money}, #{sjMoney}, #{payMoney}, #{arrearage}, #{concatType}, #{approveState}, #{invoiceState}, #{datetime}, #{staffId},#{sourceId})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into concat_bill(id,concat_id, name, start_date, end_date, type, unit, pay_cycle, month_bill, pay_type, pay_end_date, state, arrearage_day, room, floor, brand, money, sj_money, pay_money, arrearage, concat_type, approve_state, invoice_state, datetime, staff_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.id},#{entity.concatId}, #{entity.name}, #{entity.startDate}, #{entity.endDate}, #{entity.type}, #{entity.unit}, #{entity.payCycle}, #{entity.monthBill}, #{entity.payType}, #{entity.payEndDate}, #{entity.state}, #{entity.arrearageDay}, #{entity.room}, #{entity.floor}, #{entity.brand}, #{entity.money}, #{entity.sjMoney}, #{entity.payMoney}, #{entity.arrearage}, #{entity.concatType}, #{entity.approveState}, #{entity.invoiceState}, #{entity.datetime}, #{entity.staffId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into concat_bill(concat_id, name, start_date, end_date, type, unit, pay_cycle, month_bill, pay_type, pay_end_date, state, arrearage_day, room, floor, brand, money, sj_money, pay_money, arrearage, concat_type, approve_state, invoice_state, datetime, staff_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.concatId}, #{entity.name}, #{entity.startDate}, #{entity.endDate}, #{entity.type}, #{entity.unit}, #{entity.payCycle}, #{entity.monthBill}, #{entity.payType}, #{entity.payEndDate}, #{entity.state}, #{entity.arrearageDay}, #{entity.room}, #{entity.floor}, #{entity.brand}, #{entity.money}, #{entity.sjMoney}, #{entity.payMoney}, #{entity.arrearage}, #{entity.concatType}, #{entity.approveState}, #{entity.invoiceState}, #{entity.datetime}, #{entity.staffId})
+        </foreach>
+        on duplicate key update
+        concat_id = values(concat_id),
+        name = values(name),
+        start_date = values(start_date),
+        end_date = values(end_date),
+        type = values(type),
+        unit = values(unit),
+        pay_cycle = values(pay_cycle),
+        month_bill = values(month_bill),
+        pay_type = values(pay_type),
+        pay_end_date = values(pay_end_date),
+        state = values(state),
+        arrearage_day = values(arrearage_day),
+        room = values(room),
+        floor = values(floor),
+        brand = values(brand),
+        money = values(money),
+        sj_money = values(sj_money),
+        pay_money = values(pay_money),
+        arrearage = values(arrearage),
+        concat_type = values(concat_type),
+        approve_state = values(approve_state),
+        invoice_state = values(invoice_state),
+        datetime = values(datetime),
+        staff_id = values(staff_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update concat_bill
+        <set>
+            <if test="concatId != null and concatId != ''">
+                concat_id = #{concatId},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="startDate != null">
+                start_date = #{startDate},
+            </if>
+            <if test="endDate != null">
+                end_date = #{endDate},
+            </if>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="unit != null and unit != ''">
+                unit = #{unit},
+            </if>
+            <if test="payCycle != null and payCycle != ''">
+                pay_cycle = #{payCycle},
+            </if>
+            <if test="monthBill != null">
+                month_bill = #{monthBill},
+            </if>
+            <if test="payType != null and payType != ''">
+                pay_type = #{payType},
+            </if>
+            <if test="payEndDate != null">
+                pay_end_date = #{payEndDate},
+            </if>
+            <if test="state != null and state != ''">
+                state = #{state},
+            </if>
+            <if test="arrearageDay != null">
+                arrearage_day = #{arrearageDay},
+            </if>
+            <if test="room != null and room != ''">
+                room = #{room},
+            </if>
+            <if test="floor != null and floor != ''">
+                floor = #{floor},
+            </if>
+            <if test="brand != null and brand != ''">
+                brand = #{brand},
+            </if>
+            <if test="money != null">
+                money = #{money},
+            </if>
+            <if test="sjMoney != null">
+                sj_money = #{sjMoney},
+            </if>
+            <if test="payMoney != null">
+                pay_money = #{payMoney},
+            </if>
+            <if test="arrearage != null">
+                arrearage = #{arrearage},
+            </if>
+            <if test="concatType != null and concatType != ''">
+                concat_type = #{concatType},
+            </if>
+            <if test="approveState != null">
+                approve_state = #{approveState},
+            </if>
+            <if test="invoiceState != null">
+                invoice_state = #{invoiceState},
+            </if>
+            <if test="datetime != null">
+                datetime = #{datetime},
+            </if>
+            <if test="staffId != null and staffId != ''">
+                staff_id = #{staffId},
+            </if>
+            <if test="sourceId != null and sourceId != ''">
+                source_id = #{sourceId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from concat_bill where id = #{id}
+    </delete>
+    <!--通过sourceId删除-->
+    <delete id="deleteBySourceId">
+        delete from concat_bill where source_id = #{sourceId} and invoice_state=0 and state != '1'
+    </delete>
+    <!--通过合同删除-->
+    <delete id="deleteByConcatId">
+        delete
+        from concat_bill
+        where concat_id = #{concatId}
+          and invoice_state = 0
+          and state != '1'
+    </delete>
+
+</mapper>
+

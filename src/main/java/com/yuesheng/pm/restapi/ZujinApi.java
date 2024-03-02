@@ -4,16 +4,22 @@ import com.github.pagehelper.Page;
 import com.yuesheng.pm.entity.*;
 import com.yuesheng.pm.model.Cell;
 import com.yuesheng.pm.model.ResponseModel;
+import com.yuesheng.pm.model.ResponsePage;
 import com.yuesheng.pm.model.Row;
 import com.yuesheng.pm.service.*;
 import com.yuesheng.pm.util.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.*;
+
 @Tag(name = "租金管理")
 @RestController
 @RequestMapping("api/zujin")
@@ -41,10 +47,15 @@ public class ZujinApi extends BaseApi {
     private ProPutDetailService proPutDetailService;
     @Autowired
     private StaffService staffService;
+    @Autowired
+    private TermService termService;
+    @Autowired
+    @Lazy
+    private ConcatBillService billService;
 
     @Operation(description = "查询所有品牌")
     @GetMapping("brandList")
-    public ResponseModel brandList(String searchText){
+    public ResponseModel brandList(String searchText) {
         return ResponseModel.ok(zujinService.queryBrand(searchText));
     }
 
@@ -52,7 +63,7 @@ public class ZujinApi extends BaseApi {
     @GetMapping("moneyTotal")
     public ResponseModel moneyTotal() {
         Map<String, Object> result = zujinService.queryMoneyTotal(DateUtil.format(new Date(), "yyyy"));
-        if(Objects.isNull(result)){
+        if (Objects.isNull(result)) {
             result = new HashMap<>();
         }
         Double money = zujinService.queryEarlyMoney(DateUtil.format(DateUtil.rollDay(new Date(), 30), DateUtil.PATTERN_CLASSICAL_SIMPLE));
@@ -89,8 +100,8 @@ public class ZujinApi extends BaseApi {
         params.put("endDatetime", DateUtil.format(DateUtil.getNowDate(), DateUtil.PATTERN_CLASSICAL_SIMPLE));
         params.put("expire", "1");
         params.put("zlType", "0,1");
-        params.put("ytId",ytId);
-        params.put("type",type);
+        params.put("ytId", ytId);
+        params.put("type", type);
         String fileName = getExcelModel(params, sortBy, sortDesc);
         return new ResponseModel(fileName);
     }
@@ -105,8 +116,8 @@ public class ZujinApi extends BaseApi {
                               String ytId,
                               Integer type,
                               Integer isSh) {
-        // Order order = new Order();
-        if(Objects.isNull(page)){
+
+        if (Objects.isNull(page)) {
             return ResponseModel.ok();
         }
         HashMap<String, Object> params = new HashMap<>();
@@ -115,8 +126,8 @@ public class ZujinApi extends BaseApi {
         params.put("expire", "1");
         params.put("zlType", "0,1");
         params.put("isSh", isSh);
-        params.put("ytId",ytId);
-        params.put("type",type);
+        params.put("ytId", ytId);
+        params.put("type", type);
         startPage(page, itemsPerPage == -1 ? 1000 : itemsPerPage, sortBy, sortDesc);
         Page<ProZujin> zujins = (Page<ProZujin>) zujinService.queryByParam(params);
 
@@ -459,7 +470,7 @@ public class ZujinApi extends BaseApi {
     }
 
     private List<Cell> getCells(ProZujin report) {
-        String[] values = new String[]{"Series", "Company",
+        String[] values = new String[]{"Series", "Company.Name",
                 "Brand", "HousesString", "Acreage",
                 "YearRental", "YsMoney", "CwMoney",
                 "Kj.Series", "Kj.Money"};
@@ -618,7 +629,7 @@ public class ZujinApi extends BaseApi {
     public ResponseModel getByHouseId(@PathVariable Integer houseId) {
         ProZujinHouseR query = new ProZujinHouseR();
         query.setHouseId(houseId);
-        query.setType((byte)0);
+        query.setType((byte) 0);
         List<ProZujinHouseR> houseRS = houseRService.queryAll(query);
         if (houseRS.size() > 0) {
             query = houseRS.get(0);
@@ -632,10 +643,112 @@ public class ZujinApi extends BaseApi {
 
     @Operation(description = "通过id查询租赁合同明细")
     @GetMapping("{id}")
-    public ResponseModel getById(@PathVariable Integer id){
+    public ResponseModel getById(@PathVariable Integer id) {
+
         ProZujin zujin = zujinService.queryById(id);
         setZujin(zujin);
         zujin.setYt(ytService.queryById(zujin.getCompanyTypeId()));
+
+        ProBzj bzj = new ProBzj();
+        bzj.setProDetailId(id + "");
+        zujin.setBzjList(bzjService.queryAll(bzj));
+
+        Term term = new Term();
+        term.setConcatId(id + "");
+        zujin.setTermList(termService.queryByPage(term));
+
         return ResponseModel.ok(zujin);
+    }
+
+    @Operation(description = "查询合同账单")
+    @GetMapping("billList")
+    public ResponsePage billList(Integer page, Integer itemsPerPage,
+                                 String companyName,
+                                 String brand,
+                                 String room,
+                                 String name,
+                                 String startDate,
+                                 String endDate,
+                                 String[] state,
+                                 String concatType,
+                                 String type) {
+
+        HashMap<String, String> param = new HashMap<>();
+        param.put("companyName", companyName);
+        param.put("brand", brand);
+        param.put("room", room);
+        param.put("name", name);
+        param.put("startDate", startDate);
+        param.put("endDate", endDate);
+        param.put("state", ArrayUtil.join(state, ",", "'"));
+        param.put("concatType", concatType);
+        param.put("type", type);
+        startPage(page, itemsPerPage, "pay_end_date", "asc");
+        Page<ConcatBill> cbList = (Page) billService.queryByParam(param);
+        HashMap<String, ProZujin> pzMap = new HashMap<>();
+        cbList.forEach(item -> {
+            if (pzMap.containsKey(item.getConcatId())) {
+                item.setConcat(pzMap.get(item.getConcatId()));
+            } else if (StringUtils.isNotBlank(item.getConcatId())) {
+                try {
+                    ProZujin pz = (ProZujin) getById(Integer.valueOf(item.getConcatId())).getData();
+                    item.setConcat(pz);
+                } catch (Exception e) {
+                    //ignore this error
+                }
+            }
+        });
+
+        return ResponsePage.ok(cbList);
+    }
+
+    @Operation(description = "导出合同账单")
+    @GetMapping("exportBillList")
+    public ResponseModel exportBillList(Integer page,
+                                        String companyName,
+                                        String brand,
+                                        String room,
+                                        String name,
+                                        String startDate,
+                                        String endDate,
+                                        String[] state,
+                                        String concatType,
+                                        String type) {
+
+        HashMap<String, String> param = new HashMap<>();
+        param.put("companyName", companyName);
+        param.put("brand", brand);
+        param.put("room", room);
+        param.put("name", name);
+        param.put("startDate", startDate);
+        param.put("endDate", endDate);
+        param.put("state", ArrayUtil.join(state, ",", "'"));
+        param.put("concatType", concatType);
+        param.put("type", type);
+        startPage(page, 5000, "pay_end_date", "asc");
+        Page<ConcatBill> cbList = (Page) billService.queryByParam(param);
+        String fileName = "租赁合同账单.xlsx";
+        fileName = ExcelParse.writeExcel(cbList, fileName, new String[]{
+                "State", "ArrearageDay", "Room", "Floor", "Brand", "Name",
+                "PayEndDate", "Money", "PayMoney", "BackMoney", "SjMoney",
+                "Arrearage", "ConcatType", "InvoiceState"
+        }, ConcatBill.class);
+
+        return ResponseModel.ok(fileName);
+    }
+
+
+    @Operation(description = "新增收款账单")
+    @PutMapping("bill")
+    public ResponseModel insertBill(@RequestBody ConcatBill bill) {
+        billService.insert(bill);
+        return ResponseModel.ok(bill);
+    }
+
+    @Operation(description = "修改收款账单")
+    @PostMapping("bill")
+    public ResponseModel updateBill(@RequestBody ConcatBill bill) {
+        billService.update(bill);
+        return ResponseModel.ok(bill);
     }
 }

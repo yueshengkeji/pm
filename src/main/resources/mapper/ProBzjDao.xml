@@ -10,12 +10,15 @@
         <result property="proDetailId" column="pro_id" jdbcType="VARCHAR"/>
         <result property="proDetailId" column="pro_id" jdbcType="VARCHAR"/>
         <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="startDate" column="start_date" jdbcType="DATE"/>
+        <result property="endDate" column="end_date" jdbcType="DATE"/>
+        <result property="payState" column="pay_state" jdbcType="TINYINT"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="ProBzjMap">
         select
-          id, money, remark, datetime,pro_id,type
+          *
         from pro_bzj
         where id = #{id}
     </select>
@@ -23,7 +26,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProBzjMap">
         select
-          id, money, remark, datetime,pro_id,type
+          *
         from pro_bzj
         limit #{offset}, #{limit}
     </select>
@@ -31,7 +34,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ProBzjMap">
         select
-        id, money, remark, datetime,pro_id,type
+        *
         from pro_bzj
         <where>
             <if test="id != null">
@@ -49,14 +52,17 @@
             <if test="proDetailId != null and proDetailId != ''">
                 and pro_id = #{proDetailId}
             </if>
+            <if test="payState != null">
+                and pay_state = #{payState}
+            </if>
         </where>
         order by datetime desc
     </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into pro_bzj(money, remark, datetime,pro_id,type)
-        values (#{money}, #{remark}, #{datetime},#{proDetailId},#{type})
+        insert into pro_bzj(money, remark, datetime,pro_id,type,start_date,end_date)
+        values (#{money}, #{remark}, #{datetime},#{proDetailId},#{type},#{startDate},#{endDate})
     </insert>
 
     <!--通过主键修改数据-->
@@ -71,6 +77,15 @@
             </if>
             <if test="datetime != null and datetime != ''">
                 datetime = #{datetime},
+            </if>
+            <if test="startDate != null">
+                start_date = #{startDate},
+            </if>
+            <if test="endDate != null">
+                end_date = #{endDate},
+            </if>
+            <if test="payState != null">
+                pay_state = #{payState},
             </if>
         </set>
         where id = #{id}

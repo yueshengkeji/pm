@@ -8,10 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
@@ -384,6 +384,11 @@ public class DateUtil {
         return calendar.getTime();
     }
 
+    /**
+     * 获取指定时间的月份中最后一天日期
+     * @param date
+     * @return
+     */
     public static Date getMonthEndTime(Date date) {
         // 创建 Calendar 对象并设置为当前时间
         Calendar calendar = Calendar.getInstance();
@@ -395,8 +400,8 @@ public class DateUtil {
         int month = than.get(Calendar.MONTH);
 
         // 将 Calendar 对象设置为指定的年、月
-        calendar.set(Calendar.YEAR,year);
-        calendar.set(Calendar.MONTH,month);
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, getDayOfMonth(than.getTime()));
 
         return calendar.getTime();
@@ -897,5 +902,36 @@ public class DateUtil {
         // 格式化日期
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(cal.getTime());
+    }
+
+    /**
+     * 判断两个日期是否在同一个月
+     *
+     * @param date1
+     * @param date2
+     * @return
+     */
+    public static boolean isSameMonth(Date date1, Date date2) {
+        return date1.getYear() == date2.getYear() && date1.getMonth() == date2.getMonth();
+    }
+
+    /**
+     * 获取指定日期（号数）的时间
+     *
+     * @param payDay
+     * @return
+     */
+    public static Date getDateByDay(String payDay) {
+        LocalDate ld = LocalDate.now();
+        ld = ld.withDayOfMonth(Integer.valueOf(payDay));
+        return Date.from(Timestamp.valueOf(ld.atTime(LocalTime.MIDNIGHT)).toInstant());
+    }
+
+    public static Date setMonth(Date date, int month,int year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.YEAR,year);
+        calendar.set(Calendar.MONTH, month);
+        return calendar.getTime();
     }
 }

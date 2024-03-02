@@ -27,6 +27,12 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
     private ProDetailOweService oweService;
     @Autowired
     private AttachService attachService;
+    @Autowired
+    private TermService termService;
+    @Autowired
+    private CompanyService companyService;
+    @Autowired
+    private ProBzjService bzjService;
 
     /**
      * 通过ID查询单条数据
@@ -51,6 +57,11 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
         return this.proZujinMapper.queryAllByLimit(offset, limit);
     }
 
+    private void saveCompany(Company company, Staff staff) {
+        companyService.insert(company, staff);
+        companyService.updateCompany(company);
+    }
+
     /**
      * 新增数据
      *
@@ -60,6 +71,13 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
      */
     @Override
     public ProZujin insert(ProZujin zujin, Staff staff) {
+
+        if (zujin.getBrandCompany() != null) {
+            this.saveCompany(zujin.getBrandCompany(), staff);
+            zujin.setCompany(zujin.getBrandCompany().getId());
+        }
+
+
         zujin.setDateTime(DateUtil.format(DateUtil.getNowDate()));
         List<ProZujinHouse> houses = zujin.getHouses();
         updateYeTai(zujin);
@@ -93,6 +111,26 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
         owe2.setOweDate(owe.getDate());
         owe2.setStaff(staff);
         oweService.addOwe(owe2);
+        //合同收款规则
+        List<Term> termList = zujin.getTermList();
+        if (!Objects.isNull(termList)) {
+            termList.forEach(item -> {
+                if (!Objects.isNull(item)) {
+                    item.setConcatId(zujin.getId() + "");
+                    termService.insert(item);
+                }
+            });
+        }
+        //保证金
+        List<ProBzj> bzjList = zujin.getBzjList();
+        if (!Objects.isNull(bzjList)) {
+            bzjList.forEach(item -> {
+                if (!Objects.isNull(item)) {
+                    item.setProDetailId(zujin.getId() + "");
+                    bzjService.insert(item);
+                }
+            });
+        }
         return zujin;
     }
 
@@ -112,13 +150,38 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
      */
     @Override
     public ProZujin update(ProZujin proZujin) {
+
+        if (proZujin.getBrandCompany() != null) {
+            Staff s = new Staff();
+            s.setId(proZujin.getStaffId());
+            this.saveCompany(proZujin.getBrandCompany(), s);
+            proZujin.setCompany(proZujin.getBrandCompany().getId());
+        }
+
         updateYeTai(proZujin);
-//        String endDate = proZujin.getEndDatetime();
-//        Date end = DateUtil.parse(endDate, DateUtil.PATTERN_CLASSICAL_SIMPLE);
-//        Date now = DateUtil.getNowDate();
-//        if (end.getTime() > now.getTime()) {
-//            proZujin.setType((byte) 0);
-//        }
+
+//        保证金
+        List<ProBzj> bzjList = proZujin.getBzjList();
+        if (!Objects.isNull(bzjList)) {
+            bzjList.forEach(item -> {
+                if (!Objects.isNull(item) && StringUtils.isBlank(item.getId())) {
+                    item.setProDetailId(proZujin.getId()+"");
+                    bzjService.insert(item);
+                }
+            });
+        }
+
+//        合同条款
+        List<Term> termList = proZujin.getTermList();
+        if (!Objects.isNull(termList)) {
+            termList.forEach(item -> {
+                if (!Objects.isNull(item) && StringUtils.isBlank(item.getId())) {
+                    item.setConcatId(proZujin.getId()+"");
+                    termService.insert(item);
+                }
+            });
+        }
+
         this.proZujinMapper.update(proZujin);
         return this.queryById(proZujin.getId());
     }

@@ -1,5 +1,9 @@
 package com.yuesheng.pm.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
+
 /**
  * (ProBzj)实体类
  *
@@ -18,7 +22,7 @@ public class ProBzj extends BaseEntity {
      */
     private String remark;
     /**
-     * 登记时间
+     * 截止时间
      */
     private String datetime;
     /**
@@ -29,6 +33,42 @@ public class ProBzj extends BaseEntity {
      * 保证金类型
      */
     private String type;
+    /**
+     * 开始日期
+     */
+    @JsonFormat(pattern = "YYYY-MM-dd")
+    private Date startDate;
+    /**
+     * 缴费截止日期
+     */
+    @JsonFormat(pattern = "YYYY-MM-dd")
+    private Date endDate;
+
+    private Boolean payState;
+
+    public Boolean getPayState() {
+        return payState;
+    }
+
+    public void setPayState(Boolean payState) {
+        this.payState = payState;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
 
     public String getType() {
         return type;

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.TermMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.Term" id="TermMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="concatId" column="concat_id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="startDate" column="start_date" jdbcType="TIMESTAMP"/>
+        <result property="endDate" column="end_date" jdbcType="TIMESTAMP"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="unit" column="unit" jdbcType="VARCHAR"/>
+        <result property="payCycle" column="pay_cycle" jdbcType="VARCHAR"/>
+        <result property="monthBill" column="month_bill" jdbcType="INTEGER"/>
+        <result property="payType" column="pay_type" jdbcType="VARCHAR"/>
+        <result property="payDay" column="pay_day" jdbcType="VARCHAR"/>
+        <result property="firstStartDate" column="first_start_date" jdbcType="TIMESTAMP"/>
+        <result property="firstEndDate" column="first_end_date" jdbcType="TIMESTAMP"/>
+        <result property="firstMoney" column="first_money" jdbcType="NUMERIC"/>
+        <result property="priceType" column="price_type" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TermMap">
+        select
+          *
+        from term
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TermMap">
+        select
+          *
+        from term
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="concatId != null and concatId != ''">
+                and concat_id = #{concatId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="startDate != null">
+                and start_date = #{startDate}
+            </if>
+            <if test="endDate != null">
+                and end_date = #{endDate}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="unit != null and unit != ''">
+                and unit = #{unit}
+            </if>
+            <if test="payCycle != null and payCycle != ''">
+                and pay_cycle = #{payCycle}
+            </if>
+            <if test="monthBill != null">
+                and month_bill = #{monthBill}
+            </if>
+            <if test="payType != null and payType != ''">
+                and pay_type = #{payType}
+            </if>
+            <if test="payDay != null and payDay != ''">
+                and pay_day = #{payDay}
+            </if>
+            <if test="firstStartDate != null">
+                and first_start_date = #{firstStartDate}
+            </if>
+            <if test="firstEndDate != null">
+                and first_end_date = #{firstEndDate}
+            </if>
+            <if test="firstMoney != null">
+                and first_money = #{firstMoney}
+            </if>
+            <if test="priceType != null and priceType != ''">
+                and price_type = #{priceType}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from term
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="concatId != null and concatId != ''">
+                and concat_id = #{concatId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="startDate != null">
+                and start_date = #{startDate}
+            </if>
+            <if test="endDate != null">
+                and end_date = #{endDate}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="unit != null and unit != ''">
+                and unit = #{unit}
+            </if>
+            <if test="payCycle != null and payCycle != ''">
+                and pay_cycle = #{payCycle}
+            </if>
+            <if test="monthBill != null">
+                and month_bill = #{monthBill}
+            </if>
+            <if test="payType != null and payType != ''">
+                and pay_type = #{payType}
+            </if>
+            <if test="payDay != null and payDay != ''">
+                and pay_day = #{payDay}
+            </if>
+            <if test="firstStartDate != null">
+                and first_start_date = #{firstStartDate}
+            </if>
+            <if test="firstEndDate != null">
+                and first_end_date = #{firstEndDate}
+            </if>
+            <if test="firstMoney != null">
+                and first_money = #{firstMoney}
+            </if>
+            <if test="priceType != null and priceType != ''">
+                and price_type = #{priceType}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into term(id,concat_id, name, start_date, end_date, type, unit, pay_cycle, month_bill, pay_type, pay_day, first_start_date, first_end_date, first_money, price_type)
+        values (#{id},#{concatId}, #{name}, #{startDate}, #{endDate}, #{type}, #{unit}, #{payCycle}, #{monthBill}, #{payType}, #{payDay}, #{firstStartDate}, #{firstEndDate}, #{firstMoney}, #{priceType})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update term
+        <set>
+            <if test="concatId != null and concatId != ''">
+                concat_id = #{concatId},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="startDate != null">
+                start_date = #{startDate},
+            </if>
+            <if test="endDate != null">
+                end_date = #{endDate},
+            </if>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="unit != null and unit != ''">
+                unit = #{unit},
+            </if>
+            <if test="payCycle != null and payCycle != ''">
+                pay_cycle = #{payCycle},
+            </if>
+            <if test="monthBill != null">
+                month_bill = #{monthBill},
+            </if>
+            <if test="payType != null and payType != ''">
+                pay_type = #{payType},
+            </if>
+            <if test="payDay != null and payDay != ''">
+                pay_day = #{payDay},
+            </if>
+            <if test="firstStartDate != null">
+                first_start_date = #{firstStartDate},
+            </if>
+            <if test="firstEndDate != null">
+                first_end_date = #{firstEndDate},
+            </if>
+            <if test="firstMoney != null">
+                first_money = #{firstMoney},
+            </if>
+            <if test="priceType != null and priceType != ''">
+                price_type = #{priceType},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from term where id = #{id}
+    </delete>
+
+</mapper>
+
