@@ -78,7 +78,7 @@ public class ContractApi extends BaseApi {
         params.put("companyId", companyId);
         params.put("contractName", contractName);
         params.put("isPay", "2");
-        List<Contract> cs = contractService.getContractByCompany(params, 0, 100);
+        List<Contract> cs = contractService.getContractByCompany(params, 1, 100);
         for (Contract c : cs) {
             if(Objects.isNull(c.getApplyMoney()) || c.getApplyMoney() == 0.0){
                 c.setApplyMoney(paymentDetailService.getApplyPaymentMoneyByContract(c.getId()));

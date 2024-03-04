@@ -751,4 +751,12 @@ public class ZujinApi extends BaseApi {
         billService.update(bill);
         return ResponseModel.ok(bill);
     }
+
+    @Operation(description = "作废合同账单")
+    @DeleteMapping("bill/{id}")
+    public ResponseModel deleteBill(@PathVariable String id)
+    {
+        billService.deleteById(id);
+        return ResponseModel.ok(id);
+    }
 }

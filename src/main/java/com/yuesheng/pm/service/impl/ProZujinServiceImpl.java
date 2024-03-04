@@ -5,8 +5,10 @@ import com.yuesheng.pm.mapper.ProZujinMapper;
 import com.yuesheng.pm.service.*;
 import com.yuesheng.pm.util.DateFormat;
 import com.yuesheng.pm.util.DateUtil;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -33,6 +35,39 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
     private CompanyService companyService;
     @Autowired
     private ProBzjService bzjService;
+    @Autowired
+    @Lazy
+    private StaffService staffService;
+
+    @PostConstruct
+    public void init() {
+        List<ProZujin> proZujins = queryByParam(new HashMap<>());
+        proZujins.forEach(item -> {
+            if (Objects.isNull(item.getBrandCompany())) {
+                String name = item.getCompany();
+                Company c = new Company();
+                c.setName(name);
+                if (StringUtils.isNotBlank(item.getZlPerson())) {
+                    c.setRelationP(item.getZlPerson());
+                }
+                if (StringUtils.isNotBlank(item.getZlPersonTel())) {
+                    c.setTelephoneP(item.getZlPersonTel());
+                }
+
+                Staff s = staffService.getStaffById(item.getStaffId());
+                if(Objects.isNull(s)){
+                    s = new Staff();
+                    s.setId("1001");
+                    s.setCoding("1001");
+                }
+                saveCompany(c, s);
+
+                item.setCompany(c.getId());
+                this.proZujinMapper.update(item);
+            }
+
+        });
+    }
 
     /**
      * 通过ID查询单条数据

@@ -163,7 +163,10 @@ public class ConcatBillServiceImpl implements ConcatBillService {
         Integer endDay = DateUtil.getOffsetDays(now, term.getEndDate());
         if (startDay >= 0 && endDay >= 0) {
             //在计费时间范围内，开始算费
-            if (StringUtils.equals(term.getUnit(), "month")) {
+            if (StringUtils.equals(term.getPayCycle(), "quarter")) {
+                //季度账单
+                insertQuarterBill(term,zujin,floor,room.toString());
+            }else if (StringUtils.equals(term.getUnit(), "month")) {
 //                每月算费
                 insertMonthBill(term, zujin, floor, room.toString());
             } else {
@@ -182,6 +185,50 @@ public class ConcatBillServiceImpl implements ConcatBillService {
     @Override
     public List<ConcatBill> queryByParam(HashMap<String, String> param) {
         return concatBillMapper.queryByParam(param);
+    }
+
+
+    private void insertQuarterBill(Term term, ProZujin zujin, String floor, String room) {
+
+        Date now = DateUtil.getNowDate();
+        Date date = DateUtil.getDateByDay(term.getPayDay());
+        Date startDate = DateUtil.getNextQuarterStartTime();
+        Date endDate = null;
+
+        int endDay = DateUtil.getOffsetDays(now, term.getEndDate());
+        if (endDay <= 0) {
+            //到结束时间，以结束时间为准
+            endDate = term.getEndDate();
+        }else{
+            //下一季度结束时间
+            endDate = DateUtil.getNextQuarterEndTime();
+        }
+
+        ConcatBill cb = new ConcatBill();
+        cb.setMoney(term.getMoney());
+        cb.setConcatId(term.getConcatId());
+        cb.setDatetime(DateUtil.getNowDate());
+        cb.setApproveState(0);
+        cb.setBrand(zujin.getBrand());
+        cb.setEndDate(endDate);
+        cb.setPayEndDate(date);
+        cb.setName(term.getName());
+        cb.setConcatType(zujin.getCompanyTypeId() + "");
+        cb.setFloor(floor);
+        cb.setArrearageDay(0);
+        cb.setInvoiceState(0);
+        cb.setArrearage(term.getMoney());
+        cb.setRoom(room);
+        cb.setMonthBill(0);
+        cb.setType(term.getType());
+        cb.setUnit(term.getUnit());
+        cb.setPayCycle(term.getPayCycle());
+        cb.setPayType(term.getPayType());
+        cb.setPayMoney(0.0);
+        cb.setSourceId(term.getId());
+        cb.setStartDate(startDate);
+        cb.setState("wait");
+        insert(cb);
     }
 
     private void insertMonthBill(Term term, ProZujin zujin, String floor, String room) {
