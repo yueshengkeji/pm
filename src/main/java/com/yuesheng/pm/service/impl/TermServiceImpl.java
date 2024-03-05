@@ -4,10 +4,12 @@ import com.yuesheng.pm.entity.Term;
 import com.yuesheng.pm.mapper.TermMapper;
 import com.yuesheng.pm.service.ConcatBillService;
 import com.yuesheng.pm.service.TermService;
+import com.yuesheng.pm.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,5 +89,27 @@ public class TermServiceImpl implements TermService {
     public boolean deleteById(String id) {
         concatBillService.deleteBySourceId(id);
         return this.termMapper.deleteById(id) > 0;
+    }
+
+    @Override
+    public void genAllTerm() {
+        //查询上月有效条款
+        Date startDate = DateUtil.getMonthStartTime();
+        List<Term> terms = termMapper.queryByDate(startDate, startDate,"month");
+        terms.forEach(item->{
+            concatBillService.genByTerm(item);
+        });
+
+        //查询下季度有效条款
+        startDate = DateUtil.getNextQuarterStartTime();
+        terms = termMapper.queryByDate(startDate,startDate,"quarter");
+        terms.forEach(item->{
+            concatBillService.genByTerm(item);
+        });
+    }
+
+    @Override
+    public int deleteByConcat(String concatId) {
+        return termMapper.deleteByConcat(concatId);
     }
 }

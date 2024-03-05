@@ -1,5 +1,8 @@
 package com.yuesheng.pm.entity;
 
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.io.Serializable;
 
 /**
@@ -8,30 +11,45 @@ import java.io.Serializable;
  * @author xiaoSong
  * @since 2021-07-07 13:52:28
  */
+@Schema(name = "商铺信息")
 public class ProZujinHouse implements Serializable {
     private static final long serialVersionUID = 503812873018144081L;
 
     private Integer id;
 
+    @Schema(name="楼层")
     private String floor;
-
+    @Schema(name="商铺号")
     private String pwNumber;
-
+    @Schema(name="业态id")
     private Integer yetaiId;
-
+    @Schema(name="品类")
     private String type;
 
+    @Schema(name="面积")
     private String acreage;
 
+    @Schema(name="是否租赁标记")
     private String flag;
 
+    @Schema(name="业态对象")
     private ProZujinYt yt;
-
+    @Schema(name="备注")
     private String remark;
-
+    @Schema(name="租赁品牌")
     private String brandName;
-
+    @Schema(name="租赁人")
     private String person;
+    @Schema(name="商铺每月单价")
+    private Double money;
+
+    public Double getMoney() {
+        return money;
+    }
+
+    public void setMoney(Double money) {
+        this.money = money;
+    }
 
     public String getBrandName() {
         return brandName;

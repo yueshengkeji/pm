@@ -196,5 +196,14 @@
         delete from term where id = #{id}
     </delete>
 
+
+    <select id="queryByDate" resultMap="TermMap">
+        select * from term
+        where start_date &lt;= #{startDate} and end_date &gt;= #{endDate} and pay_cycle=#{type}
+    </select>
+
+    <delete id="deleteByConcat">
+        delete from term where concat_id=#{concatId}
+    </delete>
 </mapper>
 

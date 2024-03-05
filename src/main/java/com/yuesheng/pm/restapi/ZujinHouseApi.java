@@ -104,4 +104,11 @@ public class ZujinHouseApi {
     public ResponseModel floors() {
         return new ResponseModel(houseService.queryFloor());
     }
+
+
+    @Operation(description = "删除商铺")
+    @DeleteMapping("{id}")
+    public ResponseModel delete(@PathVariable Integer id){
+        return ResponseModel.ok(houseService.deleteById(id));
+    }
 }

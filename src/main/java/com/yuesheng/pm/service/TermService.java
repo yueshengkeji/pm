@@ -52,4 +52,15 @@ public interface TermService {
      */
     boolean deleteById(String id);
 
+    /**
+     * 查询有效期条款并生成账单
+     */
+    void genAllTerm();
+
+    /**
+     * 根据合同id删除条款
+     * @param concatId
+     * @return
+     */
+    int deleteByConcat(String concatId);
 }

@@ -3,6 +3,8 @@ package com.yuesheng.pm.mapper;
 import com.yuesheng.pm.entity.Term;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,5 +64,23 @@ public interface TermMapper {
      */
     int deleteById(String id);
 
+
+    /**
+     * 查询指定日期范围内，有效的条款信息
+     * @param startDate 开始日期
+     * @param endDate 截止日期
+     * @param payCycle 支付周期：month=月支付周期，quarter=季度支付周期
+     * @return
+     */
+    List<Term> queryByDate(@Param("startDate") Date startDate,
+                           @Param("endDate") Date endDate,
+                           @Param("type")String payCycle);
+
+    /**
+     * 删除条款
+     * @param concatId 合同id
+     * @return
+     */
+    int deleteByConcat(@Param("concatId") String concatId);
 }
 

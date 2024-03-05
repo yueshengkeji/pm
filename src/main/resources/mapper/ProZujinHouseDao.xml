@@ -13,6 +13,7 @@
         <result property="remark" column="remark" jdbcType="VARCHAR"/>
         <result property="brandName" column="brand_name" jdbcType="VARCHAR"/>
         <result property="person" column="person" jdbcType="VARCHAR"/>
+        <result property="money" column="money" jdbcType="DECIMAL"/>
     </resultMap>
 
     <select id="queryFloor" resultType="String">
@@ -21,7 +22,7 @@
 
     <select id="queryByParam" resultMap="ProZujinHouseMap">
         select
-        id, floor, pw_number, yetai_id, type, acreage, flag,remark,brand_name,person
+        *
         from pro_zujin_house
         <where>
             <if test="pwNumber != null">
@@ -53,7 +54,7 @@
     </select>
     <select id="queryByParam" resultMap="ProZujinHouseMap" databaseId="mysql">
         select
-        id, floor, pw_number, yetai_id, type, acreage, flag,remark,brand_name,person
+        *
         from pro_zujin_house
         <where>
             <if test="pwNumber != null">
@@ -151,7 +152,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="ProZujinHouseMap">
         select
-          id, floor, pw_number, yetai_id, type, acreage, flag,remark
+            *
         from pro_zujin_house
         where id = #{id}
     </select>
@@ -159,15 +160,15 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProZujinHouseMap">
         select
-          id, floor, pw_number, yetai_id, type, acreage, flag,remark,brand_name,person
+            *
         from pro_zujin_house
-        limit #{offset}, #{limit}
+                 limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ProZujinHouseMap">
         select
-        id, floor, pw_number, yetai_id, type, acreage, flag,remark,brand_name,person
+        *
         from pro_zujin_house
         <where>
             <if test="id != null">
@@ -196,8 +197,8 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into pro_zujin_house(floor, pw_number, yetai_id, type, acreage, flag,remark)
-        values (#{floor}, #{pwNumber}, #{yt.id}, #{type}, #{acreage}, #{flag},#{remark})
+        insert into pro_zujin_house(floor, pw_number, yetai_id, type, acreage, flag,remark,money)
+        values (#{floor}, #{pwNumber}, #{yt.id}, #{type}, #{acreage}, #{flag},#{remark},#{money})
     </insert>
 
     <!--通过主键修改数据-->
@@ -230,6 +231,9 @@
             </if>
             <if test="person != null">
                 person = #{person},
+            </if>
+            <if test="money != null">
+                money = #{money},
             </if>
         </set>
         where id = #{id}

@@ -229,6 +229,7 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
      */
     @Override
     public boolean deleteById(Integer id) {
+        termService.deleteByConcat(id+"");
         return this.proZujinMapper.deleteById(id) > 0;
     }
 

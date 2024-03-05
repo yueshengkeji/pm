@@ -20,7 +20,7 @@ public class YtApi {
     @PutMapping
     public ResponseModel insert(@RequestBody ProZujinYt yt) {
         if (StringUtils.isNotBlank(yt.getName())) {
-            ytService.insert(yt);
+            yt = ytService.insert(yt);
         }
         return new ResponseModel(yt);
     }

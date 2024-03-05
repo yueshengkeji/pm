@@ -55,6 +55,8 @@ public class ProZujinYtServiceImpl implements ProZujinYtService {
         List<ProZujinYt> ytList = queryAll(yt);
         if (ytList.isEmpty()) {
             this.proZujinYtMapper.insert(proZujinYt);
+        }else{
+            return ytList.get(0);
         }
         return proZujinYt;
     }
