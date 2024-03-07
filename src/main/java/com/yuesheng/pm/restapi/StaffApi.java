@@ -81,6 +81,41 @@ public class StaffApi extends BaseApi {
         return new ResponseModel(result);
     }
 
+
+    @Operation(description = "导出职员列表")
+    @GetMapping("exportAll")
+    public ResponseModel exportAll(String status, String searchText, String sortBy, Boolean sortDesc) {
+        int count = 0;
+        List<Staff> staffList = null;
+        if ("unLogin".equals(status)) {
+            staffList = staffService.queryUnLogin("");
+        } else {
+            sortBy = getSortBy(sortBy);
+            startPage(1, 10000, sortBy, sortDesc);
+            staffList = (Page<Staff>) staffService.seek(searchText);
+        }
+        staffList.forEach(item->{
+            Duty[] duties = item.getDuty();
+            if(!Objects.isNull(duties))
+            {
+                StringBuffer sb = new StringBuffer();
+                for (Duty duty : duties) {
+                    if(!Objects.isNull(duty))
+                    {
+                        sb.append(duty.getName());
+                        sb.append(";");
+                    }
+                }
+                item.setDutyName(sb.toString());
+            }
+        });
+        String fileName = "用户基础信息列表.xlsx";
+        fileName = ExcelParse.writeExcel(staffList,fileName,new String[]{
+                "Name","Tel","Email","DutyName","Section.Name","Date"
+        },Staff.class);
+        return ResponseModel.ok(fileName);
+    }
+
     private String getSortBy(String sortBy) {
         switch (sortBy) {
             case "lastLogin":

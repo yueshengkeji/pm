@@ -1,5 +1,6 @@
 package com.yuesheng.pm.service.impl;
 
+
 import com.yuesheng.pm.entity.Term;
 import com.yuesheng.pm.mapper.TermMapper;
 import com.yuesheng.pm.service.ConcatBillService;
@@ -93,9 +94,15 @@ public class TermServiceImpl implements TermService {
 
     @Override
     public void genAllTerm() {
-        //查询上月有效条款
+        //查询上月有效月度账单条款
         Date startDate = DateUtil.getMonthStartTime();
         List<Term> terms = termMapper.queryByDate(startDate, startDate,"month");
+        terms.forEach(item->{
+            concatBillService.genByTerm(item);
+        });
+
+        //查询上月有效扣点条款
+        terms = termMapper.queryByDate(startDate, startDate,"final");
         terms.forEach(item->{
             concatBillService.genByTerm(item);
         });

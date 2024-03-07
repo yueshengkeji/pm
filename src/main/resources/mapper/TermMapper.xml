@@ -18,6 +18,8 @@
         <result property="firstEndDate" column="first_end_date" jdbcType="TIMESTAMP"/>
         <result property="firstMoney" column="first_money" jdbcType="NUMERIC"/>
         <result property="priceType" column="price_type" jdbcType="VARCHAR"/>
+        <result property="money" column="money" jdbcType="DECIMAL"/>
+        <result property="price" column="price" jdbcType="DECIMAL"/>
     </resultMap>
 
     <!--查询单个-->

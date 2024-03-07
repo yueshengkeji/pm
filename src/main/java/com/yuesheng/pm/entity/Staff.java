@@ -1,5 +1,6 @@
 package com.yuesheng.pm.entity;
 
+
 import com.yuesheng.pm.annotation.Excel;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -9,13 +10,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @author XiaoSong
  * @date 2016/08/01
  */
-@Schema(name="职员基础信息")
+@Schema(name = "职员基础信息")
 public class Staff extends BaseEntity {
     private static final long serialVersionUID = -13825030241182937L;
     /**
      * 员工名称  pj00402
      */
-    @Schema(name = "员工真实姓名,添加员工信息时必填", required = true)
+    @Schema(name = "员工真实姓名,添加员工信息时必填")
     @Excel(name = "姓名")
     private String name;
     /**
@@ -37,11 +38,13 @@ public class Staff extends BaseEntity {
      * 手机号   pj00420(varchar(200))
      */
     @Schema(name = "手机号")
+    @Excel(name = "手机号")
     private String tel;
     /**
      * 邮箱号（pj00441(varchar(100))）
      */
     @Schema(name = "邮箱号")
+    @Excel(name = "邮箱号")
     private String email;
     /**
      * 用户密码
@@ -57,6 +60,7 @@ public class Staff extends BaseEntity {
      * 职务名称
      */
     @Schema(name = "职务名称")
+    @Excel(name = "职务名称")
     private String dutyName;
     /**
      * 职务集合
@@ -72,6 +76,7 @@ public class Staff extends BaseEntity {
      * 职员所属部门
      */
     @Schema(name = "员工部门，添加员工信息时必填")
+    @Excel(name = "部门")
     private Section section;
     /**
      * 首页头信息
@@ -102,6 +107,7 @@ public class Staff extends BaseEntity {
      * 注册日期
      */
     @Schema(name = "注册日期")
+    @Excel(name = "注册日期")
     private String date;
     /**
      * 最后登陆日期
@@ -124,6 +130,7 @@ public class Staff extends BaseEntity {
      * pj00426:1=禁止登陆，0=可以登录
      */
     @Schema(name = "是否禁止登录，1=禁止登陆，0=可以登录")
+    @Excel(name = "是否离职",coverFormat = "1=禁止登录,0=正常")
     private byte isLogin;
     /**
      * 最后登陆时间
@@ -137,7 +144,7 @@ public class Staff extends BaseEntity {
     /**
      * 汉王打卡机设备id
      */
-    @Schema(hidden = true)
+    @Schema(name = "汉王打卡机设备id")
     private String hwDeviceId;
     private String token;
     @Schema(name="身份证号码")

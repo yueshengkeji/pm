@@ -42,6 +42,9 @@
             <if test="person != null and person != ''">
                 and person = #{person}
             </if>
+            <if test="brand != null and brand != ''">
+                and brand = #{brand}
+            </if>
         </where>
     </select>
 
@@ -72,6 +75,9 @@
             </if>
             <if test="person != null and person != ''">
                 and person = #{person}
+            </if>
+            <if test="brand != null and brand != ''">
+                and brand = #{brand}
             </if>
         </where>
     </select>

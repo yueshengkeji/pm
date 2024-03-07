@@ -3738,6 +3738,84 @@ create table project_auth
         primary key (id)
 );
 
+create table term
+(
+    id               varchar(40)    not null
+        primary key,
+    concat_id        varchar(40)    null comment '合同id',
+    name             varchar(200)   null comment '费用名称',
+    start_date       date           null comment '开始日期',
+    end_date         date           null comment '截止日期',
+    type             varchar(200)   null comment '计费方式',
+    unit             varchar(50)    null comment '计费单位',
+    pay_cycle        varchar(50)    null comment '支付周期',
+    month_bill       tinyint        null comment '是否月度账单',
+    pay_type         varchar(50)    null comment '付款方式',
+    pay_day          varchar(50)    null comment '付款日',
+    first_start_date date           null comment '首次计费开始日期',
+    first_end_date   date           null comment '首次计费结束日期',
+    first_money      decimal(10, 2) null comment '首次计费金额',
+    price_type       varchar(50)    null comment '计价方式',
+    money            decimal(10, 2) null,
+    price            decimal(10, 2) null
+);
+create table concat_bill
+(
+    id            varchar(40)    not null
+        primary key,
+    concat_id     varchar(40)    null,
+    name          varchar(200)   null comment '费用名称',
+    start_date    date           null comment '账单开始日期',
+    end_date      date           null comment '账单截止日期',
+    type          varchar(50)    null comment '计费方式',
+    unit          varchar(50)    null comment '计费单位',
+    pay_cycle     varchar(50)    null comment '支付周期',
+    month_bill    tinyint        null comment '是否月度账单',
+    pay_type      varchar(50)    null comment '支付类型',
+    pay_end_date  date           null comment '支付截止日期',
+    state         varchar(50)    null comment '账单状态',
+    arrearage_day int            null comment '欠费天数',
+    room          varchar(50)    null comment '铺位号',
+    floor         varchar(50)    null comment '楼层',
+    brand         varchar(200)   null comment '品牌',
+    money         decimal(10, 2) null comment '应收金额',
+    sj_money      decimal(10, 2) null comment '实际金额',
+    pay_money     decimal(10, 2) null comment '已收金额',
+    arrearage     decimal(10, 2) null comment '欠费金额',
+    concat_type   varchar(50)    null comment '合同类型',
+    approve_state tinyint        null comment '状态：0=正常，1=已审核，2=作废',
+    invoice_state int            null comment '开票状态：0=为开票，1=已开票',
+    datetime      datetime       null comment '账单生成日期',
+    staff_id      varchar(40)    null comment '单据添加人',
+    source_id     varchar(40)    null comment '来源id',
+    back_money    decimal(10, 2) null
+);
+
+create table contract_word_model
+(
+    id         int auto_increment
+        primary key,
+    name       varchar(250) null,
+    rich_text  text         null,
+    type       int          null,
+    params_arr text         null,
+    constraint contract_word_model_id_uindex
+        unique (id)
+);
+
+create table contract_word_model_params
+(
+    id        int auto_increment
+        primary key,
+    name      varchar(250) null,
+    mark_Name varchar(250) null,
+    constraint contract_word_model_params_id_uindex
+        unique (id)
+);
+
+
+
+
 
 insert into sdeb003 (eb00301, eb00302, eb00303, eb00304, eb00305, eb00306, eb00307, eb00308, eb00309, eb00310, eb00311, eb00312, eb00313, eb00314, eb00315, eb00316, eb00317, eb00318, eb00319, eb00320)
 values

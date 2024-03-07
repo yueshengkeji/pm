@@ -78,6 +78,19 @@ public class Term extends BaseEntity {
      */
     private Double money;
 
+    /**
+     * 单价
+     */
+    private Double price;
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
     public String getConcatId() {
         return concatId;
     }

@@ -1,10 +1,14 @@
 package com.yuesheng.pm.service.impl;
 
-import com.yuesheng.pm.entity.*;
+import com.yuesheng.pm.entity.ConcatBill;
+import com.yuesheng.pm.entity.ProZujin;
+import com.yuesheng.pm.entity.ProZujinHouse;
+import com.yuesheng.pm.entity.Term;
 import com.yuesheng.pm.mapper.ConcatBillMapper;
 import com.yuesheng.pm.service.ConcatBillService;
 import com.yuesheng.pm.service.ProZujinHouseService;
 import com.yuesheng.pm.service.ProZujinService;
+import com.yuesheng.pm.service.SaleDataService;
 import com.yuesheng.pm.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +34,9 @@ public class ConcatBillServiceImpl implements ConcatBillService {
     @Autowired
     @Lazy
     private ProZujinHouseService houseService;
+
+    @Autowired
+    private SaleDataService saleDataService;
 
     /**
      * 通过ID查询单条数据
@@ -163,12 +170,17 @@ public class ConcatBillServiceImpl implements ConcatBillService {
         Integer endDay = DateUtil.getOffsetDays(now, term.getEndDate());
         if (startDay >= 0 && endDay >= 0) {
             //在计费时间范围内，开始算费
-            if (StringUtils.equals(term.getPayCycle(), "quarter")) {
-                //季度账单
-                insertQuarterBill(term,zujin,floor,room.toString());
-            }else if (StringUtils.equals(term.getUnit(), "month")) {
-//                每月算费
-                insertMonthBill(term, zujin, floor, room.toString());
+            if (StringUtils.equals(term.getUnit(), "month")) {
+                if (StringUtils.equals(term.getPayCycle(), "quarter")) {
+                    //季度账单
+                    insertQuarterBill(term, zujin, floor, room.toString());
+                } else if (StringUtils.equals(term.getPayCycle(), "final")) {
+                    //固定扣点,根据销售额计算租金应交账单
+                    insertFinalBill(term, zujin, floor, room.toString());
+                } else {
+//                    每月算费
+                    insertMonthBill(term, zujin, floor, room.toString());
+                }
             } else {
 //                一次性算费
                 insertOneBill(term, zujin, floor, room.toString());
@@ -187,6 +199,71 @@ public class ConcatBillServiceImpl implements ConcatBillService {
         return concatBillMapper.queryByParam(param);
     }
 
+    private void insertFinalBill(Term term, ProZujin zujin, String floor, String room) {
+
+        //获取上个月第一天
+        Date prevDate = DateUtil.getLastMonthStartTime();
+
+        Date date = DateUtil.getDateByDay(term.getPayDay());
+        Date startDate = term.getStartDate();
+        Date endDate = null;
+
+        int endDay = DateUtil.getOffsetDays(prevDate, term.getEndDate());
+        if (endDay <= 0) {
+            //到结束时间，以结束时间为准
+            endDate = term.getEndDate();
+        }
+
+        boolean sameMonth = DateUtil.isSameMonth(startDate, prevDate);
+        if (!sameMonth) {
+            //非同一个月,从本月第一天开始 到 本月最后一天
+            startDate = DateUtil.getMonthStartTime(prevDate);
+            if (Objects.isNull(endDate)) {
+                endDate = DateUtil.getMonthEndTime(prevDate);
+            }
+        } else if (Objects.isNull(endDate)) {
+            //同一个月，设置截止时间为开始日期当月最后一天
+            endDate = DateUtil.getMonthEndTime(startDate);
+        }
+
+
+        HashMap<String, Object> param = new HashMap<>();
+        param.put("saleStartDate", DateUtil.format(prevDate, DateUtil.PATTERN_CLASSICAL_SIMPLE));
+        param.put("saleEndDate", DateUtil.format(endDate, DateUtil.PATTERN_CLASSICAL_SIMPLE));
+        param.put("brand", zujin.getBrand());
+        Double money = saleDataService.queryMoney(param);
+        if (Objects.isNull(money)) {
+            money = 0.0;
+        } else {
+            money = money * term.getMoney();
+        }
+
+        ConcatBill cb = new ConcatBill();
+        cb.setMoney(money);
+        cb.setConcatId(term.getConcatId());
+        cb.setDatetime(DateUtil.getNowDate());
+        cb.setApproveState(0);
+        cb.setBrand(zujin.getBrand());
+        cb.setEndDate(endDate);
+        cb.setPayEndDate(date);
+        cb.setName(term.getName());
+        cb.setConcatType(zujin.getCompanyTypeId() + "");
+        cb.setFloor(floor);
+        cb.setArrearageDay(0);
+        cb.setInvoiceState(0);
+        cb.setArrearage(term.getMoney());
+        cb.setRoom(room);
+        cb.setMonthBill(0);
+        cb.setType(term.getType());
+        cb.setUnit(term.getUnit());
+        cb.setPayCycle(term.getPayCycle());
+        cb.setPayType(term.getPayType());
+        cb.setPayMoney(0.0);
+        cb.setSourceId(term.getId());
+        cb.setStartDate(startDate);
+        cb.setState("wait");
+        insert(cb);
+    }
 
     private void insertQuarterBill(Term term, ProZujin zujin, String floor, String room) {
 
@@ -199,7 +276,7 @@ public class ConcatBillServiceImpl implements ConcatBillService {
         if (endDay <= 0) {
             //到结束时间，以结束时间为准
             endDate = term.getEndDate();
-        }else{
+        } else {
             //下一季度结束时间
             endDate = DateUtil.getNextQuarterEndTime();
         }
@@ -233,7 +310,7 @@ public class ConcatBillServiceImpl implements ConcatBillService {
 
     private void insertMonthBill(Term term, ProZujin zujin, String floor, String room) {
 
-        //获取上个月第一题拿
+        //获取上个月第一天
         Date prevDate = DateUtil.getLastMonthStartTime();
 
         Date date = DateUtil.getDateByDay(term.getPayDay());
@@ -241,7 +318,7 @@ public class ConcatBillServiceImpl implements ConcatBillService {
         Date endDate = null;
 
         int endDay = DateUtil.getOffsetDays(prevDate, term.getEndDate());
-        if (endDay == 0) {
+        if (endDay <= 0) {
             //到结束时间，以结束时间为准
             endDate = term.getEndDate();
         }
