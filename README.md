@@ -28,6 +28,8 @@
 
 #### 9.系统管理：参数设置、定时任务
 
+#### 10.招商管理：租赁合同登记管理、合同条款管理、保证金管理、合同账单生成、收款/开票状态管理、催款通知单
+
 系统定时任务的模块，移植于若依框架的common包，系统架构如下（如有侵权，请及时联系作者，作者收到后将及时更换开源库）：
 ====
 1.spring-boot、jackson、fastjson、alibaba-druid、cglib、pagehelper、jsoup、htmlunit、apache-poi、docx4j、xdocreport、freemarker、camel-ftp、commons-email、commons-io、xmlgraphics-fop
