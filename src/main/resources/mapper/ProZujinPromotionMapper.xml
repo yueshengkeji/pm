@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProZujinPromotionMapper">
+    <resultMap id="ProZujinPromotion" type="com.yuesheng.pm.entity.ProZujinPromotion">
+        <result property="id" column="id"></result>
+        <result property="times" column="times"></result>
+        <result property="price" column="price"></result>
+        <result property="contractId" column="contract_id"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="money" column="money"></result>
+        <result property="firstBar" column="first_bar"></result>
+        <result property="liquidatedDamages" column="liquidated_damages"></result>
+        <result property="otherBar" column="other_bar"></result>
+        <result property="secondBar" column="second_bar"></result>
+        <result property="voucher" column="voucher"></result>
+        <result property="name" column="name"></result>
+    </resultMap>
+
+    <select id="list" resultMap="ProZujinPromotion">
+        select * from pro_zujin_promotion
+        where contract_id = #{contractId}
+    </select>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.ProZujinPromotion">
+        insert into pro_zujin_promotion
+        (id,times,price,contract_id,create_time,money,first_bar,liquidated_damages,other_bar,second_bar,voucher,name)
+        values (#{id},#{times},#{price},#{contractId},#{createTime},#{money},#{firstBar},#{liquidatedDamages},#{otherBar},#{secondBar},#{voucher},#{name})
+    </insert>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.ProZujinPromotion">
+        update pro_zujin_promotion
+        <set>
+            <if test="times != null">times = #{times},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="contractId != null">contract_id = #{contractId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="firstBar != null">first_bar = #{firstBar},</if>
+            <if test="liquidatedDamages != null">liquidated_damages = #{liquidatedDamages},</if>
+            <if test="otherBar != null">other_bar = #{otherBar},</if>
+            <if test="secondBar != null">second_bar = #{secondBar},</if>
+            <if test="voucher != null">voucher = #{voucher},</if>
+            <if test="name != null">name = #{name},</if>
+        </set>
+    </update>
+    <delete id="delete" parameterType="string">
+        delete from pro_zujin_promotion
+        where id = #{id}
+    </delete>
+</mapper>

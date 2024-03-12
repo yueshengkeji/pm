@@ -424,10 +424,19 @@ public class DateUtil {
      * @return 返回上个月第一天的起始时间
      */
     public static Date getLastMonthStartTime() {
+        return getMonthStartTime(1);
+    }
+
+    public static Date getMonthStartTime(int month)
+    {
+        return getIntegralStartTime(getPrevCalendarByMonth(month).getTime());
+    }
+
+    public static Calendar getPrevCalendarByMonth(int month){
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, -1);
+        cal.add(Calendar.MONTH, -month);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        return getIntegralStartTime(cal.getTime());
+        return cal;
     }
 
     /**
@@ -464,6 +473,57 @@ public class DateUtil {
         cal.add(Calendar.MONTH, 1);
         cal.set(Calendar.DAY_OF_MONTH, getDayOfMonth(cal.getTime()));
         return getIntegralEndTime(cal.getTime());
+    }
+
+    /**
+     * 获取下个季度第一天
+     * @return 返回下个季度第一天
+     */
+    public static Date getNextQuarterStartTime() {
+        // 获取当前日期
+        Calendar calendar = Calendar.getInstance();
+        // 获取当前月份
+        int currentMonth = calendar.get(Calendar.MONTH);
+        // 计算下一个季度的月份
+        int nextQuarterMonth = currentMonth + (3 - currentMonth % 3);
+        if (nextQuarterMonth > 11) {
+            nextQuarterMonth = nextQuarterMonth % 12;
+            calendar.add(Calendar.YEAR, 1);
+        }
+
+        // 设置日期为下一个季度的第一天
+        calendar.set(Calendar.MONTH, nextQuarterMonth);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime();
+    }
+
+    /**
+     * 获取下个季度最后一天
+     *
+     * @return 返回下个季度最后一天的结束时间
+     */
+    public static Date getNextQuarterEndTime() {
+        // 获取当前日期
+        Calendar calendar = Calendar.getInstance();
+
+        // 获取当前月份
+        int currentMonth = calendar.get(Calendar.MONTH);
+
+        // 计算下一个季度的第一个月
+        int nextQuarterFirstMonth = currentMonth + (3 - currentMonth % 3);
+        if (nextQuarterFirstMonth > 11) {
+            nextQuarterFirstMonth = nextQuarterFirstMonth % 12;
+            calendar.add(Calendar.YEAR, 1);
+        }
+
+        // 设置日期为下一个季度的第一天
+        calendar.set(Calendar.MONTH, nextQuarterFirstMonth);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        // 设置日期为下一个季度的最后一天
+        calendar.add(Calendar.MONTH, 2);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        // 打印下一个季度的最后一天
+        return calendar.getTime();
     }
 
     /**
@@ -932,58 +992,6 @@ public class DateUtil {
         calendar.setTime(date);
         calendar.set(Calendar.YEAR,year);
         calendar.set(Calendar.MONTH, month);
-        return calendar.getTime();
-    }
-
-
-    /**
-     * 获取下个季度第一天
-     * @return 返回下个季度第一天
-     */
-    public static Date getNextQuarterStartTime() {
-        // 获取当前日期
-        Calendar calendar = Calendar.getInstance();
-        // 获取当前月份
-        int currentMonth = calendar.get(Calendar.MONTH);
-        // 计算下一个季度的月份
-        int nextQuarterMonth = currentMonth + (3 - currentMonth % 3);
-        if (nextQuarterMonth > 11) {
-            nextQuarterMonth = nextQuarterMonth % 12;
-            calendar.add(Calendar.YEAR, 1);
-        }
-
-        // 设置日期为下一个季度的第一天
-        calendar.set(Calendar.MONTH, nextQuarterMonth);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        return calendar.getTime();
-    }
-
-    /**
-     * 获取下个季度最后一天
-     *
-     * @return 返回下个季度最后一天的结束时间
-     */
-    public static Date getNextQuarterEndTime() {
-        // 获取当前日期
-        Calendar calendar = Calendar.getInstance();
-
-        // 获取当前月份
-        int currentMonth = calendar.get(Calendar.MONTH);
-
-        // 计算下一个季度的第一个月
-        int nextQuarterFirstMonth = currentMonth + (3 - currentMonth % 3);
-        if (nextQuarterFirstMonth > 11) {
-            nextQuarterFirstMonth = nextQuarterFirstMonth % 12;
-            calendar.add(Calendar.YEAR, 1);
-        }
-
-        // 设置日期为下一个季度的第一天
-        calendar.set(Calendar.MONTH, nextQuarterFirstMonth);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        // 设置日期为下一个季度的最后一天
-        calendar.add(Calendar.MONTH, 2);
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        // 打印下一个季度的最后一天
         return calendar.getTime();
     }
 }

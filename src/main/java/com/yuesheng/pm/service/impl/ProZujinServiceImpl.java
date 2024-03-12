@@ -38,32 +38,38 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
     @Autowired
     @Lazy
     private StaffService staffService;
+    @Autowired
+    private ProZujinPromotionService proZujinPromotionService;
 
     @PostConstruct
     public void init() {
         List<ProZujin> proZujins = queryByParam(new HashMap<>());
         proZujins.forEach(item -> {
-            if (Objects.isNull(item.getBrandCompany())) {
-                String name = item.getCompany();
-                Company c = new Company();
-                c.setName(name);
-                if (StringUtils.isNotBlank(item.getZlPerson())) {
-                    c.setRelationP(item.getZlPerson());
-                }
-                if (StringUtils.isNotBlank(item.getZlPersonTel())) {
-                    c.setTelephoneP(item.getZlPersonTel());
-                }
+            try {
+                if (Objects.isNull(item.getBrandCompany())) {
+                    String name = item.getCompany();
+                    Company c = new Company();
+                    c.setName(name);
+                    if (StringUtils.isNotBlank(item.getZlPerson())) {
+                        c.setRelationP(item.getZlPerson());
+                    }
+                    if (StringUtils.isNotBlank(item.getZlPersonTel())) {
+                        c.setTelephoneP(item.getZlPersonTel());
+                    }
 
-                Staff s = staffService.getStaffById(item.getStaffId());
-                if(Objects.isNull(s)){
-                    s = new Staff();
-                    s.setId("1001");
-                    s.setCoding("1001");
-                }
-                saveCompany(c, s);
+                    Staff s = staffService.getStaffById(item.getStaffId());
+                    if (Objects.isNull(s)) {
+                        s = new Staff();
+                        s.setId("1001");
+                        s.setCoding("1001");
+                    }
+                    saveCompany(c, s);
 
-                item.setCompany(c.getId());
-                this.proZujinMapper.update(item);
+                    item.setCompany(c.getId());
+                    this.proZujinMapper.update(item);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
 
         });
@@ -166,6 +172,16 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
                 }
             });
         }
+        //推广条款
+        List<ProZujinPromotion> proZujinPromotions = zujin.getTgfList();
+        if (!Objects.isNull(proZujinPromotions)){
+            proZujinPromotions.forEach(item -> {
+                if (!Objects.isNull(item)){
+                    item.setContractId(zujin.getId() + "");
+                    proZujinPromotionService.insert(item);
+                }
+            });
+        }
         return zujin;
     }
 
@@ -200,7 +216,7 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
         if (!Objects.isNull(bzjList)) {
             bzjList.forEach(item -> {
                 if (!Objects.isNull(item) && StringUtils.isBlank(item.getId())) {
-                    item.setProDetailId(proZujin.getId()+"");
+                    item.setProDetailId(proZujin.getId() + "");
                     bzjService.insert(item);
                 }
             });
@@ -211,8 +227,18 @@ public class ProZujinServiceImpl implements ProZujinService, FileService {
         if (!Objects.isNull(termList)) {
             termList.forEach(item -> {
                 if (!Objects.isNull(item) && StringUtils.isBlank(item.getId())) {
-                    item.setConcatId(proZujin.getId()+"");
+                    item.setConcatId(proZujin.getId() + "");
                     termService.insert(item);
+                }
+            });
+        }
+        //推广条款
+        List<ProZujinPromotion> proZujinPromotions = proZujin.getTgfList();
+        if (!Objects.isNull(proZujinPromotions)){
+            proZujinPromotions.forEach(item -> {
+                if (!Objects.isNull(item) && StringUtils.isBlank(item.getId())){
+                    item.setContractId(proZujin.getId() + "");
+                    proZujinPromotionService.insert(item);
                 }
             });
         }

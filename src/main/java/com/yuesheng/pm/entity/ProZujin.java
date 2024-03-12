@@ -108,7 +108,16 @@ public class ProZujin implements Serializable {
     private List<ProBzj> bzjList;
     @Schema(name = "收款单位")
     private Company receivedCompany;
+    @Schema(name = "推广费")
+    private List<ProZujinPromotion> tgfList;
 
+    public List<ProZujinPromotion> getTgfList() {
+        return tgfList;
+    }
+
+    public void setTgfList(List<ProZujinPromotion> tgfList) {
+        this.tgfList = tgfList;
+    }
     public Company getReceivedCompany() {
         return receivedCompany;
     }

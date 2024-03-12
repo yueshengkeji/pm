@@ -174,9 +174,9 @@ public class ConcatBillServiceImpl implements ConcatBillService {
                 if (StringUtils.equals(term.getPayCycle(), "quarter")) {
                     //季度账单
                     insertQuarterBill(term, zujin, floor, room.toString());
-                } else if (StringUtils.equals(term.getPayCycle(), "final")) {
-                    //固定扣点,根据销售额计算租金应交账单
-                    insertFinalBill(term, zujin, floor, room.toString());
+                } else if (StringUtils.equals(term.getPayCycle(), "towMonth")) {
+                    //两月付
+                    insertTowMonthBill(term, zujin, floor, room.toString());
                 } else {
 //                    每月算费
                     insertMonthBill(term, zujin, floor, room.toString());
@@ -226,18 +226,7 @@ public class ConcatBillServiceImpl implements ConcatBillService {
             endDate = DateUtil.getMonthEndTime(startDate);
         }
 
-
-        HashMap<String, Object> param = new HashMap<>();
-        param.put("saleStartDate", DateUtil.format(prevDate, DateUtil.PATTERN_CLASSICAL_SIMPLE));
-        param.put("saleEndDate", DateUtil.format(endDate, DateUtil.PATTERN_CLASSICAL_SIMPLE));
-        param.put("brand", zujin.getBrand());
-        Double money = saleDataService.queryMoney(param);
-        if (Objects.isNull(money)) {
-            money = 0.0;
-        } else {
-            money = money * term.getMoney();
-        }
-
+        Double money = getTermMoney(term, prevDate, endDate, zujin.getBrand());
         ConcatBill cb = new ConcatBill();
         cb.setMoney(money);
         cb.setConcatId(term.getConcatId());
@@ -281,8 +270,74 @@ public class ConcatBillServiceImpl implements ConcatBillService {
             endDate = DateUtil.getNextQuarterEndTime();
         }
 
+        Double money = getTermMoney(term, startDate, endDate, zujin.getBrand());
+
         ConcatBill cb = new ConcatBill();
-        cb.setMoney(term.getMoney());
+        cb.setMoney(money);
+        cb.setConcatId(term.getConcatId());
+        cb.setDatetime(DateUtil.getNowDate());
+        cb.setApproveState(0);
+        cb.setBrand(zujin.getBrand());
+        cb.setEndDate(endDate);
+        cb.setPayEndDate(date);
+        cb.setName(term.getName());
+        cb.setConcatType(zujin.getCompanyTypeId() + "");
+        cb.setFloor(floor);
+        cb.setArrearageDay(0);
+        cb.setInvoiceState(0);
+        cb.setArrearage(term.getMoney());
+        cb.setRoom(room);
+        cb.setMonthBill(0);
+        cb.setType(term.getType());
+        cb.setUnit(term.getUnit());
+        cb.setPayCycle(term.getPayCycle());
+        cb.setPayType(term.getPayType());
+        cb.setPayMoney(0.0);
+        cb.setSourceId(term.getId());
+        cb.setStartDate(startDate);
+        cb.setState("wait");
+        insert(cb);
+    }
+
+    private void insertTowMonthBill(Term term, ProZujin zujin, String floor, String room) {
+
+        //获取两个月之前的第一天日期
+        Date prevDate = DateUtil.getMonthStartTime(2);
+
+        Date date = DateUtil.getDateByDay(term.getPayDay());
+        Date startDate = term.getStartDate();
+        Date endDate = null;
+
+        int day = DateUtil.getOffsetDays(prevDate, startDate);
+        if (day > 0) {
+            //账单周期开始时间比账单开始时间还要小，未到账单生成周期
+            return;
+        }
+
+        int endDay = DateUtil.getOffsetDays(prevDate, term.getEndDate());
+        if (endDay <= 0) {
+            //到结束时间，以结束时间为准
+            endDate = term.getEndDate();
+        }
+
+        boolean sameMonth = DateUtil.isSameMonth(startDate, prevDate);
+        if (!sameMonth) {
+            //非同一个月,从上两个月第一天开始 到 上月的最后一天
+            startDate = prevDate;
+            if (Objects.isNull(endDate)) {
+                endDate = DateUtil.getMonthEndTime(DateUtil.getLastMonthStartTime());
+            }
+        }else{
+            if (Objects.isNull(endDate)) {
+                endDate = DateUtil.getMonthEndTime(DateUtil.getLastMonthStartTime());
+            }
+        }
+
+
+        Double money = getTermMoney(term, startDate, endDate, zujin.getBrand());
+
+        ConcatBill cb = new ConcatBill();
+        cb.setMoney(money);
         cb.setConcatId(term.getConcatId());
         cb.setDatetime(DateUtil.getNowDate());
         cb.setApproveState(0);
@@ -335,8 +390,9 @@ public class ConcatBillServiceImpl implements ConcatBillService {
             endDate = DateUtil.getMonthEndTime(startDate);
         }
 
+        Double money = getTermMoney(term, startDate, endDate, zujin.getBrand());
         ConcatBill cb = new ConcatBill();
-        cb.setMoney(term.getMoney());
+        cb.setMoney(money);
         cb.setConcatId(term.getConcatId());
         cb.setDatetime(DateUtil.getNowDate());
         cb.setApproveState(0);
@@ -360,6 +416,47 @@ public class ConcatBillServiceImpl implements ConcatBillService {
         cb.setStartDate(startDate);
         cb.setState("wait");
         insert(cb);
+    }
+
+    private Double getTermMoney(Term term, Date startDate, Date endDate, String brand) {
+        String type = term.getType();
+        Double x = 1.0;
+        if (StringUtils.equals(term.getPayCycle(), "towMonth")) {
+            x = 2.0;
+        } else if (StringUtils.equals(term.getPayCycle(), "quarter")) {
+            x = 3.0;
+        }
+
+        Double termMoney = term.getMoney() * x;
+
+        if (StringUtils.equals(type, "regular")) {
+            return termMoney;
+        } else if (StringUtils.equals(type, "commission")) {
+            Double money = getCommossionMoney(term, startDate, endDate, brand);
+            return money;
+        } else {
+            //如果提成高，就以提成租金算，如果固定金额高，就以固定金额算
+            Double comMoney = getCommossionMoney(term, startDate, endDate, brand);
+            if (Double.compare(comMoney, termMoney) > 0) {
+                return comMoney;
+            } else {
+                return termMoney;
+            }
+        }
+    }
+
+    private Double getCommossionMoney(Term term, Date startDate, Date endDate, String brand) {
+        HashMap<String, Object> param = new HashMap<>();
+        param.put("saleStartDate", DateUtil.format(startDate, DateUtil.PATTERN_CLASSICAL_SIMPLE));
+        param.put("saleEndDate", DateUtil.format(endDate, DateUtil.PATTERN_CLASSICAL_SIMPLE));
+        param.put("brand", brand);
+        Double money = saleDataService.queryMoney(param);
+        if (Objects.isNull(money)) {
+            money = 0.0;
+        } else {
+            money = money * term.getMoney();
+        }
+        return money;
     }
 
     private void insertOneBill(Term term, ProZujin zujin, String floor, String room) {
