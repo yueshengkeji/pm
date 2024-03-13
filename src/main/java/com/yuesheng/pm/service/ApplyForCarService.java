@@ -100,7 +100,7 @@ public interface ApplyForCarService {
      * @param id
      * @return
      */
-    boolean setCheckState(Integer id);
+    boolean setCheckState(String id);
 
     /**
      * 根据主键设置司机

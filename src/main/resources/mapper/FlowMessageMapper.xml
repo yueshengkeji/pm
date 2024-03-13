@@ -249,6 +249,10 @@
         SELECT * FROM sdpo003 WHERE po00307=#{id}
     </select>
 
+    <select id="getMessage" resultMap="flowMessage">
+        SELECT * FROM sdpo003 WHERE po00307=#{frameId} and po00306=#{frameCoding}
+    </select>
+
     <update id="updateFlag">
         UPDATE sdpo003 SET po00317=#{flag} WHERE po00301=#{id}
     </update>

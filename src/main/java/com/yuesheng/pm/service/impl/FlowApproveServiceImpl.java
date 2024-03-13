@@ -438,7 +438,7 @@ public class FlowApproveServiceImpl implements FlowApproveService {
             if (item.getType() == 1) {
                 isPublicNotify = false;
                 List<Staff> staff = flowMessageService.getStaffByType(item, startStaff);
-                myApproveAttachedService.staffDispose(null, approve, flowMsg, item, null, null, approve.getAcceptStaffId(), staff);
+                myApproveAttachedService.staffDispose(approve.getCourse(), approve, flowMsg, item, null, null, approve.getAcceptStaffId(), staff);
                 /*
                  * 微信通知
                  */

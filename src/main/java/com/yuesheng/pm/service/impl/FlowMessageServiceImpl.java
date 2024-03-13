@@ -836,4 +836,11 @@ public class FlowMessageServiceImpl implements FlowMessageService {
         PageHelper.startPage(1, 1);
         return flowMessageMapper.getByFlowHistory(historyId);
     }
+
+
+    @Override
+    public FlowMessage getMessage(String frameId, String frameCoding) {
+        PageHelper.startPage(1,1);
+        return flowMessageMapper.getMessage(frameId,frameCoding);
+    }
 }

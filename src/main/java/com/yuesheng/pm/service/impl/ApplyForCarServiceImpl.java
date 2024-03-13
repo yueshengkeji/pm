@@ -92,8 +92,8 @@ public class ApplyForCarServiceImpl implements ApplyForCarService {
     }
 
     @Override
-    public boolean setCheckState(Integer id) {
-        applyForCarMapper.setCheckState(id);
+    public boolean setCheckState(String id) {
+        applyForCarMapper.setCheckState(Integer.valueOf(id));
         return true;
     }
 

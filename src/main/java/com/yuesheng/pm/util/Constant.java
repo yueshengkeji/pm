@@ -4,6 +4,7 @@ import com.sun.istack.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Administrator on 2016-08-15.
@@ -281,6 +282,7 @@ public class Constant {
         FLOW_SUCCESS_HANDLER.put("15323", "proHouseBillDetailService.approve");
         FLOW_SUCCESS_HANDLER.put("15223", "workArticleService.approve");
         FLOW_SUCCESS_HANDLER.put("15203", "ArticleService.approve");
+        FLOW_SUCCESS_HANDLER.put("1320277", "applyForCarService.setCheckState");
 //        待实现
 //        FLOW_SUCCESS_HANDLER.put("1320287", "proZujinService");
 //        FLOW_SUCCESS_HANDLER.put("15313", "");
@@ -422,5 +424,9 @@ public class Constant {
         public String getValue() {
             return value;
         }
+    }
+
+    public static String uuid(){
+        return UUID.randomUUID().toString();
     }
 }

@@ -104,7 +104,7 @@ public class MyApproveAttachedServiceImpl implements MyApproveAttachedService {
                                           List<Staff> staffList) {
         ArrayList<FlowApprove> faList = new ArrayList();
         Integer lastCourse = 0;
-        if ("10563".equals(flowMsg.getFrameCoding())) {
+        if ("10563".equals(flowMsg.getFrameCoding()) && !Objects.isNull(fc)) {
             //合同付款判断步骤位置
             if (fc.getName().startsWith("现金会计")) {
                 lastCourse = 1;

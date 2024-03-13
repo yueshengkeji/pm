@@ -162,4 +162,13 @@ public interface FlowMessageMapper {
      * @return
      */
     FlowMessage getByFlowHistory(@Param("historyId") String historyId);
+
+    /**
+     * 获取流程消息实例
+     * @param frameId 表单id
+     * @param frameCoding 表单编码
+     * @return
+     */
+    FlowMessage getMessage(@Param("frameId") String frameId,
+                           @Param("frameCoding") String frameCoding);
 }

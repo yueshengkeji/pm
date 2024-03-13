@@ -203,4 +203,12 @@ public interface FlowMessageService {
      * @return
      */
     FlowMessage getByFlowHistory(String historyId);
+
+    /**
+     * 获取流程消息实例
+     * @param frameId 表单id
+     * @param frameCoding 表单编码
+     * @return
+     */
+    FlowMessage getMessage(String frameId, String frameCoding);
 }

@@ -63,8 +63,14 @@ public class FlowMessageApi {
 
     @Operation(description = "根据表单对象id获取流程实例")
     @GetMapping("getByFrameId/{frameId}")
-    public ResponseModel getByFrameId(@Parameter(name = "表单对象id") @PathVariable String frameId) {
-        FlowMessage message = flowMessageService.getMessageByFrameId(frameId);
+    public ResponseModel getByFrameId(@Parameter(name = "表单对象id") @PathVariable String frameId,
+                                      @Parameter(name = "表单编码") String frameCoding) {
+        FlowMessage message;
+        if(StringUtils.isNotBlank(frameCoding)){
+            message = flowMessageService.getMessage(frameId,frameCoding);
+        }else{
+            message = flowMessageService.getMessageByFrameId(frameId);
+        }
         if (!Objects.isNull(message)) {
             message.setStaff(staffService.getStaffById(message.getStaffId()));
         }
