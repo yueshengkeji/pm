@@ -31,8 +31,8 @@ public class ContractWordModelParamsServiceImpl implements ContractWordModelPara
     }
 
     @Override
-    public List<ContractWordModelParams> list() {
-        return contractWordModelParamsMapper.list();
+    public List<ContractWordModelParams> list(int type) {
+        return contractWordModelParamsMapper.list(type);
     }
 
     @Override

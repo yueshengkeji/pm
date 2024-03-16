@@ -46,7 +46,7 @@
         select * from sdpo020b_instance where po020b01=#{courseId}
     </select>
     <select id="getFlowCourseBById" resultMap="flowCourseB">
-        select * from sdpo020b where po020b01=#{courseId}
+        select * from sdpo020b where po020b01=#{courseId} and po020b02=#{flowId}
     </select>
     <select id="getFlowCourseFirst" parameterType="String" resultMap="flowCourse">
         SELECT * FROM sdpo020

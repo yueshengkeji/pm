@@ -43,7 +43,7 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
         contractWordRecord.setId(UUID.randomUUID().toString());
         contractWordRecord.setRecordTime(DateUtil.getDatetime());
         contractWordRecord.setRichText(getRichText(proZujin, contractWordModel));
-        contractWordRecord.setContractId(proZujin.getId());
+        contractWordRecord.setContractId(proZujin.getId() + "");
         contractWordRecord.setType(proZujin.getType());
         return contractWordRecordMapper.insert(contractWordRecord);
     }
@@ -76,19 +76,16 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                         Field field = ProZujin.class.getDeclaredField(replace);
                         field.setAccessible(true);
                         replaceValue = (int) field.get(proZujin) == 0 ? "年付" : (int) field.get(proZujin) == 1 ? "季度" : "月付";
-                    }
-                    else if (replace.equals("zlType")) {
+                    } else if (replace.equals("zlType")) {
                         Field field = ProZujin.class.getDeclaredField(replace);
                         field.setAccessible(true);
                         replaceValue = (int) field.get(proZujin) == 0 ? "固定铺位" : (int) field.get(proZujin) == 1 ? "机动" : "临时收费";
-                    }
-                    else if (replace.equals("yt")) {
+                    } else if (replace.equals("yt")) {
                         Field field = ProZujin.class.getDeclaredField(replace);
                         field.setAccessible(true);
                         ProZujinYt proZujinYt = (ProZujinYt) field.get(proZujin);
                         replaceValue = proZujinYt.getName();
-                    }
-                    else if (replace.equals("houses")) {
+                    } else if (replace.equals("houses")) {
                         Field field = ProZujin.class.getDeclaredField(replace);
                         field.setAccessible(true);
                         List<ProZujinHouse> list = (List<ProZujinHouse>) field.get(proZujin);
@@ -104,8 +101,7 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                             }
                         }
                         replaceValue = str;
-                    }
-                    else if (replace.equals("houses.floor")) {
+                    } else if (replace.equals("houses.floor")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
@@ -115,36 +111,32 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                             for (int j = 0; j < list.size(); j++) {
                                 if (j == list.size() - 1) {
                                     str = str + list.get(j).getFloor() + "";
-                                }else {
+                                } else {
                                     str = str + list.get(j).getFloor() + ",";
                                 }
 
                             }
                         }
                         replaceValue = str;
-                    }
-                    else if (replace.equals("moneyOwe")) {
+                    } else if (replace.equals("moneyOwe")) {
                         Field field = ProZujin.class.getDeclaredField(replace);
                         field.setAccessible(true);
                         ProDetailOwe proDetailOwe = (ProDetailOwe) field.get(proZujin);
                         if (ObjectUtils.isNotEmpty(proDetailOwe)) {
                             replaceValue = String.valueOf(proDetailOwe.getOweMoney());
                         }
-                    }
-                    else if (replace.equals("billOwe")) {
+                    } else if (replace.equals("billOwe")) {
                         Field field = ProZujin.class.getDeclaredField(replace);
                         field.setAccessible(true);
                         ProDetailOwe billOwe = (ProDetailOwe) field.get(proZujin);
                         if (ObjectUtils.isNotEmpty(billOwe)) {
                             replaceValue = billOwe.getOweMoney();
                         }
-                    }
-                    else if (replace.equals("startDatetime") || replace.equals("endDatetime") || replace.equals("planDate") || replace.equals("openDate")) {
+                    } else if (replace.equals("startDatetime") || replace.equals("endDatetime") || replace.equals("planDate") || replace.equals("openDate")) {
                         Field field = ProZujin.class.getDeclaredField(replace);
                         field.setAccessible(true);
                         replaceValue = String.valueOf(field.get(proZujin)).replaceFirst("-", "年").replaceFirst("-", "月");
-                    }
-                    else if (replace.equals("startDatetime.endDatetime")) {
+                    } else if (replace.equals("startDatetime.endDatetime")) {
                         String startDatetime = replace.split("\\.")[0];
                         String endDatetime = replace.split("\\.")[1];
                         Field field = ProZujin.class.getDeclaredField(startDatetime);
@@ -157,12 +149,11 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                         LocalDate localDateEnd = LocalDate.parse(endDatetimeValue);
                         Period period = localDateStart.until(localDateEnd);
                         int months = period.getYears() * 12 + period.getMonths();
-                        if (period.getDays() == 30){
+                        if (period.getDays() == 30) {
                             months = months + 1;
                         }
                         replaceValue = String.valueOf(months);
-                    }
-                    else if (replace.equals("termList.筹备期装修管理费") || replace.equals("termList.营运期装修管理费") || replace.equals("termList.装修建筑垃圾清运费")
+                    } else if (replace.equals("termList.筹备期装修管理费") || replace.equals("termList.营运期装修管理费") || replace.equals("termList.装修建筑垃圾清运费")
                             || replace.equals("termList.临时水费") || replace.equals("termList.临时电费")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
@@ -176,8 +167,7 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                                 }
                             }
                         }
-                    }
-                    else if (replace.equals("bzjList.装修保证金") || replace.equals("bzjList.履约保证金") || replace.equals("bzjList.质保保证金")) {
+                    } else if (replace.equals("bzjList.装修保证金") || replace.equals("bzjList.履约保证金") || replace.equals("bzjList.质保保证金")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
@@ -190,8 +180,7 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                                 }
                             }
                         }
-                    }
-                    else if (replace.equals("bzjList.装修保证金.大写") || replace.equals("bzjList.履约保证金.大写") || replace.equals("bzjList.质保保证金.大写")) {
+                    } else if (replace.equals("bzjList.装修保证金.大写") || replace.equals("bzjList.履约保证金.大写") || replace.equals("bzjList.质保保证金.大写")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
@@ -204,28 +193,26 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                                 }
                             }
                         }
-                    }
-                    else if (replace.equals("brandCompany.name") || replace.equals("brandCompany.relationP") || replace.equals("brandCompany.telephoneP") || replace.equals("brandCompany.emailP")) {
+                    } else if (replace.equals("brandCompany.name") || replace.equals("brandCompany.relationP") || replace.equals("brandCompany.telephoneP") || replace.equals("brandCompany.emailP")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
                         Company company = (Company) field.get(proZujin);
                         if (company != null) {
-                            if (replace.split("\\.")[1].equals("name")){
+                            if (replace.split("\\.")[1].equals("name")) {
                                 replaceValue = company.getName();
                             }
-                            if (replace.split("\\.")[1].equals("relationP")){
+                            if (replace.split("\\.")[1].equals("relationP")) {
                                 replaceValue = company.getRelationP();
                             }
-                            if (replace.split("\\.")[1].equals("telephoneP")){
+                            if (replace.split("\\.")[1].equals("telephoneP")) {
                                 replaceValue = company.getTelephoneP();
                             }
-                            if (replace.split("\\.")[1].equals("emailP")){
+                            if (replace.split("\\.")[1].equals("emailP")) {
                                 replaceValue = company.getEmailP();
                             }
                         }
-                    }
-                    else if (replace.equals("termList.固定租金") || replace.equals("termList.固定租金(优惠阶段)") || replace.equals("termList.提成租金") || replace.equals("termList.提成固定较高租金")) {
+                    } else if (replace.equals("termList.固定租金") || replace.equals("termList.固定租金(优惠阶段)") || replace.equals("termList.提成租金") || replace.equals("termList.提成固定较高租金")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
@@ -250,20 +237,19 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                                 }
                             }
                         }
-                        if (replace.split("\\.")[1].equals("固定租金")){
+                        if (replace.split("\\.")[1].equals("固定租金")) {
                             replaceValue = dealGDZJ(termListZJ);
                         }
-                        if (replace.split("\\.")[1].equals("固定租金(优惠阶段)")){
+                        if (replace.split("\\.")[1].equals("固定租金(优惠阶段)")) {
                             replaceValue = dealYHZJ(termListYHZJ);
                         }
-                        if (replace.split("\\.")[1].equals("提成租金")){
+                        if (replace.split("\\.")[1].equals("提成租金")) {
                             replaceValue = dealTCZJ(termListTCZJ);
                         }
-                        if (replace.split("\\.")[1].equals("提成固定较高租金")){
+                        if (replace.split("\\.")[1].equals("提成固定较高租金")) {
                             replaceValue = dealCompareZJ(termListZJCompare);
                         }
-                    }
-                    else if (replace.equals("termList.租金方式")) {
+                    } else if (replace.equals("termList.租金方式")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
@@ -288,8 +274,7 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                             }
                         }
                         replaceValue = zjType;
-                    }
-                    else if (replace.equals("termList.管理费单价")) {
+                    } else if (replace.equals("termList.管理费单价")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
@@ -302,8 +287,7 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                                 }
                             }
                         }
-                    }
-                    else if (replace.equals("termList.管理费单价.大写")) {
+                    } else if (replace.equals("termList.管理费单价.大写")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
@@ -316,8 +300,7 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                                 }
                             }
                         }
-                    }
-                    else if (replace.equals("termList.管理费")) {
+                    } else if (replace.equals("termList.管理费")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
@@ -330,8 +313,7 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                                 }
                             }
                         }
-                    }
-                    else if (replace.equals("termList.管理费.大写")) {
+                    } else if (replace.equals("termList.管理费.大写")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
@@ -344,20 +326,19 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                                 }
                             }
                         }
-                    }
-                    else if (replace.equals("termList.首期租金开始日期") || replace.equals("termList.首期租金截止日期") || replace.equals("termList.首期租金金额") || replace.equals("termList.首期租金金额大写")
-                            || replace.equals("termList.首期物业服务费开始日期") || replace.equals("termList.首期物业服务费截止日期") || replace.equals("termList.首期物业服务费金额") || replace.equals("termList.首期物业服务费金额大写")){
+                    } else if (replace.equals("termList.首期租金开始日期") || replace.equals("termList.首期租金截止日期") || replace.equals("termList.首期租金金额") || replace.equals("termList.首期租金金额大写")
+                            || replace.equals("termList.首期物业服务费开始日期") || replace.equals("termList.首期物业服务费截止日期") || replace.equals("termList.首期物业服务费金额") || replace.equals("termList.首期物业服务费金额大写")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
                         List<Term> termList = (List<Term>) field.get(proZujin);
-                        if (termList != null){
+                        if (termList != null) {
                             for (int j = 0; j < termList.size(); j++) {
-                                if (termList.get(j).getName().equals("租金") && termList.get(j).getFirstStartDate() != null && replace.split("\\.")[1].equals("首期租金开始日期")){
+                                if (termList.get(j).getName().equals("租金") && termList.get(j).getFirstStartDate() != null && replace.split("\\.")[1].equals("首期租金开始日期")) {
                                     replaceValue = DateUtil.format(termList.get(j).getFirstStartDate(), DateUtil.PATTERN_CLASSICAL_SIMPLE).replaceFirst("-", "年").replaceFirst("-", "月");
                                     break;
                                 }
-                                if (termList.get(j).getName().equals("租金") && termList.get(j).getFirstEndDate() != null && replace.split("\\.")[1].equals("首期租金截止日期")){
+                                if (termList.get(j).getName().equals("租金") && termList.get(j).getFirstEndDate() != null && replace.split("\\.")[1].equals("首期租金截止日期")) {
                                     replaceValue = DateUtil.format(termList.get(j).getFirstEndDate(), DateUtil.PATTERN_CLASSICAL_SIMPLE).replaceFirst("-", "年").replaceFirst("-", "月");
                                     break;
                                 }
@@ -365,15 +346,15 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                                     replaceValue = String.valueOf(termList.get(j).getFirstMoney());
                                     break;
                                 }
-                                if (termList.get(j).getName().equals("租金") && termList.get(j).getFirstMoney() != null && replace.split("\\.")[1].equals("首期租金金额大写")){
+                                if (termList.get(j).getName().equals("租金") && termList.get(j).getFirstMoney() != null && replace.split("\\.")[1].equals("首期租金金额大写")) {
                                     replaceValue = dealMoney(String.valueOf(termList.get(j).getFirstMoney()));
                                     break;
                                 }
-                                if (termList.get(j).getName().equals("管理费") && termList.get(j).getFirstStartDate() != null && replace.split("\\.")[1].equals("首期物业服务费开始日期")){
+                                if (termList.get(j).getName().equals("管理费") && termList.get(j).getFirstStartDate() != null && replace.split("\\.")[1].equals("首期物业服务费开始日期")) {
                                     replaceValue = DateUtil.format(termList.get(j).getFirstStartDate(), DateUtil.PATTERN_CLASSICAL_SIMPLE).replaceFirst("-", "年").replaceFirst("-", "月");
                                     break;
                                 }
-                                if (termList.get(j).getName().equals("管理费") && termList.get(j).getFirstEndDate() != null && replace.split("\\.")[1].equals("首期物业服务费截止日期")){
+                                if (termList.get(j).getName().equals("管理费") && termList.get(j).getFirstEndDate() != null && replace.split("\\.")[1].equals("首期物业服务费截止日期")) {
                                     replaceValue = DateUtil.format(termList.get(j).getFirstEndDate(), DateUtil.PATTERN_CLASSICAL_SIMPLE).replaceFirst("-", "年").replaceFirst("-", "月");
                                     break;
                                 }
@@ -381,59 +362,56 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                                     replaceValue = String.valueOf(termList.get(j).getFirstMoney());
                                     break;
                                 }
-                                if (termList.get(j).getName().equals("管理费") && termList.get(j).getFirstMoney() != null && replace.split("\\.")[1].equals("首期物业服务费金额大写")){
+                                if (termList.get(j).getName().equals("管理费") && termList.get(j).getFirstMoney() != null && replace.split("\\.")[1].equals("首期物业服务费金额大写")) {
                                     replaceValue = dealMoney(String.valueOf(termList.get(j).getFirstMoney()));
                                     break;
                                 }
                             }
                         }
-                    }
-                    else if (replace.equals("tgfList.times") || replace.equals("tgfList.price") || replace.equals("tgfList.money") || replace.equals("tgfList.voucher")
-                            || replace.equals("tgfList.liquidatedDamages") || replace.equals("tgfList.firstBar") || replace.equals("tgfList.secondBar") || replace.equals("tgfList.otherBar")){
+                    } else if (replace.equals("tgfList.times") || replace.equals("tgfList.price") || replace.equals("tgfList.money") || replace.equals("tgfList.voucher")
+                            || replace.equals("tgfList.liquidatedDamages") || replace.equals("tgfList.firstBar") || replace.equals("tgfList.secondBar") || replace.equals("tgfList.otherBar")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
                         List<ProZujinPromotion> tgfList = (List<ProZujinPromotion>) field.get(proZujin);
-                        if (tgfList != null && tgfList.size() > 0){
+                        if (tgfList != null && tgfList.size() > 0) {
                             //暂时只取第一个
-                            if (replace.split("\\.")[1].equals("times")){
+                            if (replace.split("\\.")[1].equals("times")) {
                                 replaceValue = String.valueOf(tgfList.get(0).getTimes());
                             }
-                            if (replace.split("\\.")[1].equals("price")){
+                            if (replace.split("\\.")[1].equals("price")) {
                                 replaceValue = String.valueOf(tgfList.get(0).getPrice());
                             }
-                            if (replace.split("\\.")[1].equals("money")){
+                            if (replace.split("\\.")[1].equals("money")) {
                                 replaceValue = String.valueOf(tgfList.get(0).getMoney());
                             }
-                            if (replace.split("\\.")[1].equals("voucher")){
+                            if (replace.split("\\.")[1].equals("voucher")) {
                                 replaceValue = String.valueOf(tgfList.get(0).getVoucher());
                             }
-                            if (replace.split("\\.")[1].equals("liquidatedDamages")){
+                            if (replace.split("\\.")[1].equals("liquidatedDamages")) {
                                 replaceValue = String.valueOf(tgfList.get(0).getLiquidatedDamages());
                             }
-                            if (replace.split("\\.")[1].equals("firstBar")){
+                            if (replace.split("\\.")[1].equals("firstBar")) {
                                 replaceValue = String.valueOf(tgfList.get(0).getFirstBar());
                             }
-                            if (replace.split("\\.")[1].equals("secondBar")){
+                            if (replace.split("\\.")[1].equals("secondBar")) {
                                 replaceValue = String.valueOf(tgfList.get(0).getSecondBar());
                             }
-                            if (replace.split("\\.")[1].equals("otherBar")){
+                            if (replace.split("\\.")[1].equals("otherBar")) {
                                 replaceValue = String.valueOf(tgfList.get(0).getOtherBar());
                             }
                         }
-                    }
-                    else if (replace.equals("#receivedCompany.emailP#")){
+                    } else if (replace.equals("#receivedCompany.emailP#")) {
                         String s = replace.split("\\.")[0];
                         Field field = ProZujin.class.getDeclaredField(s);
                         field.setAccessible(true);
                         Company company = (Company) field.get(proZujin);
-                        if (company != null){
-                            if (replace.split("\\.")[1].equals("emailP")){
+                        if (company != null) {
+                            if (replace.split("\\.")[1].equals("emailP")) {
                                 replaceValue = company.getEmailP();
                             }
                         }
-                    }
-                    else {
+                    } else {
                         Field field = ProZujin.class.getDeclaredField(replace);
                         field.setAccessible(true);
                         replaceValue = String.valueOf(field.get(proZujin));
@@ -862,7 +840,7 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
             res = res + trRichText.replace("#startDate#", DateUtil.format(termListCompare.get(i).getStartDate(), DateUtil.PATTERN_CLASSICAL_SIMPLE).replaceFirst("-", "年").replaceFirst("-", "月"))
                     .replace("#endDate#", DateUtil.format(termListCompare.get(i).getEndDate(), DateUtil.PATTERN_CLASSICAL_SIMPLE).replaceFirst("-", "年").replaceFirst("-", "月"))
                     .replace("#price#", String.valueOf(termListCompare.get(i).getPrice()))
-                    .replace("money",String.valueOf(termListCompare.get(i).getMoney()));
+                    .replace("money", String.valueOf(termListCompare.get(i).getMoney()));
         }
 
         return "<table width=\"495\">\n" +
@@ -1027,4 +1005,174 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
         return s;
     }
 
+    /*********************************场地使用合同***********************************/
+
+    @Override
+    public int insertPlaceContract(PlaceUseContract placeUseContract) {
+        ContractWordModel contractWordModel = contractWordModelService.selectByType(placeUseContract.getType());
+        if (ObjectUtils.isEmpty(contractWordModel)) {
+            return 0;
+        }
+        ContractWordRecord contractWordRecord = new ContractWordRecord();
+        contractWordRecord.setId(UUID.randomUUID().toString());
+        contractWordRecord.setRecordTime(DateUtil.getDatetime());
+        contractWordRecord.setRichText(getRichTextPlaceContract(placeUseContract, contractWordModel));
+        contractWordRecord.setContractId(placeUseContract.getId());
+        contractWordRecord.setType(placeUseContract.getType());
+        return contractWordRecordMapper.insert(contractWordRecord);
+    }
+
+    public String getRichTextPlaceContract(PlaceUseContract placeUseContract, ContractWordModel contractWordModel) {
+        String richText = contractWordModel.getRichText();
+        String paramsArr = contractWordModel.getParamsArr();
+        if (paramsArr.equals("")) {
+            return richText;
+        }
+        String[] arr = paramsArr.split(",");
+
+        List<Integer> ids = new ArrayList<>();
+        for (int i = 0; i < arr.length; i++) {
+            ids.add(Integer.valueOf(arr[i]));
+        }
+
+        List<ContractWordModelParams> contractWordModelParams = contractWordModelParamsService.listByIds(ids);
+        if (contractWordModelParams.size() > 0) {
+            for (int i = 0; i < contractWordModelParams.size(); i++) {
+                String replace = contractWordModelParams.get(i).getMarkName().replace("#", "");
+                Object replaceValue = "";
+                try {
+                    if (replace.equals("partB.name") || replace.equals("partB.idNumber") || replace.equals("partB.address") || replace.equals("partB.telephoneP")
+                            || replace.equals("partB.openAccount") || replace.equals("partB.bankNumber")) {
+                        String s = replace.split("\\.")[0];
+                        Field field = PlaceUseContract.class.getDeclaredField(s);
+                        field.setAccessible(true);
+                        Company company = (Company) field.get(placeUseContract);
+                        if (company != null) {
+                            if (replace.split("\\.")[1].equals("name")) {
+                                replaceValue = company.getName();
+                            }
+                            if (replace.split("\\.")[1].equals("idNumber")) {
+                                replaceValue = company.getIdNumber();
+                            }
+                            if (replace.split("\\.")[1].equals("address")) {
+                                replaceValue = company.getAddress();
+                            }
+                            if (replace.split("\\.")[1].equals("telephoneP")) {
+                                replaceValue = company.getTelephoneP();
+                            }
+                            if (replace.split("\\.")[1].equals("openAccount")) {
+                                replaceValue = company.getOpenAccount();
+                            }
+                            if (replace.split("\\.")[1].equals("bankNumber")) {
+                                replaceValue = company.getBankNumber();
+                            }
+                        }
+                    } else if (replace.equals("electricType.1") || replace.equals("electricType.2") || replace.equals("electricType.3") || replace.equals("electricType.4")) {
+                        String s = replace.split("\\.")[0];
+                        Field field = PlaceUseContract.class.getDeclaredField(s);
+                        field.setAccessible(true);
+                        int electricType = (int) field.get(placeUseContract);
+                        if ((replace.equals("electricType.1") && electricType == 0) || (replace.equals("electricType.2") && electricType == 1)
+                                || (replace.equals("electricType.3") && electricType == 2) || (replace.equals("electricType.4") && electricType == 3)) {
+                            replaceValue = "√";
+                        } else {
+                            replaceValue = "□";
+                        }
+//                        if (replace.equals("electricType.2") && electricType == 1){
+//                            replaceValue = "√";
+//                        } else {
+//                            replaceValue = "□";
+//                        }
+//                        if (replace.equals("electricType.3") && electricType == 2){
+//                            replaceValue = "√";
+//                        } else {
+//                            replaceValue = "□";
+//                        }
+//                        if (replace.equals("electricType.4") && electricType == 3){
+//                            replaceValue = "√";
+//                        } else {
+//                            replaceValue = "□";
+//                        }
+                    } else if (replace.equals("electricPrice.1") || replace.equals("electricPrice.2") || replace.equals("electricPrice.3") || replace.equals("electricPrice.4")) {
+                        String s = replace.split("\\.")[0];
+                        Field field = PlaceUseContract.class.getDeclaredField(s);
+                        field.setAccessible(true);
+                        Field field2 = PlaceUseContract.class.getDeclaredField("electricType");
+                        field2.setAccessible(true);
+                        String electricPrice = (String) field.get(placeUseContract);
+                        int electricType = (int) field2.get(placeUseContract);
+                        if (replace.equals("electricPrice.1")) {
+                            replaceValue = "实时电价";
+                        }
+                        if (replace.equals("electricPrice.2")) {
+                            replaceValue = "实时电价";
+                        }
+                        if (electricType == 2 && !electricPrice.equals("实时电价") && replace.equals("electricPrice.3")) {
+                            replaceValue = electricPrice;
+                        }
+                        if (electricType == 3 && !electricPrice.equals("实时电价") && replace.equals("electricPrice.4")) {
+                            replaceValue = electricPrice;
+                        }
+                    } else {
+                        Field field = PlaceUseContract.class.getDeclaredField(replace);
+                        field.setAccessible(true);
+                        replaceValue = field.get(placeUseContract);
+                    }
+                    richText = richText.replace(contractWordModelParams.get(i).getMarkName(), String.valueOf(replaceValue != null ? replaceValue : ""));
+
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return richText;
+    }
+
+    /*********************************广告位合同***********************************/
+    @Override
+    public int insertAdvertPlaceContract(AdvertPlaceContract advertPlaceContract) {
+        ContractWordModel contractWordModel = contractWordModelService.selectByType(advertPlaceContract.getType());
+        if (ObjectUtils.isEmpty(contractWordModel)) {
+            return 0;
+        }
+        ContractWordRecord contractWordRecord = new ContractWordRecord();
+        contractWordRecord.setId(UUID.randomUUID().toString());
+        contractWordRecord.setRecordTime(DateUtil.getDatetime());
+        contractWordRecord.setRichText(getRichTextAdvertPlaceContract(advertPlaceContract, contractWordModel));
+        contractWordRecord.setContractId(advertPlaceContract.getId());
+        contractWordRecord.setType(advertPlaceContract.getType());
+        return contractWordRecordMapper.insert(contractWordRecord);
+    }
+
+    public String getRichTextAdvertPlaceContract(AdvertPlaceContract advertPlaceContract, ContractWordModel contractWordModel) {
+        String richText = contractWordModel.getRichText();
+        String paramsArr = contractWordModel.getParamsArr();
+        if (paramsArr.equals("")) {
+            return richText;
+        }
+        String[] arr = paramsArr.split(",");
+
+        List<Integer> ids = new ArrayList<>();
+        for (int i = 0; i < arr.length; i++) {
+            ids.add(Integer.valueOf(arr[i]));
+        }
+
+        List<ContractWordModelParams> contractWordModelParams = contractWordModelParamsService.listByIds(ids);
+        if (contractWordModelParams.size() > 0) {
+            for (int i = 0; i < contractWordModelParams.size(); i++) {
+                String replace = contractWordModelParams.get(i).getMarkName().replace("#", "");
+                Object replaceValue = "";
+                try {
+                    Field field = AdvertPlaceContract.class.getDeclaredField(replace);
+                    field.setAccessible(true);
+                    replaceValue = field.get(advertPlaceContract);
+                    richText = richText.replace(contractWordModelParams.get(i).getMarkName(), String.valueOf(replaceValue != null ? replaceValue : ""));
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return richText;
+    }
 }

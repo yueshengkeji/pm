@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,10 @@ public class FlowApproveServiceImpl implements FlowApproveService {
 
     @Autowired
     private DynamicMethodExecutor dynamicMethodExecutor;
+
+    @Autowired
+    @Lazy
+    private CoursePersonService coursePersonService;
 
 
     @Override
@@ -99,7 +104,10 @@ public class FlowApproveServiceImpl implements FlowApproveService {
                     //此处先从过程记录查找，如果过程被删除，从流程发起实例过程中查找，如果也被删除，则从记录表中查找
                     fc = flowCourseService.getFlowCourseById(courseId);
                     if (Objects.isNull(fc)) {
-                        fc = flowCourseService.getFlowCourseBById(courseId);
+                        FlowMessage fm = flowMessageService.getMessageById(item.getFlowMessageId());
+                        if (!Objects.isNull(fm)) {
+                            fc = flowCourseService.getFlowCourseBById(courseId, fm.getHistroryId());
+                        }
                         if (Objects.isNull(fc)) {
                             fc = flowCourseService.getFlowCourseBByInstance(courseId);
                         }
@@ -551,6 +559,9 @@ public class FlowApproveServiceImpl implements FlowApproveService {
     public int breakFLow(FlowApprove fa, FlowCourse link) {
         FlowMessage msg = flowMessageService.getMessageById(fa.getFlowMessageId());
         Staff staff = staffService.getStaffById(msg.getStaffId());
+        msg.setStaff(staff);
+        FlowCourse current = flowCourseService.getFlowCourseBById(fa.getCourseId(), msg.getHistroryId());
+        link = flowCourseService.getFlowCourseBById(link.getId(), msg.getHistroryId());
         if (msg.getState() == 1) {
             /*
              * 处理中的流程才可以中断
@@ -571,24 +582,25 @@ public class FlowApproveServiceImpl implements FlowApproveService {
 
             //查询指定节点，插入等待审批节点
             link.setParentId(flowCourseService.getParentId(link.getId()));
-            link.setFlowId(msg.getHistroryId());
-            link.setFrameId(msg.getFrameId());
-            List<FlowCourseBRelation> relations = flowCourseRelationService.getRelationByCourseId(link.getId());
-            flowMessageService.insertCourseRelation(msg.getFlow(), relations);
+            //查询驳回过程的子孙所有过程
+            FlowHistory fh = new FlowHistory();
+            fh.setId(msg.getHistroryId());
+
+            //生成新的审批过程节点
+            FlowCourse fc = insertCourseRelation(link, msg, fa.getCourseId(), current);
 
             //查询驳回过程中审批人列表
             List<FlowApprove> approves = getByCourseId(link.getId(), msg.getId());
 
-            //循环审批人，重新添加到数据库
-            List<CoursePerson> cpList = link.getPersonList();
+            List<CoursePerson> cpList = fc.getPersonList();
             for (int x = 0; x < cpList.size(); x++) {
                 CoursePerson cp = cpList.get(x);
-                flowMessageService.saveCoursePerson(msg, link, cp);
                 if (link.getPubPerson() == 1) {
-
                     //自由选人，直接从之前选择的审批人中遍历添加
                     approves.forEach(f -> {
                         if (f.getApproveState() == 3) {
+                            f.setPo00418Id("");
+                            f.setCourseId(fc.getId());
                             f.setId(UUID.randomUUID().toString());
                             f.setContent("");
                             f.setApproveState(0);
@@ -601,7 +613,6 @@ public class FlowApproveServiceImpl implements FlowApproveService {
                         }
                     });
                 } else {
-
                     //非自由选人，获取审批人列表
                     List<Staff> staffList = flowMessageService.getStaffByType(cp, staff);
                     for (int i = 0; i < staffList.size(); i++) {
@@ -612,7 +623,7 @@ public class FlowApproveServiceImpl implements FlowApproveService {
 //                        设置发送人员id
                         f.setStaffId(staff.getId());
 //                        设置过程id
-                        f.setCourseId(link.getId());
+                        f.setCourseId(fc.getId());
 //                        设置流程消息主表id
                         f.setFlowMessageId(msg.getId());
 //                        设置审批人id
@@ -627,15 +638,54 @@ public class FlowApproveServiceImpl implements FlowApproveService {
                         f.setDate(f.getAcceptDate());
 //                        设置发送时间
                         f.setAccrptDate(f.getAcceptDate());
+                        f.setPo00418Id("");
                         addApprove(f);
                     }
                 }
             }
 
+            setOtherState(fa, getByCourseId(fa.getCourseId(), msg.getId()));
+
             return 1;
         } else {
             return -1;
         }
+    }
+
+    private FlowCourse insertCourseRelation(FlowCourse link, FlowMessage msg, String parentId, FlowCourse current) {
+        FlowCourse fc = new FlowCourse();
+        BeanUtils.copyProperties(link, fc);
+        fc.setId(Constant.uuid());
+        fc.setParentId(parentId);
+        fc.setFlowId(msg.getHistroryId());
+        fc.setFrameId(msg.getFrameId());
+        fc.setSerial(current.getSerial() + 1);
+        flowCourseService.addFlowCourseB(fc);
+
+        List<FlowCourseBRelation> relations = flowCourseRelationService.getRelationByCourseId(link.getId());
+        relations.forEach(item -> {
+            FlowCourse childLink = flowCourseService.getFlowCourseById(item.getNextCourseId());
+            item.setId(Constant.uuid());
+            item.setCurrentId(fc.getId());
+            item.setNextCourseId(insertCourseRelation(childLink, msg, fc.getId(), fc).getId());
+        });
+        FlowHistory fh = new FlowHistory();
+        fh.setId(msg.getHistroryId());
+        flowMessageService.insertCourseRelation(fh, relations);
+
+        //循环审批人，重新添加到数据库
+        List<CoursePerson> cpList = link.getPersonList();
+        if (Objects.isNull(cpList) || cpList.isEmpty()) {
+            cpList = coursePersonService.getPersonByCourseId(link.getId(), msg.getStaff());
+        }
+        if(!Objects.isNull(cpList)){
+            cpList.forEach(person->{
+                person.setId(Constant.uuid());
+                flowMessageService.saveCoursePerson(msg, fc, person);
+            });
+        }
+        fc.setPersonList(cpList);
+        return fc;
     }
 
 
@@ -815,7 +865,7 @@ public class FlowApproveServiceImpl implements FlowApproveService {
     }
 
     @Override
-    public List<FlowApprove> getMessagesAll(String userId, String start, String end, List<String> params, List<String> msgStates, Integer type, String searchText, String flowFilter, Integer pageNum,Integer pageSize) {
+    public List<FlowApprove> getMessagesAll(String userId, String start, String end, List<String> params, List<String> msgStates, Integer type, String searchText, String flowFilter, Integer pageNum, Integer pageSize) {
         HashMap<String, Object> pmap = new HashMap(16);
         pmap.put("userId", userId);
         pmap.put("startDate", start);
@@ -829,7 +879,7 @@ public class FlowApproveServiceImpl implements FlowApproveService {
         if (type != null && type <= 2) {
             order = "a.po00406 DESC";
         }
-        PageHelper.startPage(pageNum,pageSize, order);
+        PageHelper.startPage(pageNum, pageSize, order);
         return flowApproveMapper.getMessagesV2(pmap);
     }
 
@@ -882,7 +932,7 @@ public class FlowApproveServiceImpl implements FlowApproveService {
         if (type != null && type <= 2) {
             order = "a.po00406 DESC";
         }
-        PageHelper.startPage(pageNum,pageSize, order);
+        PageHelper.startPage(pageNum, pageSize, order);
         return flowApproveMapper.getMessagesAll2(pmap);
     }
 
@@ -940,7 +990,7 @@ public class FlowApproveServiceImpl implements FlowApproveService {
         approve.setApproveDate(date);
         approve.setApproveState(3);
         addApprove(approve);
-        executorService.submit(()->{
+        executorService.submit(() -> {
             flowApproveMapper.addApproveRecord(approve);
         });
         FlowMessage fm = flowMessageService.getMessageById(approve.getFlowMessageId());

@@ -97,4 +97,12 @@ public interface FlowCourseRelationService {
     int deleteRelationByRelation02(String courseId);
 
     int updateRelationBy03(String courseId, String parentId);
+
+    /**
+     * 获取指定过程的子节点
+     * @param courseId 过程id
+     * @param isChild 是否加在子孙节点
+     * @return
+     */
+    List<FlowCourseBRelation> getRelationByCourseId(String courseId, boolean isChild);
 }

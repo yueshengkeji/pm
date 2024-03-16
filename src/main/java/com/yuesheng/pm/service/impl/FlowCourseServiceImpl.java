@@ -358,12 +358,12 @@ public class FlowCourseServiceImpl implements FlowCourseService {
         flowCourseMapepr.deleteBByFlowId(historyId);
         return flowCourseMapepr.deleteInstanceByFlowId(historyId);
     }
-
     @Override
-    public FlowCourse getFlowCourseBById(String courseId) {
+    public FlowCourse getFlowCourseBById(String courseId,String flowId) {
         PageHelper.startPage(1,1);
-        return flowCourseMapepr.getFlowCourseBById(courseId);
+        return flowCourseMapepr.getFlowCourseBById(courseId,flowId);
     }
+
 
     @Override
     public FlowCourse getFlowCourseBByInstance(String courseId) {

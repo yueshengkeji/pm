@@ -16,7 +16,7 @@ import java.util.List;
 @Service("flowCourseRelationService")
 public class FlowCourseRelationServiceImpl implements FlowCourseRelationService {
     @Autowired
-    FlowCourseRelationMapper flowCourseRelationMapper;
+    private FlowCourseRelationMapper flowCourseRelationMapper;
 
     @Override
     public List<FlowCourseBRelation> getRelationByCourseId(String courseId) {
@@ -97,5 +97,16 @@ public class FlowCourseRelationServiceImpl implements FlowCourseRelationService 
     @Override
     public int updateRelationBy03(String courseId, String parentId) {
         return flowCourseRelationMapper.updateRelationBy03(courseId,parentId);
+    }
+
+    @Override
+    public List<FlowCourseBRelation> getRelationByCourseId(String courseId, boolean isChild) {
+        List<FlowCourseBRelation> result = getRelationByCourseId(courseId);
+        if(isChild && !result.isEmpty()){
+            result.forEach(item->{
+                result.addAll(getRelationByCourseId(item.getCurrentId(),isChild));
+            });
+        }
+        return result;
     }
 }

@@ -165,9 +165,10 @@ public interface FlowCourseService {
     /**
      * 查询审批实例表过程
      * @param courseId 过程id
+     * @param flowId 流程id
      * @return
      */
-    FlowCourse getFlowCourseBById(String courseId);
+    FlowCourse getFlowCourseBById(String courseId,String flowId);
 
     /**
      * 查询

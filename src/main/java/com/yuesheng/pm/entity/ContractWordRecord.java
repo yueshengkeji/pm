@@ -17,7 +17,7 @@ public class ContractWordRecord {
 
     private String id;
     private String richText;
-    private Integer contractId;
+    private String contractId;
     private String recordTime;
     private int type;
 
@@ -37,11 +37,11 @@ public class ContractWordRecord {
         this.richText = richText;
     }
 
-    public Integer getContractId() {
+    public String getContractId() {
         return contractId;
     }
 
-    public void setContractId(Integer contractId) {
+    public void setContractId(String contractId) {
         this.contractId = contractId;
     }
 

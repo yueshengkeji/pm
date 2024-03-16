@@ -21,8 +21,9 @@
         where id = #{id}
     </update>
 
-    <select id="list" resultMap="ContractWordModelParams">
+    <select id="list" resultMap="ContractWordModelParams" parameterType="int">
         select * from contract_word_model_params
+        where type = #{type}
     </select>
 
     <delete id="delete">

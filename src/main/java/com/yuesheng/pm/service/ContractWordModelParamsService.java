@@ -13,7 +13,7 @@ import java.util.List;
 public interface ContractWordModelParamsService {
     int insert(ContractWordModelParams contractWordModelParams);
     int update(ContractWordModelParams contractWordModelParams);
-    List<ContractWordModelParams> list();
+    List<ContractWordModelParams> list(int type);
     int delete(int id);
     List<ContractWordModelParams> listByIds(List<Integer> ids);
 }

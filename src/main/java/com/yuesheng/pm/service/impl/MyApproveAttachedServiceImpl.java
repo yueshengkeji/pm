@@ -116,46 +116,45 @@ public class MyApproveAttachedServiceImpl implements MyApproveAttachedService {
             if (temp == null) {
                 continue;
             }
-            FlowApprove fa = flowApproveService.getFlowApproveByStaff(flowApprove.getFlowMessageId(),person.getCourseId(),temp.getId());
-            if(Objects.isNull(fa)){
-                //添加数据到sdpo004 & sdpo004_AllRecord
-                FlowApprove newApprove = new FlowApprove();
-                //sdpo003主键
-                newApprove.setFlowMessageId(flowApprove.getFlowMessageId());
-                //生成消息主键id
-                newApprove.setId(UUID.randomUUID().toString());
-                //设置发送人员id
-                newApprove.setStaffId(sendUser);
-                //设置过程id
-                newApprove.setCourseId(person.getCourseId());
-                //设置审批过程序号
-                if (Objects.isNull(fc)) {
-                    newApprove.setPo00415( n);
-                } else {
-                    newApprove.setPo00415(fc.getSerial());
-                }
-                //设置审批人id
-                newApprove.setAcceptStaffId(temp.getId());
-                //设置发送时间
-                newApprove.setAcceptDate(DateFormat.getDateTime());
-                //设置审批人序号
-                newApprove.setPo00414((byte) person.getSerial());
-                //设置不知名的时间列
-                newApprove.setDate(newApprove.getAcceptDate());
-                //设置接收时间
-                newApprove.setAccrptDate(DateUtil.getDatetime());
-                newApprove.setPo00418Id("");
-                if (person.getType() == 0) {
-                    //审批
-                    newApprove.setApproveState(0);
-                } else {
-                    //知会
-                    newApprove.setApproveState(5);
-                }
-                newApprove.setLastCourse(lastCourse);
-                flowApproveService.addApprove(newApprove);
-                faList.add(newApprove);
+
+            //添加数据到sdpo004 & sdpo004_AllRecord
+            FlowApprove newApprove = new FlowApprove();
+            //sdpo003主键
+            newApprove.setFlowMessageId(flowApprove.getFlowMessageId());
+            //生成消息主键id
+            newApprove.setId(UUID.randomUUID().toString());
+            //设置发送人员id
+            newApprove.setStaffId(sendUser);
+            //设置过程id
+            newApprove.setCourseId(person.getCourseId());
+            //设置审批过程序号
+            if (Objects.isNull(fc)) {
+                newApprove.setPo00415(n);
+            } else {
+                newApprove.setPo00415(fc.getSerial());
             }
+            //设置审批人id
+            newApprove.setAcceptStaffId(temp.getId());
+            //设置发送时间
+            newApprove.setAcceptDate(DateFormat.getDateTime());
+            //设置审批人序号
+            newApprove.setPo00414((byte) person.getSerial());
+            //设置不知名的时间列
+            newApprove.setDate(newApprove.getAcceptDate());
+            //设置接收时间
+            newApprove.setAccrptDate(DateUtil.getDatetime());
+            newApprove.setPo00418Id("");
+            if (person.getType() == 0) {
+                //审批
+                newApprove.setApproveState(0);
+            } else {
+                //知会
+                newApprove.setApproveState(5);
+            }
+            newApprove.setLastCourse(lastCourse);
+            flowApproveService.addApprove(newApprove);
+            faList.add(newApprove);
+
         }
         return faList;
     }

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.PlaceUseContractMapper">
+    <resultMap id="PlaceUseContract" type="com.yuesheng.pm.entity.PlaceUseContract">
+        <result property="id" column="id"></result>
+        <result property="contractName" column="contract_name"></result>
+        <result property="money" column="money"></result>
+        <result property="price" column="price"></result>
+        <result property="type" column="type"></result>
+        <result property="bond" column="bond"></result>
+        <result property="electricType" column="electric_type"></result>
+        <result property="electricPrice" column="electric_price"></result>
+        <result property="endDate" column="end_date"></result>
+        <result property="payCycle" column="pay_cycle"></result>
+        <result property="placeArea" column="place_area"></result>
+        <result property="placeNum" column="place_num"></result>
+        <result property="placeUseFor" column="place_use_for"></result>
+        <result property="startDate" column="start_date"></result>
+        <result property="taxRate" column="tax_rate"></result>
+        <result property="waterPrice" column="water_price"></result>
+        <result property="createDate" column="create_date"></result>
+        <result property="files" column="files"></result>
+        <association property="recordStaff" column="record_staff" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="partB" column="part_b" select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.PlaceUseContract">
+        insert into place_use_contract
+        (id,contract_name,money,price,type,bond,electric_price,end_date,pay_cycle,place_area,place_num,place_use_for,start_date,tax_rate,water_price,record_staff,part_b,create_date,files)
+        values (#{id},#{contractName},#{money},#{price},#{type},#{bond},#{electricPrice},#{endDate},#{payCycle},#{placeArea},#{placeNum},#{placeUseFor},#{startDate},#{taxRate},#{waterPrice},#{recordStaff.id},#{partB.id},#{createDate},#{files})
+    </insert>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.PlaceUseContract">
+        update place_use_contract
+        <set>
+            <if test="contractName != null">contract_name = #{contractName},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="bond != null">bond = #{bond},</if>
+            <if test="electricPrice != null">electric_price = #{electricPrice},</if>
+            <if test="electricType != null">electric_type = #{electricType},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="payCycle != null">pay_cycle = #{payCycle},</if>
+            <if test="placeArea != null">place_area = #{placeArea},</if>
+            <if test="placeNum != null">place_num = #{placeNum},</if>
+            <if test="placeUseFor != null">place_use_for = #{placeUseFor},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="taxRate != null">tax_rate = #{taxRate},</if>
+            <if test="waterPrice != null">water_price = #{waterPrice},</if>
+            <if test="recordStaff != null">record_staff = #{recordStaff.id},</if>
+            <if test="partB != null">part_b = #{partB.id},</if>
+            <if test="files != null">files = #{files},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="string">
+        delete from place_use_contract
+        where id = #{id}
+    </delete>
+
+    <select id="selectById" parameterType="string" resultMap="PlaceUseContract">
+        select * from place_use_contract
+        where id = #{id}
+    </select>
+
+    <select id="list" resultMap="PlaceUseContract">
+        select * from place_use_contract
+        <where>
+            <if test="searchStr != null">
+                and contract_name like '%' + #{searchStr} + '%'
+            </if>
+        </where>
+        order by create_date desc
+    </select>
+</mapper>

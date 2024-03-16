@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.AdvertPlaceContractMapper">
+    <resultMap id="AdvertPlaceContract" type="com.yuesheng.pm.entity.AdvertPlaceContract">
+        <result property="id" column="id"></result>
+        <result property="contractName" column="contract_name"></result>
+        <result property="number" column="number"></result>
+        <result property="placeNum" column="place_num"></result>
+        <result property="placeAddress" column="place_address"></result>
+        <result property="advertType" column="advert_type"></result>
+        <result property="startDate" column="start_date"></result>
+        <result property="endDate" column="end_date"></result>
+        <result property="price" column="price"></result>
+        <result property="money" column="money"></result>
+        <result property="capitalizationMoney" column="capitalization_money"></result>
+        <result property="designPrice" column="design_price"></result>
+        <result property="perElectricPrice" column="per_electric_price"></result>
+        <result property="electricMoney" column="electric_money"></result>
+        <result property="capitalizationElectricMoney" column="capitalization_electric_money"></result>
+        <result property="createDate" column="create_date"></result>
+        <result property="updateDate" column="update_date"></result>
+        <result property="type" column="type"></result>
+        <result property="partB" column="part_b"></result>
+        <result property="files" column="files"></result>
+        <association property="updateStaff" column="update_staff" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="recordStaff" column="record_staff" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.AdvertPlaceContract">
+        insert into advert_place_contract
+        (id,contract_name,number,place_num,place_address,advert_type,start_date,end_date,price,money,capitalization_money,design_price,per_electric_price,
+        electric_money,capitalization_electric_money,create_date,update_date,update_staff,type,record_staff,part_b,files)
+        values (#{id},#{contractName},#{number},#{placeNum},#{placeAddress},#{advertType},#{startDate},#{endDate},#{price},#{money},#{capitalizationMoney},
+        #{designPrice},#{perElectricPrice},#{electricMoney},#{capitalizationElectricMoney},#{createDate},#{updateDate},#{updateStaff.id},#{type},#{recordStaff.id},#{partB},#{files})
+    </insert>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.AdvertPlaceContract">
+        update advert_place_contract
+        <set>
+            <if test="contractName != null">contract_name = #{contractName},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="placeNum != null">place_num = #{placeNum},</if>
+            <if test="placeAddress != null">place_address = #{placeAddress},</if>
+            <if test="advertType != null">advert_type = #{advertType},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="capitalizationMoney != null">capitalization_money = #{capitalizationMoney},</if>
+            <if test="designPrice != null">design_price = #{designPrice},</if>
+            <if test="perElectricPrice !=null">per_electric_price = #{perElectricPrice},</if>
+            <if test="electricMoney != null">electric_money = #{electricMoney},</if>
+            <if test="capitalizationElectricMoney != null">capitalization_electric_money = #{capitalizationElectricMoney},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="updateStaff != null">update_staff = #{updateStaff.id},</if>
+            <if test="recordStaff != null">record_staff = #{recordStaff.id},</if>
+            <if test="partB != null">part_b = #{partB},</if>
+            <if test="files != null">files = #{files},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="string">
+        delete from advert_place_contract
+        where id = #{id}
+    </delete>
+
+    <select id="list" resultMap="AdvertPlaceContract">
+        select * from advert_place_contract
+        <where>
+            <if test="searchStr != null">
+                and contract_name like '%' + #{searchStr} + '%'
+            </if>
+        </where>
+        order by createDate desc
+    </select>
+
+    <select id="selectById" resultMap="AdvertPlaceContract">
+        select * from advert_place_contract
+        where id = #{id}
+    </select>
+
+</mapper>

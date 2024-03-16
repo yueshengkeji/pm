@@ -23,6 +23,19 @@ public class CompanyExtra extends BaseEntity {
      */
     private String street;
 
+    /**
+     * 证件号
+     */
+    private String idNumber;
+
+    public String getIdNumber() {
+        return idNumber;
+    }
+
+    public void setIdNumber(String idNumber) {
+        this.idNumber = idNumber;
+    }
+
     public String getJurisdiction() {
         return jurisdiction;
     }

@@ -465,11 +465,14 @@ public class FlowMessageServiceImpl implements FlowMessageService {
     @Override
     public void insertCourseRelation(FlowHistory history, List<FlowCourseBRelation> temp) {
         for (int x = 0; x < temp.size(); x++) {
-            FlowCourseBRelation relation = temp.get(x);
+            try {
+                FlowCourseBRelation relation = temp.get(x);
 //                设置流程记录id
-            relation.setFlowHistoryId(history.getId());
-            flowCourseRelationService.addRelationB(relation);
-            //flowCourseRelationService.addCondition();
+                relation.setFlowHistoryId(history.getId());
+                flowCourseRelationService.addRelationB(relation);
+            }catch (Exception e){
+                //ignore this error
+            }
         }
     }
 

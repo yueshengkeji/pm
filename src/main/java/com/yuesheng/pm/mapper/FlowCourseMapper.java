@@ -170,7 +170,7 @@ public interface FlowCourseMapper {
      * @param courseId 过程id
      * @return
      */
-    FlowCourse getFlowCourseBById(@Param("courseId") String courseId);
+    FlowCourse getFlowCourseBById(@Param("courseId") String courseId,@Param("flowId") String flowId);
 
     /**
      * 查询过程实例记录

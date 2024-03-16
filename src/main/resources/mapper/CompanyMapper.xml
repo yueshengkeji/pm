@@ -22,6 +22,10 @@
         <result column="pf00306" jdbcType="VARCHAR" property="bankNumber2" javaType="String"></result>
         <result column="pf00305" jdbcType="VARCHAR" property="openAccount2" javaType="String"></result>
         <result column="pf00307" jdbcType="VARCHAR" property="lineNum" javaType="String"></result>
+        <result column="jurisdiction" jdbcType="VARCHAR" property="jurisdiction"></result>
+        <result column="street" jdbcType="VARCHAR" property="street"></result>
+        <result column="phone" jdbcType="VARCHAR" property="phone"></result>
+        <result column="id_number" jdbcType="VARCHAR" property="idNumber"></result>
         <association property="staff" javaType="com.yuesheng.pm.entity.Staff">
             <result column="pf00314" property="coding" jdbcType="VARCHAR"></result>
         </association>
@@ -35,6 +39,7 @@
         <result column="jurisdiction" jdbcType="VARCHAR" property="jurisdiction"></result>
         <result column="street" jdbcType="VARCHAR" property="street"></result>
         <result column="phone" jdbcType="VARCHAR" property="phone"></result>
+        <result column="id_number" jdbcType="VARCHAR" property="idNumber"></result>
         <result column="pf00335" jdbcType="VARCHAR" property="relationP" javaType="String"></result>
         <result column="pf00336" jdbcType="VARCHAR" property="telephoneP" javaType="String"></result>
         <result column="pf00337" jdbcType="VARCHAR" property="emailP" javaType="String"></result>
@@ -52,7 +57,7 @@
         <result column="pf00103" property="parent" jdbcType="VARCHAR"></result>
         <result column="pf00104" property="rootId" jdbcType="VARCHAR"></result>
     </resultMap>
-    <select id="getByMaterial" resultMap="company" >
+    <select id="getByMaterial" resultMap="company">
         select distinct a.* from sdpf003 as a
         right join sdpm013 as b on a.pf00301=b.pm01304
         right join sdpm014 as c on b.pm01301=c.pm01401
@@ -93,7 +98,10 @@
         SELECT * FROM sdpf003 WHERE pf00302=#{name}
     </select>
     <select id="getCompanyById" parameterType="String" resultMap="company">
-        SELECT * FROM sdpf003 WHERE pf00301=#{id}
+        SELECT a.*,b.jurisdiction,b.phone,b.street,b.id_number FROM sdpf003
+        as a
+        left join company_to_sdpf003 as b on b.id = a.pf00301
+        where a.pf00301 = #{id}
     </select>
     <select id="getCompanyBySupply" resultMap="companyJane">
         SELECT pf00301,pf00302 FROM sdpf003 WHERE pf00316=1
@@ -101,7 +109,7 @@
     <select id="count" parameterType="INTEGER" resultType="INTEGER">
         SELECT count(pf00301) FROM sdpf003 WHERE pf00316=#{type}
     </select>
-    <select id="seek" parameterType="String" resultMap="companyJane" >
+    <select id="seek" parameterType="String" resultMap="companyJane">
         SELECT pf00301,pf00302,pf00308,pf00341,pf00342 FROM sdpf003 WHERE pf00316=1 AND pf00302 LIKE '%'+#{name}+'%'
     </select>
     <select id="seek" parameterType="String" resultMap="companyJane" databaseId="mysql">
@@ -128,8 +136,8 @@
         SELECT pm02008 AS id,COUNT(pm02008) AS myCount from sdpm020 GROUP BY pm02008 ORDER BY count(pm02008) DESC
     </select>
 
-    <select id="seekAll" resultMap="companyJane" >
-        SELECT a.*,b.jurisdiction,b.phone,b.street FROM sdpf003
+    <select id="seekAll" resultMap="companyJane">
+        SELECT a.*,b.jurisdiction,b.phone,b.street,b.id_number FROM sdpf003
         as a
         left join company_to_sdpf003 as b on b.id = a.pf00301
         <where>
@@ -139,7 +147,7 @@
         </where>
     </select>
     <select id="seekAll" resultMap="companyJane" databaseId="mysql">
-        SELECT a.*,b.jurisdiction,b.phone,b.street FROM sdpf003
+        SELECT a.*,b.jurisdiction,b.phone,b.street,b.id_number FROM sdpf003
         as a
         left join company_to_sdpf003 as b on b.id = a.pf00301
         <where>
@@ -151,7 +159,7 @@
     <select id="getSupplyCount" resultType="java.lang.Integer">
         SELECT count(pf00301) FROM sdpf003 WHERE pf00316=1
     </select>
-    <select id="queryFolder" resultMap="folder" >
+    <select id="queryFolder" resultMap="folder">
         SELECT * FROM sdpf001
         <if test="str != null">
             WHERE pf00102 LIKE '%'+#{str}+'%'
@@ -188,7 +196,7 @@
         </if>
         GROUP BY pm01304 ORDER BY count(pm01304) DESC
     </select>
-    <select id="getCompanyByParam" resultMap="company" >
+    <select id="getCompanyByParam" resultMap="company">
         SELECT * FROM sdpf003
         <if test="str != null">
             WHERE pf00302+pf00311+pf00341+pf00342+pf00335 LIKE '%'+#{str}+'%'
@@ -202,7 +210,7 @@
         </if>
         ${order}
     </select>
-    <select id="getCompanyByParamCount" resultType="java.lang.Integer" >
+    <select id="getCompanyByParamCount" resultType="java.lang.Integer">
         SELECT COUNT(pf00301) FROM sdpf003
         <if test="str != null">
             WHERE pf00302+pf00311+pf00341+pf00342+pf00335 LIKE '%'+#{str}+'%'

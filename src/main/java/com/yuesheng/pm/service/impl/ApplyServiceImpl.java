@@ -95,6 +95,12 @@ public class ApplyServiceImpl implements ApplyService {
             applyMaterialService.updateProSum(item);
         }
 
+        checkStatus(id, isNoPro);
+    }
+
+    @Override
+    public void checkStatus(String id, boolean isNoPro) {
+        List<ApplyMaterial> applyMaterials;
         //查询该申请单采购总数与申请总数
         Map<String, BigDecimal> sums = applyMaterialService.getMaterSums(id);
         BigDecimal applySum = sums.getOrDefault("applySum", new BigDecimal(0.0));
@@ -124,7 +130,6 @@ public class ApplyServiceImpl implements ApplyService {
         }
         //更新申请订单状态
         updateState(id, state);
-//        applyMapper.setStatus(id);
     }
 
     @Override

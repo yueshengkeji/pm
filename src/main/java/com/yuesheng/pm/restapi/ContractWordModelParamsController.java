@@ -21,7 +21,7 @@ public class ContractWordModelParamsController {
     private ContractWordModelParamsService contractWordModelParamsService;
 
     @GetMapping("/list")
-    public ResponseModel list(){
-        return new ResponseModel(contractWordModelParamsService.list());
+    public ResponseModel list(int type){
+        return new ResponseModel(contractWordModelParamsService.list(type));
     }
 }

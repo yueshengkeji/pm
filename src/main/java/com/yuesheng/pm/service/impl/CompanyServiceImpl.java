@@ -129,6 +129,7 @@ public class CompanyServiceImpl implements CompanyService {
         companyExtra.setPhone(company.getPhone());
         companyExtra.setStreet(company.getStreet());
         companyExtra.setJurisdiction(company.getJurisdiction());
+        companyExtra.setIdNumber(company.getIdNumber());
         companyExtraMapper.update(companyExtra);
         return companyMapper.updateCompany(company);
     }
@@ -156,6 +157,7 @@ public class CompanyServiceImpl implements CompanyService {
             companyExtra.setJurisdiction(c.getJurisdiction());
             companyExtra.setStreet(c.getStreet());
             companyExtra.setPhone(c.getPhone());
+            companyExtra.setIdNumber(c.getIdNumber());
             companyExtraMapper.insert(companyExtra);
         }
         return c;

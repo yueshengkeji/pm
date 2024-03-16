@@ -7,17 +7,21 @@
         <result property="phone" column="phone"></result>
         <result property="street" column="street"></result>
         <result property="jurisdiction" column="jurisdiction"></result>
+        <result property="idNumber" column="id_number"></result>
     </resultMap>
 
     <insert id="insert" parameterType="com.yuesheng.pm.entity.CompanyExtra">
-        insert into company_to_sdpf003 values (#{id},#{jurisdiction},#{street},#{phone});
+        insert into company_to_sdpf003
+        (id,jurisdiction,street,phone,id_number)
+        values (#{id},#{jurisdiction},#{street},#{phone},#{idNumber});
     </insert>
 
     <update id="update" parameterType="com.yuesheng.pm.entity.CompanyExtra">
         update company_to_sdpf003
         set jurisdiction = #{jurisdiction},
         phone = #{phone},
-        street = #{street}
+        street = #{street},
+        id_number = #{idNumber}
         where id = #{id}
     </update>
 </mapper>

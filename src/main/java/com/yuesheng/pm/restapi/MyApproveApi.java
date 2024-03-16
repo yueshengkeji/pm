@@ -182,7 +182,6 @@ public class MyApproveApi {
         if(Objects.isNull(link)) {
             return ResponseModel.ok(flowApproveService.breakFlow(fa));
         }else{
-            //中断到指定节点
             return ResponseModel.ok(flowApproveService.breakFLow(fa,link));
         }
     }

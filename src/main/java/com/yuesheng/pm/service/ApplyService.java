@@ -54,10 +54,16 @@ public interface ApplyService {
     Integer getApplyListCount(Map<String, Object> params);
 
     /**
-     * 设置申请单状态，并自动更新出已采购数量
+     * 检查设置申请单状态，并自动更新已采购数量
      * @param s
      */
     void setStatus(String s);
+    /**
+     * 检查申请单已采购状态
+     * @param id
+     * @param isNoPro
+     */
+    void checkStatus(String id, boolean isNoPro);
 
     /**
      * 添加材料申请单
