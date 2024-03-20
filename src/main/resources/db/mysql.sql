@@ -1269,7 +1269,8 @@ create table pro_zujin
     return_money    decimal(11, 2) null,
     type            tinyint        default 0 null,
     start_datetime  varchar(20)    default '' null,
-    files           varchar(2000) null
+    files           varchar(2000) null,
+    end_flag        int            default 0
 );
 
 create table pro_zujin_house
@@ -3865,10 +3866,40 @@ create table advert_place_contract
     files                         text
 );
 
+create table pro_zujin_end
+(
+    id                varchar(40) not null primary key,
+    contract_name     varchar(250),
+    floor             varchar(250),
+    pw_number         varchar(250),
+    contract_num      varchar(250),
+    brand_name        varchar(250),
+    end_reason        varchar(250),
+    end_date          varchar(20),
+    return_house_date varchar(20),
+    other_pay_date    varchar(20),
+    bzj               decimal(10, 2),
+    return_days       int,
+    overdue_day       int,
+    overdue_day_money decimal(10, 2),
+    quality_bzj       decimal(10, 2),
+    type              int,
+    create_date       varchar(20),
+    update_date       varchar(20),
+    update_staff      varchar(40),
+    record_staff      varchar(40),
+    files             text,
+    part_b            varchar(250),
+    pro_zujin         varchar(40),
+    quality_time      int
+);
+
 insert into sdeb003 (eb00301, eb00302, eb00303, eb00304, eb00305, eb00306, eb00307, eb00308, eb00309, eb00310, eb00311,
                      eb00312, eb00313, eb00314, eb00315, eb00316, eb00317, eb00318, eb00319, eb00320)
 values (N'1010100', N'00', N'10101', N'项目立项', 3, 0, N'102012', 1, 1, N'', 1, 0, 0, N'00', N'1010100', 0, 0, 1, 0,
         N''),
+       ( '11103375', '13', '10210', '合同终止协议', 3, 0, '1320290'
+       , 1, 1, '', 1, 0, 0, 3, 1000204, 0, 0, 1, 0, ''),
        ( '19999054', '13', '10210', '广告位租赁', 3, 0, '1320289'
        , 1, 1, '', 1, 0, 0, 3, 1000204, 0, 0, 1, 0, ''),
        (N'1020301', N'01', N'10203', N'部门组织', 3, 0, N'10190', 1, 0, N'', 0, 0, 0, N'01', N'1030301', 0, 0, 0, 0,
@@ -4441,139 +4472,290 @@ VALUES ('10YA81JP', '供应商', '', '10YA81JP', '1', 2);
 INSERT INTO sdpf001 (pf00101, pf00102, pf00103, pf00104, pf00105, pf00106)
 VALUES ('D0&0P&ST', '甲方', '', 'D0&0P&ST', '6', 1);
 
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ('合同编号', N'#series#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ('单位名称', N'#company#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ('品牌', N'#brand#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ('付款方式', N'#payType#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ('租赁方式', N'#zlType#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ('租赁面积', N'#acreage#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ('租赁联系人', N'#zlPerson#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ('租赁联系人手机号', N'#zlPersonTel#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ('业态对象', N'#yt#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'招商经办人', N'#staffName#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'递增金额', N'#dzNumber#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'合同应收金额（合同总价）', N'#ysMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'开票金额合计', N'#kpMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'招商实际已收合计', N'#sjMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'财务实际收款合计', N'#cwMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'备注', N'#remark#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'登记时间', N'#dateTime#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'最后更新人姓名', N'#lastStaffName#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'最后更新时间', N'#lastDateTime#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'商铺集合', N'#houses#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'年初欠款', N'#moneyOwe#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'年初欠票', N'#billOwe#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'当年租金', N'#yearRental#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'合同截止时间', N'#endDatetime#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'合同开始时间', N'#startDatetime#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'保证金', N'#bzjMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'保证金类型', N'#bzjType#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'已退保证金', N'#returnBzjMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'合同编号', N'#series#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'乙方单位', N'#brandCompany.name#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'品牌', N'#brand#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'付款方式', N'#payType#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'租赁方式', N'#zlType#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'租赁面积', N'#acreage#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'租赁联系人', N'#brandCompany.relationP#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'租赁联系人手机号', N'#brandCompany.telephoneP#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'业态对象', N'#yt#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'招商经办人', N'#staffName#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'计划进场日', N'#planDate#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'计划开业日', N'#openDate#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'递增金额', N'#dzNumber#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'合同应收金额（合同总价）', N'#ysMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'开票金额合计', N'#kpMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'招商实际已收合计', N'#sjMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'财务实际收款合计', N'#cwMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'备注', N'#remark#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'登记时间', N'#dateTime#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'最后更新人姓名', N'#lastStaffName#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'最后更新时间', N'#lastDateTime#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'商铺集合(铺位号)', N'#houses#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'年初欠款', N'#moneyOwe#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'年初欠票', N'#billOwe#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'当年租金', N'#yearRental#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'合同截止时间', N'#endDatetime#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'合同开始时间', N'#startDatetime#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'保证金', N'#bzjMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'保证金类型', N'#bzjType#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'已退保证金', N'#returnBzjMoney#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'商铺楼层', N'#houses.floor#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'租赁期限(月份)', N'#startDatetime.endDatetime#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'装修保证金(装修期装修押金)', N'#bzjList.装修保证金#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'筹备期装修管理费(元/m2)', N'#termList.筹备期装修管理费#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'营运期装修管理费(元/m2)', N'#termList.营运期装修管理费#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'装修建筑垃圾清运费(元/m2)', N'#termList.装修建筑垃圾清运费#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'临时水费(元/m2)', N'#termList.临时水费#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'临时电费(元/m2)', N'#termList.临时电费#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'履约保证金', N'#bzjList.履约保证金#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'质保保证金(质量保证金)', N'#bzjList.质保保证金#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'装修保证金.大写', N'#bzjList.装修保证金.大写#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'履约保证金.大写', N'#bzjList.履约保证金.大写#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'质保保证金.大写', N'#bzjList.质保保证金.大写#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'固定租金', N'#termList.固定租金#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'租金方式', N'#termList.租金方式#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'物业服务费(元/m2)(管理费)', N'#termList.管理费单价#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'物业服务费单价.大写(管理费)', N'#termList.管理费单价.大写#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'物业服务费(管理费)', N'#termList.管理费#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'物业服务费.大写(管理费)', N'#termList.管理费.大写#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'提成租金', N'#termList.提成租金#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'固定租金(优惠阶段)', N'#termList.固定租金(优惠阶段)#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'提成固定较高租金', N'#termList.提成固定较高租金#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'首期租金开始日期', N'#termList.首期租金开始日期#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'首期租金截止日期', N'#termList.首期租金截止日期#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'首期租金金额', N'#termList.首期租金金额#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'首期租金金额.大写', N'#termList.首期租金金额大写#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'首期物业服务费开始日期', N'#termList.首期物业服务费开始日期#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'首期物业服务费截止日期', N'#termList.首期物业服务费截止日期#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'首期物业服务费金额', N'#termList.首期物业服务费金额#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'首期物业服务费金额.大写', N'#termList.首期物业服务费金额大写#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'乙方', N'#partB.name#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'证件号码', N'#partB.idNumber#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'指定送达地址', N'#partB.address#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'指定联系电话', N'#partB.telephoneP#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'开户行', N'#partB.openAccount#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'账号', N'#partB.bankNumber#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'场地编号', N'#placeNum#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'场地面积', N'#placeArea#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'场地用途', N'#placeUseFor#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'开始日期', N'#startDate#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'截止日期', N'#endDate#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'场地费用标准(含税)', N'#price#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'场地费费总额(含税)', N'#money#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'场地费税率', N'#taxRate#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'交费结算期', N'#payCycle#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'水费单价', N'#waterPrice#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'保证金', N'#bond#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'电费标准4.4', N'#electricType.1#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'电费标准4.5', N'#electricType.2#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'电费标准4.6', N'#electricType.3#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'电费标准4.7', N'#electricType.4#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'电费金额4.4', N'#electricPrice.1#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'电费金额4.5', N'#electricPrice.2#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'电费金额4.6', N'#electricPrice.3#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'电费金额4.7', N'#electricPrice.4#', 2);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'乙方', N'#partB#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'场地编号', N'#placeNum#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'具体位置', N'#placeAddress#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'广告类别', N'#advertType#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'开始日期', N'#startDate#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'截止日期', N'#endDate#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'租金单价', N'#price#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'合计租金 大写', N'#capitalizationMoney#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'设计费', N'#designPrice#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'电费单价', N'#perElectricPrice#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'合计电费 大写', N'#capitalizationElectricMoney#', 3);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'推广次数', N'#tgfList.times#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'推广费用单价', N'#tgfList.price#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'推广费用', N'#tgfList.money#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'抵用券', N'#tgfList.voucher#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'违约金', N'#tgfList.liquidatedDamages#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'租赁方邮箱', N'#brandCompany.emailP#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'推广头条单价', N'#tgfList.firstBar#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'推广次条单价', N'#tgfList.secondBar#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'推广其他单价', N'#tgfList.otherBar#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES (N'甲方邮箱', N'#receivedCompany.emailP#', 0);
-INSERT INTO contract_word_model_params ( name, mark_Name, type) VALUES ( N'广告位数量', N'#number#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES ('合同编号', N'#series#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES ('单位名称', N'#company#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES ('品牌', N'#brand#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES ('付款方式', N'#payType#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES ('租赁方式', N'#zlType#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES ('租赁面积', N'#acreage#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES ('租赁联系人', N'#zlPerson#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES ('租赁联系人手机号', N'#zlPersonTel#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES ('业态对象', N'#yt#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'招商经办人', N'#staffName#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'递增金额', N'#dzNumber#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'合同应收金额（合同总价）', N'#ysMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'开票金额合计', N'#kpMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'招商实际已收合计', N'#sjMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'财务实际收款合计', N'#cwMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'备注', N'#remark#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'登记时间', N'#dateTime#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'最后更新人姓名', N'#lastStaffName#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'最后更新时间', N'#lastDateTime#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'商铺集合', N'#houses#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'年初欠款', N'#moneyOwe#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'年初欠票', N'#billOwe#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'当年租金', N'#yearRental#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'合同截止时间', N'#endDatetime#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'合同开始时间', N'#startDatetime#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'保证金', N'#bzjMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'保证金类型', N'#bzjType#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'已退保证金', N'#returnBzjMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'合同编号', N'#series#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'乙方单位', N'#brandCompany.name#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'品牌', N'#brand#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'付款方式', N'#payType#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'租赁方式', N'#zlType#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'租赁面积', N'#acreage#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'租赁联系人', N'#brandCompany.relationP#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'租赁联系人手机号', N'#brandCompany.telephoneP#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'业态对象', N'#yt#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'招商经办人', N'#staffName#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'计划进场日', N'#planDate#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'计划开业日', N'#openDate#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'递增金额', N'#dzNumber#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'合同应收金额（合同总价）', N'#ysMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'开票金额合计', N'#kpMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'招商实际已收合计', N'#sjMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'财务实际收款合计', N'#cwMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'备注', N'#remark#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'登记时间', N'#dateTime#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'最后更新人姓名', N'#lastStaffName#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'最后更新时间', N'#lastDateTime#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'商铺集合(铺位号)', N'#houses#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'年初欠款', N'#moneyOwe#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'年初欠票', N'#billOwe#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'当年租金', N'#yearRental#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'合同截止时间', N'#endDatetime#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'合同开始时间', N'#startDatetime#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'保证金', N'#bzjMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'保证金类型', N'#bzjType#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'已退保证金', N'#returnBzjMoney#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'商铺楼层', N'#houses.floor#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'租赁期限(月份)', N'#startDatetime.endDatetime#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'装修保证金(装修期装修押金)', N'#bzjList.装修保证金#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'筹备期装修管理费(元/m2)', N'#termList.筹备期装修管理费#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'营运期装修管理费(元/m2)', N'#termList.营运期装修管理费#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'装修建筑垃圾清运费(元/m2)', N'#termList.装修建筑垃圾清运费#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'临时水费(元/m2)', N'#termList.临时水费#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'临时电费(元/m2)', N'#termList.临时电费#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'履约保证金', N'#bzjList.履约保证金#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'质保保证金(质量保证金)', N'#bzjList.质保保证金#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'装修保证金.大写', N'#bzjList.装修保证金.大写#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'履约保证金.大写', N'#bzjList.履约保证金.大写#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'质保保证金.大写', N'#bzjList.质保保证金.大写#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'固定租金', N'#termList.固定租金#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'租金方式', N'#termList.租金方式#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'物业服务费(元/m2)(管理费)', N'#termList.管理费单价#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'物业服务费单价.大写(管理费)', N'#termList.管理费单价.大写#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'物业服务费(管理费)', N'#termList.管理费#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'物业服务费.大写(管理费)', N'#termList.管理费.大写#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'提成租金', N'#termList.提成租金#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'固定租金(优惠阶段)', N'#termList.固定租金(优惠阶段)#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'提成固定较高租金', N'#termList.提成固定较高租金#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'首期租金开始日期', N'#termList.首期租金开始日期#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'首期租金截止日期', N'#termList.首期租金截止日期#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'首期租金金额', N'#termList.首期租金金额#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'首期租金金额.大写', N'#termList.首期租金金额大写#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'首期物业服务费开始日期', N'#termList.首期物业服务费开始日期#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'首期物业服务费截止日期', N'#termList.首期物业服务费截止日期#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'首期物业服务费金额', N'#termList.首期物业服务费金额#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'首期物业服务费金额.大写', N'#termList.首期物业服务费金额大写#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'乙方', N'#partB.name#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'证件号码', N'#partB.idNumber#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'指定送达地址', N'#partB.address#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'指定联系电话', N'#partB.telephoneP#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'开户行', N'#partB.openAccount#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'账号', N'#partB.bankNumber#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'场地编号', N'#placeNum#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'场地面积', N'#placeArea#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'场地用途', N'#placeUseFor#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'开始日期', N'#startDate#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'截止日期', N'#endDate#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'场地费用标准(含税)', N'#price#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'场地费费总额(含税)', N'#money#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'场地费税率', N'#taxRate#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'交费结算期', N'#payCycle#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'水费单价', N'#waterPrice#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'保证金', N'#bond#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'电费标准4.4', N'#electricType.1#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'电费标准4.5', N'#electricType.2#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'电费标准4.6', N'#electricType.3#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'电费标准4.7', N'#electricType.4#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'电费金额4.4', N'#electricPrice.1#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'电费金额4.5', N'#electricPrice.2#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'电费金额4.6', N'#electricPrice.3#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'电费金额4.7', N'#electricPrice.4#', 2);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'乙方', N'#partB#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'场地编号', N'#placeNum#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'具体位置', N'#placeAddress#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'广告类别', N'#advertType#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'开始日期', N'#startDate#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'截止日期', N'#endDate#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'租金单价', N'#price#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'合计租金 大写', N'#capitalizationMoney#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'设计费', N'#designPrice#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'电费单价', N'#perElectricPrice#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'合计电费 大写', N'#capitalizationElectricMoney#', 3);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'推广次数', N'#tgfList.times#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'推广费用单价', N'#tgfList.price#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'推广费用', N'#tgfList.money#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'抵用券', N'#tgfList.voucher#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'违约金', N'#tgfList.liquidatedDamages#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'租赁方邮箱', N'#brandCompany.emailP#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'推广头条单价', N'#tgfList.firstBar#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'推广次条单价', N'#tgfList.secondBar#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'推广其他单价', N'#tgfList.otherBar#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'甲方邮箱', N'#receivedCompany.emailP#', 0);
+INSERT INTO contract_word_model_params (name, mark_Name, type)
+VALUES (N'广告位数量', N'#number#', 3);
+
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'乙方', N'#partB#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'楼层', N'#floor#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'铺位号', N'#pwNumber#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'合同编号', N'#contractNum#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'品牌名', N'#brandName#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'终止原因', N'#endReason#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'终止日期', N'#endDate#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'房屋归还日期', N'#returnHouseDate#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'所有费用支付日期', N'#otherPayDate#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'违约金', N'#bzj#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'保证金归还限定天数', N'#returnDays#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'逾期天数', N'#overdueDay#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'逾期违约金', N'#overdueDayMoney#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'质量保证金', N'qualityBzj', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'质保时长', N'#qualityTime#', 4);
 

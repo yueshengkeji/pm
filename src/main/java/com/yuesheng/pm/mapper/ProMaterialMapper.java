@@ -288,4 +288,11 @@ public interface ProMaterialMapper {
      * @return
      */
     List<ProjectMaterial> getProjectMaterial(String projectId);
+
+    /**
+     * 更新退料数量
+     * @param mater
+     * @return
+     */
+    int updateBackSum(ProMaterial mater);
 }

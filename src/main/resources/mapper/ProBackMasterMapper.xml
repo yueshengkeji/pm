@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProBackMasterMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProBackMaster" id="ProBackMasterMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="proBackId" column="pro_back_id" jdbcType="VARCHAR"/>
+        <result property="sum" column="sum" jdbcType="NUMERIC"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="money" column="money" jdbcType="NUMERIC"/>
+        <result property="proRowId" column="pro_row_id" jdbcType="VARCHAR"/>
+        <association property="material" column="master_id" select="com.yuesheng.pm.mapper.MaterialMapper.getMaterialByid"></association>
+        <association property="project" column="project_id" select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
+    </resultMap>
+
+    <select id="queryBackSum" resultType="Double">
+        select sum(sum) from pro_back_master where pro_row_id=#{proRowId}
+    </select>
+
+    <select id="queryByBack" resultMap="ProBackMasterMap">
+        select * from pro_back_master where pro_back_id=#{backId}
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProBackMasterMap">
+        select
+          *
+        from pro_back_master
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProBackMasterMap">
+        select
+          *
+        from pro_back_master
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="proBackId != null and proBackId != ''">
+                and pro_back_id = #{proBackId}
+            </if>
+            <if test="material != null">
+                and master_id = #{material.id}
+            </if>
+            <if test="sum != null">
+                and sum = #{sum}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="proRowId != null and proRowId != ''">
+                and pro_row_id = #{proRowId}
+            </if>
+            <if test="project != null">
+                and project_id = #{project.id}
+            </if>
+        </where>
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into pro_back_master(id,pro_back_id, master_id, sum, price, money, pro_row_id,project_id)
+        values (#{id},#{proBackId}, #{material.id}, #{sum}, #{price}, #{money}, #{proRowId},#{project.id})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_back_master
+        <set>
+            <if test="proBackId != null and proBackId != ''">
+                pro_back_id = #{proBackId},
+            </if>
+            <if test="material != null">
+                master_id = #{material.id},
+            </if>
+            <if test="sum != null">
+                sum = #{sum},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="money != null">
+                money = #{money},
+            </if>
+            <if test="proRowId != null and proRowId != ''">
+                pro_row_id = #{proRowId},
+            </if>
+            <if test="project != null">
+                project_id = #{project.id},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from pro_back_master where id = #{id}
+    </delete>
+
+</mapper>
+

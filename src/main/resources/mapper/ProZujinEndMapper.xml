@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProZujinEndMapper">
+    <resultMap id="ProZujinEnd" type="com.yuesheng.pm.entity.ProZujinEnd">
+        <result property="id" column="id"></result>
+        <result property="contractName" column="contract_name"></result>
+        <result property="partB" column="part_b"></result>
+        <result property="floor" column="floor"></result>
+        <result property="pwNumber" column="pw_number"></result>
+        <result property="contractNum" column="contract_num"></result>
+        <result property="brandName" column="brand_name"></result>
+        <result property="endReason" column="end_reason"></result>
+        <result property="endDate" column="end_date"></result>
+        <result property="returnHouseDate" column="return_house_date"></result>
+        <result property="otherPayDate" column="other_pay_date"></result>
+        <result property="bzj" column="bzj"></result>
+        <result property="returnDays" column="return_days"></result>
+        <result property="overdueDay" column="overdue_day"></result>
+        <result property="overdueDayMoney" column="overdue_day_money"></result>
+        <result property="qualityBzj" column="quality_bzj"></result>
+        <result property="type" column="type"></result>
+        <result property="createDate" column="create_date"></result>
+        <result property="updateDate" column="update_date"></result>
+        <result property="files" column="files"></result>
+        <result property="qualityTime" column="quality_time"></result>
+        <association property="updateStaff" column="update_staff" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="recordStaff" column="record_staff" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="proZujin" column="pro_zujin" select="com.yuesheng.pm.mapper.ProZujinMapper.queryById"></association>
+     </resultMap>
+
+    <insert id="insert" parameterType="com.yuesheng.pm.entity.ProZujinEnd">
+        insert into pro_zujin_end
+        (id,contract_name,part_b,floor,pw_number,contract_num,brand_name,end_reason,end_date,return_house_date,other_pay_date,bzj,return_days,
+        overdue_day,overdue_day_money,quality_bzj,type,create_date,update_date,update_staff,record_staff,files,pro_zujin,quality_time)
+        values (#{id},#{contractName},#{partB},#{floor},#{pwNumber},#{contractNum},#{brandName},#{endReason},#{endDate},#{returnHouseDate},#{otherPayDate},
+        #{bzj},#{returnDays},#{overdueDay},#{overdueDayMoney},#{qualityBzj},#{type},#{createDate},#{updateDate},#{updateStaff.id},#{recordStaff.id},#{files},#{proZujin.id},#{qualityTime})
+    </insert>
+
+    <update id="update" parameterType="com.yuesheng.pm.entity.ProZujinEnd">
+        update pro_zujin_end
+        <set>
+            <if test="contractName != null">contract_name = #{contractName},</if>
+            <if test="partB != null">part_b = #{partB},</if>
+            <if test="floor != null">floor = #{floor},</if>
+            <if test="pwNumber != null">pw_number = #{pwNumber},</if>
+            <if test="contractNum != null">contract_num = #{contractNum},</if>
+            <if test="brandName != null">brand_name = #{brandName},</if>
+            <if test="endReason != null">end_reason = #{endReason},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="returnHouseDate != null">return_house_date = #{returnHouseDate},</if>
+            <if test="otherPayDate != null">other_pay_date = #{otherPayDate},</if>
+            <if test="bzj != null">bzj = #{bzj},</if>
+            <if test="returnDays != null">return_days = #{returnDays},</if>
+            <if test="overdueDay != null">overdue_day = #{overdueDay},</if>
+            <if test="overdueDayMoney != null">overdue_day_money = #{overdueDayMoney},</if>
+            <if test="qualityBzj != null">quality_bzj = #{qualityBzj},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="updateStaff != null">update_staff = #{updateStaff.id},</if>
+            <if test="recordStaff != null">record_staff = #{recordStaff.id},</if>
+            <if test="files != null">files = #{files},</if>
+            <if test="proZujin != null">pro_zujin = #{proZujin.id},</if>
+            <if test="qualityTime != null">quality_time = #{qualityTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="string">
+        delete from pro_zujin_end
+        where id = #{id}
+    </delete>
+
+    <select id="list" resultMap="ProZujinEnd">
+        select * from pro_zujin_end
+        <where>
+            <if test="searchStr != null">
+                and contract_name like '%' + #{searchStr} + '%'
+            </if>
+        </where>
+        order by createDate desc
+    </select>
+
+    <select id="selectById" resultMap="ProZujinEnd">
+        select * from pro_zujin_end
+        where id = #{id}
+    </select>
+</mapper>

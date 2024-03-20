@@ -20,6 +20,7 @@
         <result column="pm01410" property="dhDate" jdbcType="VARCHAR"></result>
         <result column="pm03520" property="planRowId" jdbcType="VARCHAR"></result>
         <result column="pm03506" property="applyPrice" jdbcType="DECIMAL"></result>
+        <result column="pm01419" property="backSum" jdbcType="DECIMAL"></result>
         <association property="unit" column="pm01404"
                      select="com.yuesheng.pm.mapper.UnitMapper.getUnit"></association>
         <association property="material" column="pm01403"
@@ -27,6 +28,10 @@
         <association property="project" column="pm01422"
                      select="com.yuesheng.pm.mapper.ProjectMapper.getProjectByid"></association>
     </resultMap>
+
+    <update id="updateBackSum">
+        update sdpm014 set pm01419=#{backSum} where pm01402=#{id}
+    </update>
     <select id="queryAllProMater" resultMap="materialSimple" databaseId="sqlserver">
         select * from sdpm014 where DATALENGTH(pm01410) &lt; 10 and pm01410 != ''
     </select>

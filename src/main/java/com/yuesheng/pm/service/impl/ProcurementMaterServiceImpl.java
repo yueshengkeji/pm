@@ -300,4 +300,9 @@ public class ProcurementMaterServiceImpl implements ProcurementMaterService {
     public List<ProjectMaterial> getProjectMaterial(String projectId) {
         return proMaterialMapper.getProjectMaterial(projectId);
     }
+
+    @Override
+    public int updateBackSum(ProMaterial material) {
+        return proMaterialMapper.updateBackSum(material);
+    }
 }

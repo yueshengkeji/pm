@@ -103,6 +103,16 @@ public class ProMaterial extends ApplyMaterial {
     private String applyMaterialId;
     @Schema(name="计划数量")
     private Double planSum;
+    @Schema(name = "退料数量")
+    private Double backSum;
+
+    public Double getBackSum() {
+        return backSum;
+    }
+
+    public void setBackSum(Double backSum) {
+        this.backSum = backSum;
+    }
 
     @Override
     public Double getPlanSum() {

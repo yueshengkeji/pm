@@ -286,4 +286,11 @@ public interface ProcurementMaterService {
      * @return
      */
     List<ProjectMaterial> getProjectMaterial(String projectId);
+
+    /**
+     * 更新退料数量
+     * @param material
+     * @return
+     */
+    int updateBackSum(ProMaterial material);
 }

@@ -117,7 +117,7 @@
         </if>
         <where>
             <if test="str != null">
-                AND pm1.pm00201+pm1.pm00202+pm1.pm00205+pm1.pm00221+pm00222 LIKE '%'+#{str}+'%'
+                AND pm1.pm00201+pm1.pm00202+isnull(pm1.pm00205,'')+pm1.pm00221+pm00222 LIKE '%'+#{str}+'%'
             </if>
             <if test="type != null">
                 AND storage.pm00503 &gt; #{type}
@@ -129,7 +129,7 @@
                 and pm1.pm00202 LIKE '%'+#{materialName}+'%'
             </if>
             <if test="materialModel != null">
-                and pm1.pm00205 LIKE '%'+#{materialModel}+'%'
+                and isnull(pm1.pm00205,'') LIKE '%'+#{materialModel}+'%'
             </if>
             <if test="materialBrand != null">
                 and pm1.pm00221 LIKE '%'+#{materialBrand}+'%'
@@ -155,7 +155,7 @@
         </if>
         <where>
             <if test="str != null">
-                AND concat(pm1.pm00201,pm1.pm00202,pm1.pm00205,pm1.pm00221,pm00222) LIKE concat('%',#{str},'%')
+                AND concat(pm1.pm00201,pm1.pm00202,ifnull(pm1.pm00205,''),pm1.pm00221,pm00222) LIKE concat('%',#{str},'%')
             </if>
             <if test="type != null">
                 AND storage.pm00503 &gt; #{type}
@@ -167,7 +167,7 @@
                 and pm1.pm00202 LIKE concat('%',#{materialName},'%')
             </if>
             <if test="materialModel != null">
-                and pm1.pm00205 LIKE concat('%',#{materialModel},'%')
+                and ifnull(pm1.pm00205,'') LIKE concat('%',#{materialModel},'%')
             </if>
             <if test="materialBrand != null">
                 and pm1.pm00221 LIKE concat('%',#{materialBrand},'%')

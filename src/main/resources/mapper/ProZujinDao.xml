@@ -39,6 +39,7 @@
         <result property="openDate" column="open_date" jdbcType="VARCHAR"/>
         <result property="dayNum" column="day_num" jdbcType="VARCHAR"/>
         <result property="company" column="company" jdbcType="VARCHAR"/>
+        <result property="endFlag" column="end_flag" jdbcType="TINYINT"></result>
 
         <association property="brandCompany" column="company" select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
         <association property="receivedCompany" column="received_company" select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>

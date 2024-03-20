@@ -3,6 +3,7 @@ package com.yuesheng.pm.restapi;
 import com.yuesheng.pm.entity.AdvertPlaceContract;
 import com.yuesheng.pm.entity.PlaceUseContract;
 import com.yuesheng.pm.entity.ProZujin;
+import com.yuesheng.pm.entity.ProZujinEnd;
 import com.yuesheng.pm.model.ResponseModel;
 import com.yuesheng.pm.service.ContractWordRecordService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,5 +43,11 @@ public class ContractWordModelRecordController {
     @Operation(description = "广告位租赁")
     public ResponseModel insertAdvertPlaceContract(@RequestBody AdvertPlaceContract advertPlaceContract){
         return new ResponseModel(contractWordRecordService.insertAdvertPlaceContract(advertPlaceContract));
+    }
+
+    @PostMapping("/insertProZujinEnd")
+    @Operation(description = "合同终止协议")
+    public ResponseModel insertProZujinEnd(@RequestBody ProZujinEnd proZujinEnd){
+        return new ResponseModel(contractWordRecordService.insertProZujinEnd(proZujinEnd));
     }
 }

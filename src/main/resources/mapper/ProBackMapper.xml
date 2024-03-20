@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuesheng.pm.mapper.ProBackMapper">
+
+    <resultMap type="com.yuesheng.pm.entity.ProBack" id="ProBackMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="proId" column="pro_id" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="backDatetime" column="back_datetime" jdbcType="VARCHAR"/>
+        <result property="datetime" column="datetime" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="money" column="money" jdbcType="DECIMAL"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="tax" column="tax" jdbcType="DECIMAL"/>
+        <result property="toApply" column="to_apply" jdbcType="TINYINT"/>
+
+        <association property="staff" column="staff_id"
+                     select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
+        <association property="company" column="company_id"
+                     select="com.yuesheng.pm.mapper.CompanyMapper.getCompanyById"></association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ProBackMap">
+        select *
+        from pro_back
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ProBackMap">
+        select
+        *
+        from pro_back
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="proId != null and proId != ''">
+                and pro_id = #{proId}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="backDatetime != null and backDatetime != ''">
+                and back_datetime = #{backDatetime}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="staff != null">
+                and staff_id = #{staff.id}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="company != null">
+                and company_id = #{company.id}
+            </if>
+            <if test="tax != null">
+                and tax = #{tax}
+            </if>
+        </where>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from pro_back
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="proId != null and proId != ''">
+                and pro_id = #{proId}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="backDatetime != null and backDatetime != ''">
+                and back_datetime = #{backDatetime}
+            </if>
+            <if test="datetime != null and datetime != ''">
+                and datetime = #{datetime}
+            </if>
+            <if test="staff != null">
+                and staff_id = #{staff.id}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="company != null">
+                and company_id = #{company.id}
+            </if>
+            <if test="tax != null">
+                and tax = #{tax}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert">
+        insert into pro_back(id,pro_id, remark, back_datetime, datetime, staff_id, state, money, title, company_id, tax,
+                             to_apply)
+        values (#{id},#{proId}, #{remark}, #{backDatetime}, #{datetime}, #{staff.id}, #{state}, #{money}, #{title},
+                #{company.id}, #{tax}, #{toApply})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update pro_back
+        <set>
+            <if test="proId != null and proId != ''">
+                pro_id = #{proId},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="backDatetime != null and backDatetime != ''">
+                back_datetime = #{backDatetime},
+            </if>
+            <if test="datetime != null and datetime != ''">
+                datetime = #{datetime},
+            </if>
+            <if test="staff != null">
+                staff_id = #{staff.id},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="money != null">
+                money = #{money},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="company != null">
+                company_id = #{company.id},
+            </if>
+            <if test="tax != null">
+                tax = #{tax},
+            </if>
+            <if test="toApply != null">
+                to_apply = #{toApply},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from pro_back
+        where id = #{id}
+    </delete>
+
+</mapper>
+

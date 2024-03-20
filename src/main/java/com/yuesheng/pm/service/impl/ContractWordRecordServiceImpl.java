@@ -414,7 +414,7 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                     } else {
                         Field field = ProZujin.class.getDeclaredField(replace);
                         field.setAccessible(true);
-                        replaceValue = String.valueOf(field.get(proZujin));
+                        replaceValue = field.get(proZujin);
                     }
                     richText = richText.replace(contractWordModelParams.get(i).getMarkName(), String.valueOf(replaceValue != null ? replaceValue : ""));
                 } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -1167,6 +1167,54 @@ public class ContractWordRecordServiceImpl implements ContractWordRecordService 
                     Field field = AdvertPlaceContract.class.getDeclaredField(replace);
                     field.setAccessible(true);
                     replaceValue = field.get(advertPlaceContract);
+                    richText = richText.replace(contractWordModelParams.get(i).getMarkName(), String.valueOf(replaceValue != null ? replaceValue : ""));
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return richText;
+    }
+
+
+    /*********************************广告位合同***********************************/
+    @Override
+    public int insertProZujinEnd(ProZujinEnd proZujinEnd) {
+        ContractWordModel contractWordModel = contractWordModelService.selectByType(proZujinEnd.getType());
+        if (ObjectUtils.isEmpty(contractWordModel)) {
+            return 0;
+        }
+        ContractWordRecord contractWordRecord = new ContractWordRecord();
+        contractWordRecord.setId(UUID.randomUUID().toString());
+        contractWordRecord.setRecordTime(DateUtil.getDatetime());
+        contractWordRecord.setRichText(getRichTextProZujinEnd(proZujinEnd, contractWordModel));
+        contractWordRecord.setContractId(proZujinEnd.getId());
+        contractWordRecord.setType(proZujinEnd.getType());
+        return contractWordRecordMapper.insert(contractWordRecord);
+    }
+
+    public String getRichTextProZujinEnd(ProZujinEnd proZujinEnd,ContractWordModel contractWordModel){
+        String richText = contractWordModel.getRichText();
+        String paramsArr = contractWordModel.getParamsArr();
+        if (paramsArr.equals("")) {
+            return richText;
+        }
+        String[] arr = paramsArr.split(",");
+
+        List<Integer> ids = new ArrayList<>();
+        for (int i = 0; i < arr.length; i++) {
+            ids.add(Integer.valueOf(arr[i]));
+        }
+
+        List<ContractWordModelParams> contractWordModelParams = contractWordModelParamsService.listByIds(ids);
+        if (contractWordModelParams.size() > 0) {
+            for (int i = 0; i < contractWordModelParams.size(); i++) {
+                String replace = contractWordModelParams.get(i).getMarkName().replace("#", "");
+                Object replaceValue = "";
+                try {
+                    Field field = ProZujinEnd.class.getDeclaredField(replace);
+                    field.setAccessible(true);
+                    replaceValue = field.get(proZujinEnd);
                     richText = richText.replace(contractWordModelParams.get(i).getMarkName(), String.valueOf(replaceValue != null ? replaceValue : ""));
                 } catch (NoSuchFieldException | IllegalAccessException e) {
                     e.printStackTrace();

@@ -1,9 +1,6 @@
 package com.yuesheng.pm.service;
 
-import com.yuesheng.pm.entity.AdvertPlaceContract;
-import com.yuesheng.pm.entity.ContractWordRecord;
-import com.yuesheng.pm.entity.PlaceUseContract;
-import com.yuesheng.pm.entity.ProZujin;
+import com.yuesheng.pm.entity.*;
 
 /**
  * @ClassName ContractWordRecordService
@@ -18,4 +15,5 @@ public interface ContractWordRecordService {
     int insertPlaceContract(PlaceUseContract placeUseContract);
 
     int insertAdvertPlaceContract(AdvertPlaceContract advertPlaceContract);
+    int insertProZujinEnd(ProZujinEnd proZujinEnd);
 }

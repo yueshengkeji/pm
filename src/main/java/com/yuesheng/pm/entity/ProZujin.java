@@ -110,6 +110,16 @@ public class ProZujin implements Serializable {
     private Company receivedCompany;
     @Schema(name = "推广费")
     private List<ProZujinPromotion> tgfList;
+    @Schema(name = "合同终止标识 默认0=进行中 1=终止")
+    private int endFlag;
+
+    public int getEndFlag() {
+        return endFlag;
+    }
+
+    public void setEndFlag(int endFlag) {
+        this.endFlag = endFlag;
+    }
 
     public List<ProZujinPromotion> getTgfList() {
         return tgfList;

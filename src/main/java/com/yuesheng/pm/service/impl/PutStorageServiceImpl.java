@@ -393,7 +393,7 @@ public class PutStorageServiceImpl implements PutStorageService {
             HashMap<String, String> materMap = new HashMap<>();
             for (ProMaterial pm : materialList) {
                 materMap.put(pm.getId(), "1");
-                if (pm.getInSum() < pm.getSum()) {
+                if (pm.getInSum() < (pm.getSum() - pm.getBackSum())) {
                     //部分入库
                     putState = Constant.STATE_3;
                     break;
@@ -406,7 +406,7 @@ public class PutStorageServiceImpl implements PutStorageService {
                 for (ProMaterial pm : pmList) {
                     if (!materMap.containsKey(pm.getId())) {
                         //未比较过的材料，并且有入库数小于采购数的，设置未部分入库，否则设置订单未完全入库
-                        if (pm.getInSum() < pm.getSum()) {
+                        if(pm.getInSum() < (pm.getSum() - pm.getBackSum())){
                             putState = Constant.STATE_3;
                             break;
                         }

@@ -543,8 +543,10 @@ public class ZujinApi extends BaseApi {
     @Operation(description = "更新租金合同")
     @PostMapping
     public ResponseModel update(@RequestBody ProZujin zujin, @SessionAttribute(Constant.SESSION_KEY) Staff staff) {
-        houseService.deleteByZujin(zujin.getId());
-        houseService.insertHouseRelation(zujin.getHouses(), zujin);
+        if (zujin.getHouses() != null){
+            houseService.deleteByZujin(zujin.getId());
+            houseService.insertHouseRelation(zujin.getHouses(), zujin);
+        }
         zujin.setLastStaffId(staff.getId());
         zujin.setLastDateTime(DateUtil.format(new Date()));
         return new ResponseModel(zujinService.update(zujin));
