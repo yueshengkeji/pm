@@ -6,9 +6,7 @@ import com.yuesheng.pm.entity.Staff;
 import com.yuesheng.pm.model.ResponseModel;
 import com.yuesheng.pm.service.ProZujinEndService;
 import com.yuesheng.pm.util.Constant;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +27,7 @@ public class ProZujinEndApi extends BaseApi{
     @Autowired
     private ProZujinEndService proZujinEndService;
 
-    @ApiOperation("新增")
+    @Operation(description = "新增")
     @PostMapping("/insert")
     public ResponseModel insert(@RequestBody ProZujinEnd proZujinEnd, @SessionAttribute(Constant.SESSION_KEY) Staff staff){
         proZujinEnd.setRecordStaff(staff);
@@ -37,24 +35,24 @@ public class ProZujinEndApi extends BaseApi{
         return new ResponseModel(proZujinEnd);
     }
 
-    @ApiOperation("更新")
+    @Operation(description = "更新")
     @PostMapping("update")
     public ResponseModel update(@RequestBody ProZujinEnd proZujinEnd, @SessionAttribute(Constant.SESSION_KEY) Staff staff){
         proZujinEnd.setUpdateStaff(staff);
         return new ResponseModel(proZujinEndService.update(proZujinEnd));
     }
 
-    @ApiOperation("删除")
+    @Operation(description = "删除")
     @PostMapping("deleteById")
-    public ResponseModel deleteById(@ApiParam String id){
+    public ResponseModel deleteById(String id){
         return new ResponseModel(proZujinEndService.delete(id));
     }
 
-    @ApiOperation("列表")
+    @Operation(description = "列表")
     @GetMapping("list")
-    public ResponseModel list(@ApiParam String searchStr,
-                              @ApiParam Integer page,
-                              @ApiParam Integer pageSize){
+    public ResponseModel list(String searchStr,
+                              Integer page,
+                              Integer pageSize){
         Map<String,Object> params = new HashMap<>();
         params.put("searchStr",searchStr);
 
@@ -68,9 +66,9 @@ public class ProZujinEndApi extends BaseApi{
         return new ResponseModel(params);
     }
 
-    @ApiOperation("id查找")
+    @Operation(description = "id查找")
     @GetMapping("selectById")
-    public ResponseModel selectById(@ApiParam String id){
+    public ResponseModel selectById(String id){
         return new ResponseModel(proZujinEndService.selectById(id));
     }
 }
