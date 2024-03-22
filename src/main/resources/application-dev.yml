@@ -2,11 +2,8 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://127.0.0.1:3306/pm2?characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
-#    url: jdbc:sqlserver://192.168.2.254:1435;database=ByPrj201410130458;integratedSecurity=false;SelectMethod=cursor
     username: root
-    password: wanNt239754
-#    password: ZHMKJ85516128So
-#    username: pm2_sync
+    password: root
   # druid 连接池管理
     druid:
       filter:
