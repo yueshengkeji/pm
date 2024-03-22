@@ -91,4 +91,10 @@ public interface ProOtherPayService {
      * 同步没有支付时间的数据
      */
     void syncNoPay();
+
+    /**
+     * 通知申请人审批进度
+     * @param id
+     */
+    void notifyApplyStaff(String id);
 }

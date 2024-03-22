@@ -3,17 +3,18 @@ package com.yuesheng.pm.service.impl;
 import com.yuesheng.pm.entity.Attach;
 import com.yuesheng.pm.entity.FlowMessage;
 import com.yuesheng.pm.entity.ProOtherPay;
+import com.yuesheng.pm.entity.Staff;
+import com.yuesheng.pm.listener.WebParam;
 import com.yuesheng.pm.mapper.ProOtherPayMapper;
 import com.yuesheng.pm.service.*;
+import com.yuesheng.pm.util.AESEncrypt;
 import com.yuesheng.pm.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * (ProOtherPay)表服务实现类
@@ -31,6 +32,9 @@ public class ProOtherPayServiceImpl implements ProOtherPayService, FileService {
     private FlowMessageService messageService;
     @Autowired
     private FlowApproveService approveService;
+    @Autowired
+    @Lazy
+    private FlowNotifyService flowNotifyService;
 
     /**
      * 通过ID查询单条数据
@@ -165,5 +169,19 @@ public class ProOtherPayServiceImpl implements ProOtherPayService, FileService {
                 approve(proOtherPay);
             }
         });
+    }
+
+    @Override
+    public void notifyApplyStaff(String id) {
+        ProOtherPay pay = queryById(id);
+        Staff staff = pay.getStaff();
+        ArrayList<Staff> staffs = new ArrayList<>();
+        staffs.add(staff);
+        Map<String, Object> msgMap = new HashMap<>(4);
+        msgMap.put("title", "采购付款通知");
+        msgMap.put("mTitle", pay.getTitle());
+        msgMap.put("content", "已经发送到现金会计");
+        msgMap.put("url", WebParam.VUETIFY_BASE + "/otherPay/pro?id=" + id);
+        flowNotifyService.msgNotify(staff, msgMap);
     }
 }
