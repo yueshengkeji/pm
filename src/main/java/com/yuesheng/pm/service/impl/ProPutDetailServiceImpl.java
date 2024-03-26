@@ -387,7 +387,10 @@ public class ProPutDetailServiceImpl implements ProPutDetailService {
             project.setName("");
             detail.setProject(project);
         } else {
-            detail.setProjectName(detail.getProject().getName());
+            Project p = detail.getProject();
+            if (StringUtils.isBlank(p.getName())) {
+                p.setName(detail.getProjectName());
+            }
         }
     }
 }
