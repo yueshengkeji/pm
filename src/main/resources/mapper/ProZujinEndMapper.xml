@@ -23,6 +23,9 @@
         <result property="updateDate" column="update_date"></result>
         <result property="files" column="files"></result>
         <result property="qualityTime" column="quality_time"></result>
+        <result property="otherPay" column="other_pay"></result>
+        <result property="lyBzj" column="ly_bzj"></result>
+        <result property="wgBzj" column="wg_bzj"></result>
         <association property="updateStaff" column="update_staff" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
         <association property="recordStaff" column="record_staff" select="com.yuesheng.pm.mapper.StaffMapper.getStaffById"></association>
         <association property="proZujin" column="pro_zujin" select="com.yuesheng.pm.mapper.ProZujinMapper.queryById"></association>
@@ -31,9 +34,10 @@
     <insert id="insert" parameterType="com.yuesheng.pm.entity.ProZujinEnd">
         insert into pro_zujin_end
         (id,contract_name,part_b,floor,pw_number,contract_num,brand_name,end_reason,end_date,return_house_date,other_pay_date,bzj,return_days,
-        overdue_day,overdue_day_money,quality_bzj,type,create_date,update_date,update_staff,record_staff,files,pro_zujin,quality_time)
+         overdue_day,overdue_day_money,quality_bzj,type,create_date,update_date,update_staff,record_staff,files,pro_zujin,quality_time,other_pay,ly_bzj,wg_bzj)
         values (#{id},#{contractName},#{partB},#{floor},#{pwNumber},#{contractNum},#{brandName},#{endReason},#{endDate},#{returnHouseDate},#{otherPayDate},
-        #{bzj},#{returnDays},#{overdueDay},#{overdueDayMoney},#{qualityBzj},#{type},#{createDate},#{updateDate},#{updateStaff.id},#{recordStaff.id},#{files},#{proZujin.id},#{qualityTime})
+                #{bzj},#{returnDays},#{overdueDay},#{overdueDayMoney},#{qualityBzj},#{type},#{createDate},#{updateDate},#{updateStaff.id},#{recordStaff.id},#{files},
+                #{proZujin.id},#{qualityTime},#{otherPay},#{lyBzj},#{wgBzj})
     </insert>
 
     <update id="update" parameterType="com.yuesheng.pm.entity.ProZujinEnd">
@@ -62,6 +66,9 @@
             <if test="files != null">files = #{files},</if>
             <if test="proZujin != null">pro_zujin = #{proZujin.id},</if>
             <if test="qualityTime != null">quality_time = #{qualityTime},</if>
+            <if test="otherPay != null">other_pay = #{otherPay},</if>
+            <if test="lyBzj != null">ly_bzj = #{lyBzj},</if>
+            <if test="wgBzj != null">wg_bzj = #{wgBzj},</if>
         </set>
         where id = #{id}
     </update>

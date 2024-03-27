@@ -53,6 +53,10 @@ public class ProZujinEnd {
      */
     private String returnHouseDate;
     /**
+     * 其他费用合计
+     */
+    private Double otherPay;
+    /**
      * 租金物业费水电费其他费用支付日期
      */
     private String otherPayDate;
@@ -60,6 +64,14 @@ public class ProZujinEnd {
      * 违约金
      */
     private Double bzj;
+    /**
+     * 履约保证金
+     */
+    private Double lyBzj;
+    /**
+     * 物业管理保证金
+     */
+    private Double wgBzj;
     /**
      * 保证金归还天数
      */
@@ -104,6 +116,30 @@ public class ProZujinEnd {
      * 附件
      */
     private String files;
+
+    public Double getOtherPay() {
+        return otherPay;
+    }
+
+    public void setOtherPay(Double otherPay) {
+        this.otherPay = otherPay;
+    }
+
+    public Double getLyBzj() {
+        return lyBzj;
+    }
+
+    public void setLyBzj(Double lyBzj) {
+        this.lyBzj = lyBzj;
+    }
+
+    public Double getWgBzj() {
+        return wgBzj;
+    }
+
+    public void setWgBzj(Double wgBzj) {
+        this.wgBzj = wgBzj;
+    }
 
     public int getQualityTime() {
         return qualityTime;

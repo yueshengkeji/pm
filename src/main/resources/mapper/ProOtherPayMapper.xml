@@ -47,7 +47,32 @@
         from pro_other_pay
         where pay_datetime is null
         <if test="title != null">
-            and isnull(title,'')+isnull(remark,'') like '%'+ #{title}+'%'
+            and isnull(company_name,'')+isnull(title,'')+isnull(remark,'') like '%'+ #{title}+'%'
+        </if>
+        <if test="company != null">
+            and company_name = #{company.name}
+        </if>
+        <if test="payMoney != null">
+            and pay_money = #{payMoney}
+        </if>
+        <if test="payTypeTag != null and payTypeTag != ''">
+            and pay_type_tag = #{payTypeTag}
+        </if>
+        <if test="staff != null">
+            and staff_id = #{staff.id}
+        </if>
+        <if test="state != null">
+            and state = #{state}
+        </if>
+    </select>
+
+    <select id="queryNoPay" resultMap="ProOtherPayMap" databaseId="mysql">
+        select
+            *
+        from pro_other_pay
+        where pay_datetime is null
+        <if test="title != null">
+            and ifnull(company_name,'')+ifnull(title,'')+ifnull(remark,'') like '%'+ #{title}+'%'
         </if>
         <if test="company != null">
             and company_name = #{company.name}
@@ -74,6 +99,35 @@
         <where>
             <if test="title != null">
                 and isnull(title,'')+isnull(remark,'') like '%'+ #{title}+'%'
+            </if>
+            <if test="company != null">
+                and company_name = #{company.name}
+            </if>
+            <if test="payMoney != null">
+                and pay_money = #{payMoney}
+            </if>
+            <if test="payTypeTag != null and payTypeTag != ''">
+                and pay_type_tag = #{payTypeTag}
+            </if>
+            <if test="staff != null">
+                and staff_id = #{staff.id}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="datetime != null">
+                and pay_datetime between #{datetime} and #{remark}
+            </if>
+        </where>
+    </select>
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ProOtherPayMap" databaseId="mysql">
+        select
+        *
+        from pro_other_pay
+        <where>
+            <if test="title != null">
+                and ifnull(company_name,'')+ifnull(title,'')+ifnull(remark,'') like '%'+ #{title}+'%'
             </if>
             <if test="company != null">
                 and company_name = #{company.name}

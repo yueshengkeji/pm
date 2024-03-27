@@ -364,7 +364,7 @@ public class ProWorkLogApi extends BaseApi {
             if (!Objects.isNull(item.getWeight())) {
                 if (Objects.isNull(log.getId())) {
                     count += item.getWeight();
-                } else if (log.getId() != item.getId()) {
+                } else if (Long.compare(log.getId(),item.getId()) != 0) {
                     count += item.getWeight();
                 }
             }

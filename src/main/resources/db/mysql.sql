@@ -3891,8 +3891,45 @@ create table pro_zujin_end
     files             text,
     part_b            varchar(250),
     pro_zujin         varchar(40),
-    quality_time      int
+    quality_time      int,
+    other_pay decimal(10,2),
+    ly_bzj decimal(10,2),
+    wg_bzj decimal(10,2)
 );
+
+
+create table pro_back
+(
+    id varchar(40) not null,
+    pro_id varchar(40),
+    remark varchar(2000),
+    back_datetime varchar(20),
+    datetime varchar(20),
+    staff_id varchar(40),
+    state tinyint,
+    money decimal(10,2),
+    title varchar(500),
+    company_id varchar(40),
+    tax decimal(10,2),
+    to_apply tinyint,
+    constraint pro_back_pk
+        primary key (id)
+);
+
+create table pro_back_master
+(
+    id varchar(40) not null,
+    pro_back_id varchar(40),
+    master_id varchar(40),
+    sum decimal(10,2),
+    price decimal(10,2),
+    money decimal(10,2),
+    pro_row_id varchar(40),
+    project_id varchar(40),
+    constraint pro_back_master_pk
+        primary key (id)
+);
+
 
 insert into sdeb003 (eb00301, eb00302, eb00303, eb00304, eb00305, eb00306, eb00307, eb00308, eb00309, eb00310, eb00311,
                      eb00312, eb00313, eb00314, eb00315, eb00316, eb00317, eb00318, eb00319, eb00320)
@@ -4758,4 +4795,7 @@ INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'逾期�
 INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'逾期违约金', N'#overdueDayMoney#', 4);
 INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'质量保证金', N'qualityBzj', 4);
 INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'质保时长', N'#qualityTime#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'所有费用', N'#otherPay#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'履约保证金', N'#lyBzj#', 4);
+INSERT INTO contract_word_model_params (name, mark_Name, type) VALUES (N'物管保证金', N'#wgBzj#', 4);
 

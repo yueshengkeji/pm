@@ -61,6 +61,9 @@ public class OutCarHistoryServiceImpl implements OutCarHistoryService {
      */
     @Override
     public OutCarHistory insert(OutCarHistory outCarHistory) {
+        if(StringUtils.isBlank(outCarHistory.getStartTime())){
+            outCarHistory.setStartTime(DateUtil.getDatetime());
+        }
         outCarHistory.setId(UUID.randomUUID().toString());
         outCarHistory.setDatetime(DateUtil.getDatetime());
         outCarHistory.setIsParkingCost(0);

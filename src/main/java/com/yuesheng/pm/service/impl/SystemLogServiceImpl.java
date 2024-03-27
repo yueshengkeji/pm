@@ -67,6 +67,7 @@ public class SystemLogServiceImpl implements SystemLogService {
             this.systemLogMapper.insert(systemLog);
         } catch (Exception e) {
             //ignore this error
+            throw new RuntimeException(e);
         }
 
         return systemLog;
