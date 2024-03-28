@@ -137,6 +137,10 @@ public class WebParam implements ServletContextListener {
      * 前端项目上下文
      */
     public static String VUETIFY_BASE = "/vuetify";
+    /**
+     * 使用sftp管理文件
+     */
+    public static Boolean SFTP = false;
 
     public static WebApplicationContext webApplicationContext;
 
@@ -307,7 +311,8 @@ public class WebParam implements ServletContextListener {
         }
 
         FTP_ADDRESS = appParamConfig.getFTP_ADDRESS();
-        FTP_PASSWD = appParamConfig.getFTP_PASSWD();;
+        FTP_PASSWD = appParamConfig.getFTP_PASSWD();
+        ;
         FTP_USER = appParamConfig.getFTP_USER();
         FTP_ROOT_FOLDER = appParamConfig.getFTP_ROOT_FOLDER();
 

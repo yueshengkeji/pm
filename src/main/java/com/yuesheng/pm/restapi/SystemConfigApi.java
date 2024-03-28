@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.PostConstruct;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -280,7 +281,11 @@ public class SystemConfigApi extends BaseApi {
                 String c = sc.getCoding();
                 try {
                     Field field = WebParam.class.getDeclaredField(c);
-                    field.set(null, sc.getValue());
+                    if(StringUtils.equals(sc.getValue(),"true") || StringUtils.equals(sc.getValue(),"false")){
+                        field.set(null, Boolean.valueOf(sc.getValue()));
+                    }else{
+                        field.set(null, sc.getValue());
+                    }
                 } catch (NoSuchFieldException | IllegalAccessException e) {
 
                 }

@@ -1,5 +1,6 @@
 package com.yuesheng.pm.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.yuesheng.pm.entity.Course;
 import com.yuesheng.pm.mapper.CourseMapper;
 import com.yuesheng.pm.service.CourseService;
@@ -54,6 +55,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course queryByName(String name) {
+        PageHelper.startPage(1, 1);
         return courseMapper.queryByName(name);
     }
 }

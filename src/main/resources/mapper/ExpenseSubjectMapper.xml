@@ -113,4 +113,44 @@
         </where>
 
     </select>
+    <select id="list" resultMap="ExpenseSubModel" databaseId="mysql">
+        select a.id as id ,a.money as totalMoney,a.remark as remark,a.mark as mark,
+               a.staff as staff,a.course, b.project as project,b.apply_date as applyDate,
+        b.create_date as createDate, b.status as status from expense_subject as a
+        left join expense as b on b.id = a.mark
+        left join sdpb006 on a.course=pb00601
+        <where>
+            <if test="searchCourse != null">
+                AND a.course = #{searchCourse}
+            </if>
+            <if test="staff != null">
+                AND a.staff = #{staff}
+            </if>
+            <if test="str != null">
+                AND concat(ifnull(b.project,''),ifnull(a.remark,'')) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="searchProjectName != null">
+                AND b.project = #{searchProjectName}
+            </if>
+            <if test="start != null and end != null">
+                AND b.apply_date BETWEEN #{start} AND #{end}
+            </if>
+            <if test="status != null">
+                    AND b.status = #{status}
+            </if>
+            <if test="projectId != null">
+                    AND b.project_id = #{projectId}
+            </if>
+            <if test="projectName != null">
+                    AND b.project = #{projectName}
+            </if>
+            <if test="inCourse != null">
+                    AND a.course in (#{inCourse})
+            </if>
+            <if test="isProject != null">
+                and pb00612=#{isProject}
+            </if>
+        </where>
+
+    </select>
 </mapper>

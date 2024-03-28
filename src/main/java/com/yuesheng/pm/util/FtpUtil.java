@@ -1,5 +1,6 @@
 package com.yuesheng.pm.util;
 
+import com.jcraft.jsch.*;
 import com.yuesheng.pm.entity.Attach;
 import com.yuesheng.pm.entity.Staff;
 import com.yuesheng.pm.listener.WebParam;
@@ -7,11 +8,15 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.util.Objects;
+import java.util.Properties;
 import java.util.UUID;
 
 /**
@@ -21,42 +26,65 @@ import java.util.UUID;
  * @date 2016/11/17
  */
 public class FtpUtil {
-    /**
-     * ftp登录用户名
-     */
-    private static String userName = WebParam.FTP_USER;
-    /**
-     * ftp登录密码
-     */
-    private static String userPassword = WebParam.FTP_PASSWD;
-    /**
-     * ftp地址:直接IP地址
-     */
-    private static String server = WebParam.FTP_ADDRESS;
-    /**
-     * 指定写入的目录
-     */
-    private static String path = WebParam.FTP_ROOT_FOLDER;
+    private static Logger logger = LogManager.getLogger(FtpUtil.class);
 
     /**
      * 向ftp写文件(数据)
      */
     public synchronized static void uploadFile(byte[] fileBytes, String fileName) throws IOException {
         // 指定写入的目录
-        FTPClient ftpClient = loginFtp();
-        ftpClient.enterLocalPassiveMode();
-        InputStream is = null;
+        InputStream is = new ByteArrayInputStream(fileBytes);
+        if (WebParam.SFTP) {
+            ChannelSftp channelSftp = null;
+            try {
+                channelSftp = loginSFtp();
+                fileExists(fileName, channelSftp);
+                fileName = spliteFileName(fileName);
+                channelSftp.put(is, fileName);
+            } catch (SftpException e) {
+                logger.error("uploadFile SftpException:" + e.getMessage());
+            } finally {
+                IOUtils.closeQuietly(is);
+                closeSftp(channelSftp);
+            }
+        } else {
+            FTPClient ftpClient = loginFtp();
+            ftpClient.enterLocalPassiveMode();
+            try {
+                // 1.输入流
+                fileExists(fileName, ftpClient);
+                fileName = spliteFileName(fileName);
+                // 5.写操作
+                ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+                ftpClient.storeFile(fileName, is);
+            } finally {
+                IOUtils.closeQuietly(is);
+                closeFtp(ftpClient);
+            }
+        }
+
+    }
+
+    private static void closeSftp(ChannelSftp channelSftp) {
+        if (!Objects.isNull(channelSftp)) {
+            channelSftp.exit();
+        }
+    }
+
+    private static void fileExists(String fileName, ChannelSftp channelSftp) {
+        String path = WebParam.FTP_ROOT_FOLDER;
+        String folder = fileName.contains(File.separator) ? fileName.substring(0, fileName.indexOf(File.separator)) : "";
+        //设置超时时间 ,1分钟
+        /*ftpClient.setConnectTimeout(60000);*/
+        // 4.指定写入的目录
         try {
-            // 1.输入流
-            is = new ByteArrayInputStream(fileBytes);
-            fileExists(fileName, ftpClient);
-            fileName = spliteFileName(fileName);
-            // 5.写操作
-            ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
-            ftpClient.storeFile(fileName, is);
-        } finally {
-            IOUtils.closeQuietly(is);
-            closeFtp(ftpClient);
+            SftpATTRS temp = channelSftp.stat(path + File.separator + folder);
+            if (Objects.isNull(temp)) {
+                channelSftp.mkdir(path + File.separator + folder);
+            }
+            channelSftp.cd(path + File.separator + folder);
+        } catch (SftpException e) {
+            logger.error("文件夹创建失败，sftp dir create error:" + e.getMessage());
         }
     }
 
@@ -65,6 +93,7 @@ public class FtpUtil {
     }
 
     private static void fileExists(String fileName, FTPClient ftpClient) throws IOException {
+        String path = WebParam.FTP_ROOT_FOLDER;
         String folder = fileName.contains(File.separator) ? fileName.substring(0, fileName.indexOf(File.separator)) : "";
         //设置超时时间 ,1分钟
         /*ftpClient.setConnectTimeout(60000);*/
@@ -78,57 +107,48 @@ public class FtpUtil {
     }
 
     /**
-     * 压缩图片
-     *
-     * @param localPath 目标路径
-     * @param localName 目标名称
-     * @param bais      图片流对象
-     * @throws IOException
-     */
-    public synchronized static byte[] zipImage(String localPath, String localName, ByteArrayInputStream bais) throws IOException {
-        File localFile = new File(localPath + localName);
-        //如果文件存在，则直接return，无须从ftp服务器下载
-        if (localFile.exists()) {
-            FileInputStream fis = new FileInputStream(localFile);
-            byte[] bytes = IOUtils.toByteArray(fis);
-            fis.close();
-            return bytes;
-        }
-        ImageCompress ic = ImageCompress.instanceImage();
-        ic.setOutputDir(localPath);
-        //图片大小1024时才压缩
-        ic.setProportion(((bais.available() / 1024) > 1024));
-        byte[] bytes = ic.compressPic(localName, bais);
-        bais.close();
-        return bytes;
-    }
-
-    /**
      * 获取文件流对象，用完调用closeFtp();
      *
      * @param fileName 文件名称
      * @return
      */
     private static byte[] getFileStream(String fileName) {
-        FTPClient ftp = null;
-        try {
-            ftp = loginFtp();
-            fileExists(fileName, ftp);
+
+        InputStream is = null;
+        if (WebParam.SFTP) {
+            ChannelSftp channel = loginSFtp();
+            fileExists(fileName, channel);
             fileName = spliteFileName(fileName);
-            ftp.setFileType(FTPClient.BINARY_FILE_TYPE);
-//            String charSet = Charset.defaultCharset().displayName();
-//            fileName = new String(fileName.getBytes(charSet), "iso-8859-1");
-            FTPFile fs = ftp.mlistFile(fileName);
-            //获取ftp服务器流对象
-            return IOUtils.toByteArray(ftp.retrieveFileStream(fs.getName()));
-        } catch (IOException e) {
-            LoggerFactory.getLogger(FtpUtil.class).error("ftp IoException:", e);
-        } catch (Exception e) {
-            LoggerFactory.getLogger(FtpUtil.class).error("ftp exception:", e);
-        } finally {
-            closeFtp(ftp);
+            try {
+                is = channel.get(fileName);
+                return IOUtils.toByteArray(is);
+            } catch (SftpException | IOException e) {
+                logger.error("文件下载失败：filename:" + fileName + ";error::" + e.getMessage());
+            } finally {
+                IOUtils.closeQuietly(is);
+                closeSftp(channel);
+            }
+        } else {
+            FTPClient ftp = null;
+            try {
+                ftp = loginFtp();
+                fileExists(fileName, ftp);
+                fileName = spliteFileName(fileName);
+                ftp.setFileType(FTPClient.BINARY_FILE_TYPE);
+                FTPFile fs = ftp.mlistFile(fileName);
+                //获取ftp服务器流对象
+                is = ftp.retrieveFileStream(fs.getName());
+                return IOUtils.toByteArray(is);
+            } catch (IOException e) {
+                LoggerFactory.getLogger(FtpUtil.class).error("ftp IoException:", e);
+            } catch (Exception e) {
+                LoggerFactory.getLogger(FtpUtil.class).error("ftp exception:", e);
+            } finally {
+                IOUtils.closeQuietly(is);
+                closeFtp(ftp);
+            }
         }
-        return null;
+        return new byte[0];
     }
 
     /**
@@ -139,20 +159,7 @@ public class FtpUtil {
      * @throws Exception
      */
     public static byte[] downloadFile(String fileName) throws Exception {
-        FTPClient ftp = null;
-        try {
-            ftp = loginFtp();
-            fileExists(fileName, ftp);
-            fileName = spliteFileName(fileName);
-            // 设置以二进制流的方式传输
-            ftp.setFileType(FTPClient.BINARY_FILE_TYPE);
-            return IOUtils.toByteArray(ftp.retrieveFileStream(fileName));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeFtp(ftp);
-        }
-        return new byte[0];
+        return getFileStream(fileName);
     }
 
     private static FTPClient loginFtp() throws IOException {
@@ -160,23 +167,49 @@ public class FtpUtil {
         FTPClient ftp = new FTPClient();
         ftp.setControlEncoding("UTF-8");
         //1.连接服务器
-        ftp.connect(server);
+        ftp.connect(WebParam.FTP_ADDRESS);
         //2.登录服务器 如果采用默认端口，可以使用ftp.connect(url)的方式直接连接FTP服务器
-        ftp.login(userName, userPassword);
+        ftp.login(WebParam.FTP_USER, WebParam.FTP_PASSWD);
         ftp.enterLocalPassiveMode();
         //4.指定要下载的目录
-        ftp.changeWorkingDirectory(path);
-//        if (!ftp.changeWorkingDirectory(path + "/" + folder)) {
-//            ftp.changeWorkingDirectory(path);
-//            //创建目录
-//            if (!ftp.makeDirectory(folder)) {
-//                //创建目录失败,切换到失败目录
-//                ftp.changeWorkingDirectory(path + "/" + folder);
-//            } else {
-//                ftp.changeWorkingDirectory(folder);
-//            }
-//        }
+        ftp.changeWorkingDirectory(WebParam.FTP_ROOT_FOLDER);
         return ftp;
+    }
+
+    private static ChannelSftp loginSFtp() {
+
+        try {
+            JSch jSch = new JSch();
+            Session session = null;
+            session = jSch.getSession(WebParam.FTP_USER, WebParam.FTP_ADDRESS, 22);
+            session.setPassword(WebParam.FTP_PASSWD);
+            // 配置链接的属性
+            Properties p = new Properties();
+            p.put("StrictHostKeyChecking", "no");
+            session.setConfig(p);
+
+            // 进行sftp链接
+            session.connect();
+
+            // 获取通信通道
+            ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
+            channel.connect();
+            try {
+                String path = WebParam.FTP_ROOT_FOLDER;
+                if (channel.stat(path) != null) {
+                    channel.cd(path);
+                } else {
+                    channel.mkdir(path);
+                    channel.cd(path);
+                }
+            } catch (SftpException e) {
+                e.printStackTrace();
+            }
+
+            return channel;
+        } catch (JSchException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -224,15 +257,15 @@ public class FtpUtil {
             lastIndex = lastIndex == -1 ? fileName.length() : lastIndex;
             attach.setName(fileName.substring(0, lastIndex));
             attach.setFileBytes(file.getBytes());
-            attach.setPk00811(StringUtils.substring(fileName,lastIndex,fileName.length()));
+            attach.setPk00811(StringUtils.substring(fileName, lastIndex, fileName.length()));
             //添加附件到ftp服务器
             uploadFile(attach.getFileBytes(), attach.getName() + attach.getId() + (fileName.substring(lastIndex)));
             //添加附件到数据库
         } catch (IOException e) {
-            LogManager.getLogger("mylog").error("文件上传异常："+e);
+            LogManager.getLogger("mylog").error("文件上传异常：" + e);
             attach = null;
         } catch (Exception e) {
-            LogManager.getLogger("mylog").error("文件上传异常："+e);
+            LogManager.getLogger("mylog").error("文件上传异常：" + e);
             attach = null;
         }
         return attach;
@@ -273,12 +306,22 @@ public class FtpUtil {
      * @param fileName 文件名称
      */
     public static void deleteFile(String fileName) throws IOException {
-        FTPClient ftp = loginFtp();
-        fileExists(fileName, ftp);
-        fileName = spliteFileName(fileName);
-//        ftp.deleteFile(new String(fileName.getBytes(), "iso-8859-1"));
-        ftp.deleteFile(fileName);
-        closeFtp(ftp);
+        if (WebParam.SFTP) {
+            ChannelSftp channelSftp = loginSFtp();
+            fileExists(fileName, channelSftp);
+            fileName = spliteFileName(fileName);
+            try {
+                channelSftp.rm(fileName);
+            } catch (SftpException e) {
+                logger.error("删除sftp文件失败：fileName:" + fileName + ",error:" + e.getMessage());
+            }
+        } else {
+            FTPClient ftp = loginFtp();
+            fileExists(fileName, ftp);
+            fileName = spliteFileName(fileName);
+            ftp.deleteFile(fileName);
+            closeFtp(ftp);
+        }
     }
 
     /**
@@ -293,33 +336,5 @@ public class FtpUtil {
             return file.delete();
         }
         return false;
-    }
-
-    /**
-     * 写入文件到本地
-     *
-     * @param file
-     * @return
-     */
-    public static String uploadFileToLocal(MultipartFile file, String fileName) {
-        FileOutputStream fos = null;
-        String path = WebParam.assetsPath + "ftptemp"+File.separator + fileName;
-        try {
-            fos = new FileOutputStream(path);
-            IOUtils.write(file.getBytes(), fos);
-        } catch (FileNotFoundException e) {
-            return "";
-        } catch (IOException ignore) {
-            return "";
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException ignore) {
-
-            }
-        }
-        return path;
     }
 }

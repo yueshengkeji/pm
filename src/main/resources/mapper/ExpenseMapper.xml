@@ -89,6 +89,26 @@
             </if>
         </where>
     </select>
+    <select id="list" resultMap="Expense" databaseId="mysql">
+        select * from expense
+        <where>
+            <if test="staff != null">
+                AND staff = #{staff}
+            </if>
+            <if test="str != null">
+                AND concat(ifnull(project,''),ifnull(remark,'')) LIKE concat('%',#{str},'%')
+            </if>
+            <if test="searchProjectName != null">
+                AND project = #{searchProjectName}
+            </if>
+            <if test="start != null and end != null">
+                AND apply_date BETWEEN #{start} AND #{end}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
 
     <update id="updateState">
         update expense set status=#{status} where id=#{id}

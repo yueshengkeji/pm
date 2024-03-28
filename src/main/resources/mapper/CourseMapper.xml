@@ -13,13 +13,13 @@
         <result column="pb00612" property="isProject" jdbcType="TINYINT"></result>
     </resultMap>
     <select id="queryById" resultMap="course">
-        SELECT * FROM sdpb006 WHERE pb00601=#{id};
+        SELECT * FROM sdpb006 WHERE pb00601=#{id}
     </select>
     <select id="queryByParent" resultMap="course">
-        SELECT * FROM sdpb006 WHERE pb00603=#{parentId};
+        SELECT * FROM sdpb006 WHERE pb00603=#{parentId}
     </select>
     <select id="queryRoot" resultMap="course">
-        SELECT * FROM sdpb006 WHERE pb00603='';
+        SELECT * FROM sdpb006 WHERE pb00603=''
     </select>
     <insert id="insert">
         INSERT INTO sdpb006 VALUES (#{id},#{name},#{parentId},#{id}+#{parentId},#{series},#{type},0,'',#{isDetail},'',#{isCompany},#{isProject},'');
@@ -40,6 +40,6 @@
         SELECT * FROM sdpb006;
     </select>
     <select id="queryByName" resultMap="course">
-        select top 1 * from sdpb006 where pb00602=#{name};
+        select * from sdpb006 where pb00602=#{name}
     </select>
 </mapper>
