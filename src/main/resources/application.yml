@@ -2,6 +2,6 @@ server:
   port: 8089
 spring:
   profiles:
-    active: dev
+    active: prop
 mybatis:
   mapper-locations: mapper/*.xml

@@ -177,7 +177,7 @@ public class PutSignApi extends BaseApi {
     @GetMapping("put/{id}")
     public ResponseModel getPutById(@PathVariable String id) {
         ProPutSign pps = putSignService.queryById(id);
-        if (pps == null || org.apache.commons.lang.StringUtils.isBlank(pps.getPutobj())) {
+        if (pps == null || StringUtils.isBlank(pps.getPutobj())) {
             return ResponseModel.error("入库签单不存在或被撤回");
         }
         PutStorage ps = JSON.parseObject(pps.getPutobj(), PutStorage.class);

@@ -2,7 +2,6 @@ package com.yuesheng.pm.restapi;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.nimbusds.jose.util.Base64;
 import com.yuesheng.pm.entity.FlowApprove;
 import com.yuesheng.pm.entity.Staff;
 import com.yuesheng.pm.listener.WebParam;
@@ -63,7 +62,7 @@ public class ManagerLogin {
                 staff.setLastDate(DateUtil.format(DateUtil.getNowDate(), "yyyy-MM-dd HH:mm:ss"));
                 staffService.updateLoginTime(staff);
                 STAFF_LIST.put(staff.getId(), session);
-                String token = WebParam.USE_KEY + Base64.encode(UUID.randomUUID().toString()).toString();
+                String token = WebParam.USE_KEY + Base64.getMimeEncoder().encodeToString(Constant.uuid().getBytes());
                 staff.setToken(token);
                 redisService.setKey(token, staff);
                 redisService.expireKey(token, (long) 60 * 60 * 8, TimeUnit.SECONDS);
@@ -111,7 +110,7 @@ public class ManagerLogin {
                 staff.setLastDate(DateUtil.format(DateUtil.getNowDate(), "yyyy-MM-dd HH:mm:ss"));
                 staffService.updateLoginTime(staff);
                 STAFF_LIST.put(staff.getId(), session);
-                String token = WebParam.USE_KEY + Base64.encode(UUID.randomUUID().toString()).toString();
+                String token = WebParam.USE_KEY + Base64.getMimeEncoder().encodeToString(Constant.uuid().getBytes());
                 staff.setToken(token);
                 redisService.setKey(token, staff);
                 redisService.expireKey(token, (long) 60 * 60 * 8, TimeUnit.SECONDS);
@@ -334,7 +333,7 @@ public class ManagerLogin {
             Staff staff = new Staff();
             staff.setId("email_system_auth");
             staff.setName("邮件审批系统系统");
-            String token = WebParam.USE_KEY + Base64.encode(UUID.randomUUID().toString()).toString();
+            String token = WebParam.USE_KEY + Base64.getMimeEncoder().encodeToString(Constant.uuid().getBytes());
             staff.setToken(token);
             redisService.setKey(token, staff);
             redisService.expireKey(token, 900, TimeUnit.SECONDS);

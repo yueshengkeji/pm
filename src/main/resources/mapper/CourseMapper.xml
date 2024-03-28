@@ -22,7 +22,12 @@
         SELECT * FROM sdpb006 WHERE pb00603=''
     </select>
     <insert id="insert">
-        INSERT INTO sdpb006 VALUES (#{id},#{name},#{parentId},#{id}+#{parentId},#{series},#{type},0,'',#{isDetail},'',#{isCompany},#{isProject},'');
+        INSERT INTO sdpb006 VALUES (#{id},#{name},#{parentId},#{id}+#{parentId},#{series},#{type},0,'',
+                                    #{isDetail},'',#{isCompany},#{isProject},'');
+    </insert>
+    <insert id="insert" databaseId="mysql">
+        INSERT INTO sdpb006 VALUES (#{id},#{name},#{parentId},concat(#{id},#{parentId}),#{series},#{type},0,'',
+                                    #{isDetail},'',#{isCompany},#{isProject},'');
     </insert>
     <update id="update">
         UPDATE sdpb006

@@ -121,11 +121,11 @@
             <artifactId>org.apache.poi.xwpf.converter.xhtml</artifactId>
             <version>1.0.6</version>
         </dependency>
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-            <version>6.1.0.jre8</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.microsoft.sqlserver</groupId>-->
+<!--            <artifactId>mssql-jdbc</artifactId>-->
+<!--            <version>6.1.0.jre8</version>-->
+<!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/org.apache.camel/camel-ftp -->
         <dependency>
             <groupId>org.apache.camel</groupId>

@@ -5,7 +5,7 @@ import com.yuesheng.pm.mapper.FixedApplyMapper;
 import com.yuesheng.pm.service.*;
 import com.yuesheng.pm.util.Constant;
 import com.yuesheng.pm.util.DateUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

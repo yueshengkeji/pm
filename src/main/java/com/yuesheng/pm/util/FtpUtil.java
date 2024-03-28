@@ -5,7 +5,7 @@ import com.yuesheng.pm.entity.Attach;
 import com.yuesheng.pm.entity.Staff;
 import com.yuesheng.pm.listener.WebParam;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPSClient;
@@ -67,24 +67,36 @@ public class FtpUtil {
 
     private static void closeSftp(ChannelSftp channelSftp) {
         if (!Objects.isNull(channelSftp)) {
+            Session session = null;
+            try {
+                session = channelSftp.getSession();
+                session.disconnect();
+                ;
+            } catch (JSchException e) {
+
+            }
             channelSftp.exit();
         }
     }
 
     private static void fileExists(String fileName, ChannelSftp channelSftp) {
-        String path = WebParam.FTP_ROOT_FOLDER;
         String folder = fileName.contains(File.separator) ? fileName.substring(0, fileName.indexOf(File.separator)) : "";
         //设置超时时间 ,1分钟
         /*ftpClient.setConnectTimeout(60000);*/
         // 4.指定写入的目录
         try {
-            SftpATTRS temp = channelSftp.stat(path + File.separator + folder);
-            if (Objects.isNull(temp)) {
-                channelSftp.mkdir(path + File.separator + folder);
+            SftpATTRS temp = channelSftp.lstat(folder);
+            if (Objects.isNull(temp) || !temp.isDir()) {
+                channelSftp.mkdir(folder);
             }
-            channelSftp.cd(path + File.separator + folder);
+            channelSftp.cd(folder);
         } catch (SftpException e) {
-            logger.error("文件夹创建失败，sftp dir create error:" + e.getMessage());
+            try {
+                channelSftp.mkdir(folder);
+                channelSftp.cd(folder);
+            } catch (SftpException e2) {
+                logger.error("文件夹创建失败，sftp dir create error:" + "folder=" + folder + "error:;" + e2.getMessage());
+            }
         }
     }
 
@@ -196,14 +208,18 @@ public class FtpUtil {
             channel.connect();
             try {
                 String path = WebParam.FTP_ROOT_FOLDER;
-                if (channel.stat(path) != null) {
-                    channel.cd(path);
-                } else {
+                SftpATTRS sftpATTRS = channel.lstat(path);
+                if (Objects.isNull(sftpATTRS) || !sftpATTRS.isDir()) {
                     channel.mkdir(path);
-                    channel.cd(path);
                 }
+                channel.cd(path);
             } catch (SftpException e) {
-                e.printStackTrace();
+                try {
+                    channel.mkdir(WebParam.FTP_ROOT_FOLDER);
+                    channel.cd(WebParam.FTP_ROOT_FOLDER);
+                } catch (SftpException exception) {
+                    logger.error("创建文件根目录失败：" + exception.getMessage());
+                }
             }
 
             return channel;
@@ -284,7 +300,15 @@ public class FtpUtil {
      * @return
      */
     public static void downOtherFile(String fileName, String localPath, String localName) throws NullPointerException {
-        File localFile = new File(localPath, localName);
+        File localFile = new File(localPath);
+        if (!localFile.exists()) {
+            //不存在，创建文件夹
+            boolean mkdir = localFile.mkdir();
+            if (!mkdir) {
+                logger.error("创建临时文件夹失败：" + mkdir + "," + localPath);
+            }
+        }
+        localFile = new File(localPath, localName);
         DataOutputStream dos = null;
         //如果文件存在，则直接return，无须从ftp服务器下载
         if (localFile.exists()) {

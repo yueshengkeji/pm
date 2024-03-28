@@ -1,6 +1,5 @@
 package com.yuesheng.pm.interceptor;
 
-import com.nimbusds.jose.util.Base64;
 import com.yuesheng.pm.entity.Staff;
 import com.yuesheng.pm.entity.StaffAdditionInfo;
 import com.yuesheng.pm.service.*;
@@ -15,10 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -155,7 +151,7 @@ public class WxPublicAccountInterceptor implements HandlerInterceptor {
                             Staff staff = staffService.getStaffById(staffAdditionInfo.getStaffId());
                             staff.setDuty(dutyService.getDutyByStaffId(staff.getId()));
                             staff.setRole(roleService.getRolesByStaff(staff.getId()));
-                            String token = WebParam.USE_KEY + Base64.encode(UUID.randomUUID().toString()).toString();
+                            String token = WebParam.USE_KEY + Base64.getMimeEncoder().encodeToString(Constant.uuid().getBytes());
                             staff.setToken(token);
                             redisService.setKey(token, staff);
                             redisService.expireKey(token, (long) 60 * 60 * 8, TimeUnit.SECONDS);

@@ -53,8 +53,6 @@ public class AttachController {
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
 
-    private static String resourcePath = WebParam.webRootPath + "assets" + File.separator + "ftptemp" + File.separator;
-
     /**
      * 附件处理（此方法待优化）
      *
@@ -161,7 +159,7 @@ public class AttachController {
     }
 
     private boolean htmlFileIsExists(final Attach attach) throws IOException {
-        File f = new File(resourcePath, attach.getId() + ".html");
+        File f = new File(WebParam.webRootPath + "assets" + File.separator + "ftptemp" + File.separator, attach.getId() + ".html");
         if (f.exists()) {
             //预览文档文件存在，使用系统缓存
             FileInputStream fis = new FileInputStream(f);
@@ -176,7 +174,7 @@ public class AttachController {
     }
 
     private boolean fileIsExists(final Attach attach) throws IOException {
-        File f = new File(resourcePath, attach.getShowPath());
+        File f = new File(WebParam.webRootPath + "assets" + File.separator + "ftptemp" + File.separator, attach.getShowPath());
         FileInputStream fis;
         if (f.exists()) {
             fis = new FileInputStream(f);
@@ -190,6 +188,7 @@ public class AttachController {
     }
 
     private byte[] disposeExcel(String fileName, Attach attach, InputStream is) throws UnsupportedEncodingException {
+        String resourcePath = WebParam.webRootPath + "assets" + File.separator + "ftptemp" + File.separator;
         attach.setShowPath(attach.getId() + ".html");
         String temp;
         FileInputStream fis = null;
@@ -231,6 +230,7 @@ public class AttachController {
     }
 
     private byte[] disposeWord(String fileName, Attach attach, InputStream is) throws UnsupportedEncodingException {
+        String resourcePath = WebParam.webRootPath + "assets" + File.separator + "ftptemp" + File.separator;
         FileInputStream fis = null;
         byte[] tempBytes = new byte[0];
         try {
@@ -278,6 +278,7 @@ public class AttachController {
      * @throws UnsupportedEncodingException
      */
     private void downOther(String fileName, Attach attach) throws UnsupportedEncodingException {
+        String resourcePath = WebParam.webRootPath + "assets" + File.separator + "ftptemp" + File.separator;
         attach.setShowPath(URLEncoder.encode(fileName, "UTF-8").replace("+", "%20").replace("/", "%2F"));
         FtpUtil.downOtherFile(fileName, resourcePath, attach.getShowPath());
         FileInputStream fileInputStream = null;

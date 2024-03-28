@@ -1,6 +1,6 @@
 package com.yuesheng.pm.restapi;
 
-import com.nimbusds.jose.util.Base64;
+
 import com.yuesheng.pm.config.NoToken;
 import com.yuesheng.pm.entity.Duty;
 import com.yuesheng.pm.entity.Menu;
@@ -11,7 +11,10 @@ import com.yuesheng.pm.listener.WebParam;
 import com.yuesheng.pm.model.LoginModel;
 import com.yuesheng.pm.model.ResponseModel;
 import com.yuesheng.pm.service.*;
-import com.yuesheng.pm.util.*;
+import com.yuesheng.pm.util.CompanyWxUtil;
+import com.yuesheng.pm.util.Constant;
+import com.yuesheng.pm.util.DateUtil;
+import com.yuesheng.pm.util.RSAEncrypt;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,10 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @CrossOrigin
@@ -141,7 +141,7 @@ public class UserApi extends BaseApi {
             staff.setLastDate(DateUtil.format(DateUtil.getNowDate(), DateUtil.PATTERN_CLASSICAL));
             staff.setDuty(dutyService.getDutyByStaffId(staff.getId()));
             staff.setRole(roleService.getRolesByStaff(staff.getId()));
-            String token = WebParam.USE_KEY + Base64.encode(UUID.randomUUID().toString());
+            String token = WebParam.USE_KEY + Base64.getMimeEncoder().encodeToString(Constant.uuid().getBytes());
             staff.setToken(token);
             redisService.setKey(token, staff);
             redisService.expireKey(token, (long) 60 * 60 * 8, TimeUnit.SECONDS);
@@ -163,7 +163,7 @@ public class UserApi extends BaseApi {
             staff.setLastDate(DateUtil.format(DateUtil.getNowDate(), DateUtil.PATTERN_CLASSICAL));
             staff.setDuty(dutyService.getDutyByStaffId(staff.getId()));
             staff.setRole(roleService.getRolesByStaff(staff.getId()));
-            String token = WebParam.USE_KEY + Base64.encode(UUID.randomUUID().toString());
+            String token = WebParam.USE_KEY + Base64.getMimeEncoder().encodeToString(Constant.uuid().getBytes());
             staff.setToken(token);
             redisService.setKey(token, staff);
             redisService.expireKey(token, (long) 60 * 60 * 8, TimeUnit.SECONDS);

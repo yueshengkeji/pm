@@ -114,6 +114,37 @@
             </if>
         </where>
     </select>
+    <select id="queryByParam" resultMap="SystemLogMap" databaseId="mysql">
+        select
+        id, type, datetime, url, user_id, user_name, params, ip,method,title,result
+        from system_log
+        <where>
+            <if test="datetime != null and datetime != ''">
+                and datetime LIKE concat('%',#{datetime},'%')
+            </if>
+            <if test="params != null and params != ''">
+                and concat(ifnull(user_name,''),ifnull(params,'')) LIKE concat('%',#{params},'%')
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="method != null and method != ''">
+                and method = #{method}
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name = #{userName}
+            </if>
+            <if test="url != null and url !=''">
+                and url LIKE concat(#{url},'%')
+            </if>
+            <if test="title != null and title !=''">
+                and title LIKE concat(#{title},'%')
+            </if>
+            <if test="result != null and result !=''">
+                and result LIKE concat(#{result},'%')
+            </if>
+        </where>
+    </select>
     <select id="queryCountByParam" resultType="Integer">
         select
         COUNT(id)
