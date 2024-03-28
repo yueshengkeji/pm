@@ -1,3 +1,8 @@
+在线体验地址：<br/>
+http://106.54.11.162:8083/vuetify/login <br/>
+用户名：1001<br/>
+密码：@123@123<br/>
+
 使用说明：
 #### 1.导入：/src/main/resources/db/mysql.sql到数据库<br/>
 #### 2.安装redis 、ftp服务
